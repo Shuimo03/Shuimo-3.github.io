@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>docker学习笔记1 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="导论什么是docker？docker是一种允许开发者，系统管理等等，轻松的将应用部署在沙盒(又被称为容器)之中的工具。 以便在本地(host)操作系统上运行，比如Linux上，docker的好处在于，它运行用户将应用以及所有依赖打包到软件开发的标准单元中。 docker是基于Linux内核的cgroup，namespace，以及OverlayFS 类的 Union FS 等技术，对进程进行封装隔离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker学习笔记1">
+<meta property="og:url" content="http://example.com/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="导论什么是docker？docker是一种允许开发者，系统管理等等，轻松的将应用部署在沙盒(又被称为容器)之中的工具。 以便在本地(host)操作系统上运行，比如Linux上，docker的好处在于，它运行用户将应用以及所有依赖打包到软件开发的标准单元中。 docker是基于Linux内核的cgroup，namespace，以及OverlayFS 类的 Union FS 等技术，对进程进行封装隔离">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-77de1c34603d6dd8e1a384b07e4f8162_b.png">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-bfc621cec1c2e321cf2724093bdc8ae5_b.png">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-20496661e09e8946ce6da0a4441bdece_b.png">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-820aee2a33654099d87cdd2b7a1ce741_b.jpg">
+<meta property="article:published_time" content="2021-08-01T03:09:08.000Z">
+<meta property="article:modified_time" content="2021-08-01T03:09:27.361Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic3.zhimg.com/v2-77de1c34603d6dd8e1a384b07e4f8162_b.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-docker学习笔记1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" class="article-date">
+  <time datetime="2021-08-01T03:09:08.000Z" itemprop="datePublished">2021-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      docker学习笔记1
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="导论"><a href="#导论" class="headerlink" title="导论"></a>导论</h2><p>什么是docker？docker是一种允许开发者，系统管理等等，轻松的将应用部署在沙盒(又被称为容器)之中的工具。</p>
+<p>以便在本地(host)操作系统上运行，比如Linux上，docker的好处在于，它运行用户将应用以及所有依赖打包到软件开发的标准单元中。</p>
+<p>docker是基于Linux内核的cgroup，namespace，以及OverlayFS 类的 Union FS 等技术，对进程进行封装隔离，属于操作系统层面的虚拟化。</p>
+<p><img src="https://pic3.zhimg.com/v2-77de1c34603d6dd8e1a384b07e4f8162_b.png" alt="img"></p>
+<h3 id="docker和虚拟机的区别"><a href="#docker和虚拟机的区别" class="headerlink" title="docker和虚拟机的区别"></a>docker和虚拟机的区别</h3><p>这里参考了 Stack OverFlow(<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-virtual-machine">containers - How is Docker different from a virtual machine? - Stack Overflow</a>)上一个老哥的回答，原话如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Docker originally used LinuX Containers (LXC), but later switched to runC (formerly known as libcontainer), which runs in the same operating system as its host. This allows it to share a lot of the host operating system resources. Also, it uses a layered filesystem (AuFS) and manages networking.</span><br><span class="line"></span><br><span class="line">AuFS is a layered file system, so you can have a read only part and a write part which are merged together. One could have the common parts of the operating system as read only (and shared amongst all of your containers) and then give each container its own mount for writing.</span><br><span class="line"></span><br><span class="line">So, let&#x27;s say you have a 1 GB container image; if you wanted to use a full VM, you would need to have 1 GB x number of VMs you want. With Docker and AuFS you can share the bulk of the 1 GB between all the containers and if you have 1000 containers you still might only have a little over 1 GB of space for the containers OS (assuming they are all running the same OS image).</span><br><span class="line"></span><br><span class="line">A full virtualized system gets its own set of resources allocated to it, and does minimal sharing. You get more isolation, but it is much heavier (requires more resources). With Docker you get less isolation, but the containers are lightweight (require fewer resources). So you could easily run thousands of containers on a host, and it won&#x27;t even blink. Try doing that with Xen, and unless you have a really big host, I don&#x27;t think it is possible.</span><br><span class="line"></span><br><span class="line">A full virtualized system usually takes minutes to start, whereas Docker/LXC/runC containers take seconds, and often even less than a second.</span><br><span class="line"></span><br><span class="line">There are pros and cons for each type of virtualized system. If you want full isolation with guaranteed resources, a full VM is the way to go. If you just want to isolate processes from each other and want to run a ton of them on a reasonably sized host, then Docker/LXC/runC seems to be the way to go.</span><br></pre></td></tr></table></figure>
+
+<p>docker原先使用的技术是用了LinuX Containers，但是在0.7版本开始就不再使用了，而是使用runC，之前被称为libcontainer，在和主机相同的操作系统中运行，它允许分享许多主机资源。</p>
+<p>此外还使用了分层文件系统(AUFS)来管理网络。</p>
+<p>因为AUFS是一个分层的文件系统，所以可以有一个只读部分和写部分结合在一起，可以把操作系统的公共部分设置为只读部分，并且在所有容器之间共享，然后给每个容器分配自己的位置进行写操作。</p>
+<p>假设有一个1GB的容器镜像，如果是虚拟机(VM)的话，就要1GB x 所需要的VM，但是通过docker和AUFS，可以在所有的容器之间共享大部分1GB的空间。</p>
+<p>通过下面两张图片来总结以下</p>
+<p><img src="https://pic2.zhimg.com/v2-bfc621cec1c2e321cf2724093bdc8ae5_b.png" alt="img"></p>
+<p><img src="https://pic3.zhimg.com/v2-20496661e09e8946ce6da0a4441bdece_b.png" alt="img"></p>
+<p>虚拟机需要模拟一整台机器，包括硬件在内，每台虚拟机都必须要一个操作系统，而docker不需要，docker只需要必要的二进制和库就可以了。</p>
+<p>基于以上，个人对docker的理解是，docker相当于很多相同的资源和内容可以共享，而虚拟机则是每一台都要一模一样的资源，所以可能会造成资源浪费。</p>
+<h3 id="虚拟机和docker的对比"><a href="#虚拟机和docker的对比" class="headerlink" title="虚拟机和docker的对比"></a>虚拟机和docker的对比</h3><ul>
+<li>docker的启动速度很快，属于秒级别的，虚拟机通常需要几分钟去启动。</li>
+<li>docker需要的资源少，并且在操作系统级别进行虚拟化，docker容器和内核交互，几乎没有性能损耗，虚拟机需要通过和Hypervisor层还有内核层一起才能交互。</li>
+<li>因为docker所需要的资源少，docker的架构可以共用一个内核与共享应用程序库，所以相对虚拟机来说，在同样的硬件环境下，docker运行的数量要比虚拟机的数量多。</li>
+<li>安全性方面，虚拟机要比docker更加安全，因为docker的租户root和宿主机root相同，一旦容器内的用户从普通用户权限升级为root权限，它就直接具备了宿主机的root权限，从而对宿主机进行越级操作，之前服务器就因为这样被搞了好几次。虚拟机租户root权限和宿主机的root虚拟机权限是分离的，并且虚拟机利用如Intel的VT-d和VT-x的ring-1硬件隔离技术，这种隔离技术可以防止虚拟机突破和彼此交互，而容器至今还没有任何形式的硬件隔离，这使得容器容易受到攻击。</li>
+<li>高可用和可恢复性：docker对业务的高可用支持是通过快速重新部署实现的。虚拟化具备负载均衡，高可用，容错，迁移和数据保护等经过生产实践检验的成熟保障机制，VMware可承诺虚拟机99.999%高可用，保证业务连续性。</li>
+<li>部署和交付：docker通过Dockerfile，可以在多台服务器或者一台服务器上，快速部署，虚拟机通过镜像实现环境交付的一致性，但镜像分发无法体系化。</li>
+</ul>
+<p>| 特性       | 容器               | 虚拟机       | | ———- | —————— | ———— | | 启动       | 秒级               | 分钟级       | | 硬盘使用   | 一般为MB           | 一般为GB     | | 性能       | 接近原生           | 弱于         | | 系统支持量 | 单机支持上千个容器 | 一般为几十个 |</p>
+<h3 id="什么是容器？"><a href="#什么是容器？" class="headerlink" title="什么是容器？"></a>什么是容器？</h3><p>容器简单来说，容器就是机器上和主机上所有其他进程隔离的另一个进程，通过namespaces 和cgroups。</p>
+<h3 id="为什么使用容器？"><a href="#为什么使用容器？" class="headerlink" title="为什么使用容器？"></a>为什么使用容器？</h3><p>因为容器提供了一种逻辑打包机制，可以从应用程序的实际运行环境中抽象出应用程序，这种分离让基于容器的应用程序可以很轻松的进行部署，不管是目标环境还是私有数据中心，甚至开发人员的工作机。</p>
+<p>从操作角度来看，除了可移植性之外，还可以对资源进行更细粒度的控制，从而提高基础设施的效率，更好的使用计算资源。</p>
+<h3 id="什么是容器镜像？"><a href="#什么是容器镜像？" class="headerlink" title="什么是容器镜像？"></a>什么是容器镜像？</h3><p>镜像提供了容器的运行时所需要的程序、库、资源、配置等文件之外，还包含了一些为运行时准备的一些配置参数，比如匿名卷，环境变量，用户等。</p>
+<p>镜像可以看成一个特殊的文件系统，因为它包含了容器的文件系统，所以镜像必须包含应用程序所需要的所有内容：</p>
+<ul>
+<li>所有的依赖项</li>
+<li>配置</li>
+<li>脚本</li>
+<li>二进制文件等等</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/v2-820aee2a33654099d87cdd2b7a1ce741_b.jpg" alt="img"></p>
+<h2 id="拓展知识"><a href="#拓展知识" class="headerlink" title="拓展知识"></a>拓展知识</h2><ul>
+<li>cgroup</li>
+<li>namespace</li>
+<li>OverlayFS</li>
+<li>UnionFS</li>
+<li>runC</li>
+<li>containerd</li>
+<li>AUFS</li>
+<li>写时复制</li>
+<li>联合挂载</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-virtual-machine">containers - How is Docker different from a virtual machine? - Stack Overflow</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pangguoping/articles/5515286.html">Docker容器与虚拟机区别 - unixfbi.com - 博客园 (cnblogs.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/48174633">( docker容器与虚拟机有什么区别？ - 知乎 (zhihu.com)</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" data-id="ckrsmpdjy00033otubs527sd0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          (一)序言-SQL编译器
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MIT 6.824 SP2021 Lab1笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">August 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/">Restful API使用</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">记录一次服务器被当矿机解决方法</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/">(一)序言-SQL编译器</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/">docker学习笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/">MIT 6.824 SP2021 Lab1笔记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

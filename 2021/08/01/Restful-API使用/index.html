@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Restful API使用 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="简介REST 是一种基于超媒体构建分布式系统的架构风格。 REST 独立于任何基础协议，并且不一定绑定到 HTTP。 但是，最常见的 REST 实现使用 HTTP 作为应用程序协议。 基于 HTTP 的 REST 的主要优势在于它使用开放标准，不会绑定 API 的实现，也不会将客户端应用程序绑定到任何具体实现。 RESTful API主要原则 RESTful API围绕资源进行设计，资源可以由客户">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Restful API使用">
+<meta property="og:url" content="http://example.com/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="简介REST 是一种基于超媒体构建分布式系统的架构风格。 REST 独立于任何基础协议，并且不一定绑定到 HTTP。 但是，最常见的 REST 实现使用 HTTP 作为应用程序协议。 基于 HTTP 的 REST 的主要优势在于它使用开放标准，不会绑定 API 的实现，也不会将客户端应用程序绑定到任何具体实现。 RESTful API主要原则 RESTful API围绕资源进行设计，资源可以由客户">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-4fe2dee7f91519e25c43f5c629c6d36c_180x120.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-f61637e962a36880f427e0501d3b5a40_180x120.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-4fe2dee7f91519e25c43f5c629c6d36c_180x120.jpg">
+<meta property="article:published_time" content="2021-08-01T03:12:26.000Z">
+<meta property="article:modified_time" content="2021-08-01T03:12:52.448Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="后端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.zhimg.com/v2-4fe2dee7f91519e25c43f5c629c6d36c_180x120.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Restful-API使用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" class="article-date">
+  <time datetime="2021-08-01T03:12:26.000Z" itemprop="datePublished">2021-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Restful API使用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>REST 是一种基于超媒体构建分布式系统的架构风格。 REST 独立于任何基础协议，并且不一定绑定到 HTTP。 但是，最常见的 REST 实现使用 HTTP 作为应用程序协议。</p>
+<p>基于 HTTP 的 REST 的主要优势在于它使用开放标准，不会绑定 API 的实现，也不会将客户端应用程序绑定到任何具体实现。</p>
+<h3 id="RESTful-API主要原则"><a href="#RESTful-API主要原则" class="headerlink" title="RESTful API主要原则"></a>RESTful API主要原则</h3><ol>
+<li>RESTful API围绕资源进行设计，资源可以由客户端访问任何类型的对象、数据或者服务。</li>
+<li>每个资源都一个标识符，能够唯一标识该资源的URL。</li>
+<li>客户端通过交换资源的表达方式来和服务交互，主流的是JSON作为交换格式。</li>
+<li>RESTful API使用统一接口，这有助于分离客户端和服务实现，对于基于HTTP构建的 RESTful API，统一接口包括使用标准的HTTP谓词对资源执行操作，最常见的是GET、POST、PUT、PATCH、DELETE。</li>
+<li>资源名用复数形式表示</li>
+<li>REST API 使用无状态请求模型。 HTTP 请求应是独立的并可按任意顺序发生，因此保留请求之间的瞬时状态信息并不可行。 信息的唯一存储位置就在资源内，并且每个请求应是原子操作。 此约束可让 Web 服务获得高度可伸缩性，因为无需保留客户端与特定服务器之间的关联。 任何服务器可以处理来自任何客户端的任何请求。</li>
+</ol>
+<h3 id="CRUD对应的HTTP标准操作"><a href="#CRUD对应的HTTP标准操作" class="headerlink" title="CRUD对应的HTTP标准操作"></a>CRUD对应的HTTP标准操作</h3><p>对于资源的具体类型，由HTTP动词来决定，常用的HTTP动词有以下五个(括号内是对应的SQL命令) 1. GET（SELECT）：从服务器取出资源（一项或多项）。 2. POST（CREATE）：在服务器新建一个资源。 3. PUT（UPDATE）：在服务器更新资源（客户端提供改变后的完整资源）。 4. PATCH（UPDATE）：在服务器更新资源（客户端提供改变的属性）。 5. DELETE（DELETE）：从服务器删除资源。</p>
+<h3 id="RESTful-API例子"><a href="#RESTful-API例子" class="headerlink" title="RESTful API例子"></a>RESTful API例子</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET/books:获取所有图书的信息</span><br><span class="line">GET/books/id:获取某本图书信息</span><br></pre></td></tr></table></figure>
+
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>这里使用springboot中的几个注解来完成一些基本的操作，首先是根据id来查询某个信息，比如根据id查询图书信息，这里只关注controller层。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@ApiOperation(&quot;输入id获取对应id的图书信息&quot;)</span><br><span class="line">    @GetMapping(value = &quot;/api/get/books/id/&#123;id&#125;&quot;)</span><br><span class="line">        public JSONArray findByTreeId(@PathVariable(value = &quot;id&quot;) Integer id)&#123;</span><br><span class="line">        JSONArray jsonArray = new JSONArray();</span><br><span class="line">        jsonArray.add(mapService.getTreeInformation(id));</span><br><span class="line">        return jsonArray;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @ApiOperation(&quot;显示所有图书信息的信息&quot;)</span><br><span class="line">    @GetMapping(&quot;/api/get/trees&quot;)</span><br><span class="line">    public List&lt;book&gt; getAllBook()&#123;</span><br><span class="line">        return bookService.getAllBook();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h3><p>跟着 Github 学习 Restful HTTP API 设计 | Cizixs Write Herecizixs.com</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/azure/architecture/best-practices/api-designdocs.microsoft.com">https://docs.microsoft.com/zh-cn/azure/architecture/best-practices/api-designdocs.microsoft.com</a></p>
+<p>Restful API 的设计规范novoland.github.io</p>
+<p>RESTful API 设计指南<a href="http://www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)">www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)</a></p>
+<p>Resources in the REST APIdocs.github.com</p>
+<p>Restful API设计最佳实践kaelzhang81.github.io<img src="https://pic1.zhimg.com/v2-4fe2dee7f91519e25c43f5c629c6d36c_180x120.jpg" alt="图标"></p>
+<p>spring boot restful API 从零到一完整实践 - 阿月很乖echocow.cn<img src="https://pic1.zhimg.com/v2-f61637e962a36880f427e0501d3b5a40_180x120.jpg" alt="图标"></p>
+<p>RESTful API 设计指南<a href="http://www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)">www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)</a></p>
+<p>Restful API设计最佳实践kaelzhang81.github.io<img src="https://pic1.zhimg.com/v2-4fe2dee7f91519e25c43f5c629c6d36c_180x120.jpg" alt="图标"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" data-id="ckrsmpdjw00013otu26dmdm48" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">记录一次服务器被当矿机解决方法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">August 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/">Restful API使用</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">记录一次服务器被当矿机解决方法</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/">(一)序言-SQL编译器</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/">docker学习笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/">MIT 6.824 SP2021 Lab1笔记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

@@ -5,19 +5,19 @@
   
 
   
-  <title>关于博客补坑 | Hexo</title>
+  <title>(一)序言-SQL编译器 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="之前上传的很多文章都是在本地写的，所以没有来得及上传，导致很多文章只是标题，后续会把这些坑填上，因为之前的也没有备份，然后一顿操作，把博文弄没了，只能从知乎上搬运一部分之前写的文章了。">
+  <meta name="description" content="前言上个学期本来打算写一个关系数据库来作为毕设的，但是懒癌和拖延症发作，就拖到了这个学期，正好又开了编译原理这门课，就可以顺道把SQL的编译器来完成。 关于这个系列这个系列主要还是注重编译器的前端，同时记录编译原理这门课的过程，前期使用antlr4来完成Lexer和Grammar，这样可以减少工作量，打算等全部完成之后，再重新手写一个编译器。 antlr4介绍这里引用一下官方的介绍就是: ANTL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于博客补坑">
-<meta property="og:url" content="http://example.com/2021/08/01/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2%E8%A1%A5%E5%9D%91/index.html">
+<meta property="og:title" content="(一)序言-SQL编译器">
+<meta property="og:url" content="http://example.com/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="之前上传的很多文章都是在本地写的，所以没有来得及上传，导致很多文章只是标题，后续会把这些坑填上，因为之前的也没有备份，然后一顿操作，把博文弄没了，只能从知乎上搬运一部分之前写的文章了。">
+<meta property="og:description" content="前言上个学期本来打算写一个关系数据库来作为毕设的，但是懒癌和拖延症发作，就拖到了这个学期，正好又开了编译原理这门课，就可以顺道把SQL的编译器来完成。 关于这个系列这个系列主要还是注重编译器的前端，同时记录编译原理这门课的过程，前期使用antlr4来完成Lexer和Grammar，这样可以减少工作量，打算等全部完成之后，再重新手写一个编译器。 antlr4介绍这里引用一下官方的介绍就是: ANTL">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-08-01T02:24:08.000Z">
-<meta property="article:modified_time" content="2021-08-01T03:07:57.796Z">
+<meta property="article:published_time" content="2021-08-01T03:10:35.000Z">
+<meta property="article:modified_time" content="2021-08-01T03:10:54.548Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="blog">
+<meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -67,10 +67,10 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-关于博客补坑" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-一-序言-SQL编译器" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/08/01/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2%E8%A1%A5%E5%9D%91/" class="article-date">
-  <time datetime="2021-08-01T02:24:08.000Z" itemprop="datePublished">2021-08-01</time>
+    <a href="/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" class="article-date">
+  <time datetime="2021-08-01T03:10:35.000Z" itemprop="datePublished">2021-08-01</time>
 </a>
     
   </div>
@@ -81,7 +81,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      关于博客补坑
+      (一)序言-SQL编译器
     </h1>
   
 
@@ -89,15 +89,25 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>之前上传的很多文章都是在本地写的，所以没有来得及上传，导致很多文章只是标题，后续会把这些坑填上，因为之前的也没有备份，然后一顿操作，把博文弄没了，只能从知乎上搬运一部分之前写的文章了。</p>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>上个学期本来打算写一个关系数据库来作为毕设的，但是懒癌和拖延症发作，就拖到了这个学期，正好又开了编译原理这门课，就可以顺道把SQL的编译器来完成。</p>
+<h3 id="关于这个系列"><a href="#关于这个系列" class="headerlink" title="关于这个系列"></a>关于这个系列</h3><p>这个系列主要还是注重编译器的前端，同时记录编译原理这门课的过程，前期使用antlr4来完成Lexer和Grammar，这样可以减少工作量，打算等全部完成之后，再重新手写一个编译器。</p>
+<h3 id="antlr4介绍"><a href="#antlr4介绍" class="headerlink" title="antlr4介绍"></a>antlr4介绍</h3><p>这里引用一下官方的介绍就是:</p>
+<p>ANTLR (ANother Tool for Language Recognition) is a powerful parser generator for reading, processing, executing, or translating structured text or binary files. It’s widely used to build languages, tools, and frameworks. From a grammar, ANTLR generates a parser that can build and walk parse trees.</p>
+<p>简单来说就是，antlr是一个强大的语法生成器工具，可以用来读取，生产，执行和翻译二进制文件。</p>
+<p>你可以用它来实现编译器的前端(Lexer和Grammar).</p>
+<h3 id="Lexer-词法分析器"><a href="#Lexer-词法分析器" class="headerlink" title="Lexer 词法分析器"></a>Lexer 词法分析器</h3><p>一个词法分析器主要任务是读入源代码的字符，然后将它们组成词素(token)，然后生成并输出一个词法单元序列，每个此法单元对应一个词素，这个词法单元序列被输出到词法分析器进行语法分析，词法分析器还需要和符号表进行匹配。</p>
+<p>当词法分析器发现一个标识符的词素的时候，还需要将这个词素添加到符号表里面。</p>
+<p>简单来说就是，当我们平时把代码写好，运行的时候，词法分析器会先去读取代码中每一个字符，通过某种匹配算法，来检查这个是关键字还是其他字符。</p>
+<p>这里使用ANTLR4来编写一个词法分析器，需要新建一个LexerFileName.g4，代码文件名和lexer grammar同名，在这个文件里面可以自己定义语法规则，最后通过anltr4 LexerFileName.g4 来生成三个文件，分别是: 1. LexerFileName.java 2. LexerFileName.interp 3. LexerFileName.token</p>
+<p>LexerFileName.g4只是一个语法规则文件，想要继续实现这个词法解析器，去把LexerFileName.java中内容实现了。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2%E8%A1%A5%E5%9D%91/" data-id="ckrsmpdk100083otucafx63uc" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" data-id="ckrsmpdjz00043otu4daja28r" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/blog/" rel="tag">blog</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
 
     </footer>
   </div>
@@ -105,15 +115,20 @@
     
 <nav id="article-nav">
   
-    <a href="/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          MIT 6.824 SP2021 Lab1笔记
+          记录一次服务器被当矿机解决方法
         
       </div>
     </a>
   
+  
+    <a href="/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">docker学习笔记1</div>
+    </a>
   
 </nav>
 
