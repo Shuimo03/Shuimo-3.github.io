@@ -5,19 +5,14 @@
   
 
   
-  <title>记录一次服务器被当矿机解决方法 | Hexo</title>
+  <title>Tag: 操作系统 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="腾讯云之前发来过警告说服务器被攻击了，当时是在tmp目录下，有一个文件无法删除，chmod 777 修改文件都没有办法，还好那个时候没有安装什么东西，于是就重装了，最近跑了一个docker服务，发现每次都会无缘无故多出两个镜像，一个是ubuntu，一个是其他的，后来每次自己的镜像总会消失，并且CPU占用率就居然有90%。。 发现是一个kdevtmpfsi进程，通过Google发现是一个挖矿病毒。。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="记录一次服务器被当矿机解决方法">
-<meta property="og:url" content="http://example.com/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="腾讯云之前发来过警告说服务器被攻击了，当时是在tmp目录下，有一个文件无法删除，chmod 777 修改文件都没有办法，还好那个时候没有安装什么东西，于是就重装了，最近跑了一个docker服务，发现每次都会无缘无故多出两个镜像，一个是ubuntu，一个是其他的，后来每次自己的镜像总会消失，并且CPU占用率就居然有90%。。 发现是一个kdevtmpfsi进程，通过Google发现是一个挖矿病毒。。">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-08-01T03:11:07.000Z">
-<meta property="article:modified_time" content="2021-08-01T03:12:56.963Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="后端">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -67,69 +62,40 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-记录一次服务器被当矿机解决方法" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="article-date">
-  <time datetime="2021-08-01T03:11:07.000Z" itemprop="datePublished">2021-08-01</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="article-title" itemprop="name">
-      记录一次服务器被当矿机解决方法
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2021" class="archive-year">2021</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2021/08/02/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%A4%8D%E4%B9%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
+  <time datetime="2021-08-02T14:55:55.000Z" itemprop="datePublished">Aug 2</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2021/08/02/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%A4%8D%E4%B9%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">操作系统复习-进程与线程</a>
     </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>腾讯云之前发来过警告说服务器被攻击了，当时是在tmp目录下，有一个文件无法删除，chmod 777 修改文件都没有办法，还好那个时候没有安装什么东西，于是就重装了，最近跑了一个docker服务，发现每次都会无缘无故多出两个镜像，一个是ubuntu，一个是其他的，后来每次自己的镜像总会消失，并且CPU占用率就居然有90%。。 发现是一个kdevtmpfsi进程，通过Google发现是一个挖矿病毒。。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ol>
-<li>使用top命令，查看那个程序占用率CPU最高，一般是50%或者90%，接着使用kill -9 PID 杀掉这个进程，但是还会回来，是因为写了定时任务。</li>
-<li>接着使用find / -name kdevtmpfsi和find / -name kinsing，找到这些文件，并且删除，这里有一个坑的地方在于，可能根本删不掉，就算是root权限都不行，可以使用chattr工具。</li>
-<li>crontab -l查看定时任务，如果这里有权限的话，就可以crontab -e把定时任务删除。</li>
-</ol>
-<h3 id="防护措施"><a href="#防护措施" class="headerlink" title="防护措施"></a>防护措施</h3><p>主要原因还是因为对docker不熟悉，刚刚接触上手，这个病毒主要是通过扫描docker端口2375，可以在docker.service，把-H 0.0.0.0:2375改了，或者是在云服务器中的安全组里面关闭端口，同时修改ssh端口。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-id="ckrsmqik40008bgtu5w16f73w" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          Restful API使用
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">(一)序言-SQL编译器</div>
-    </a>
-  
-</nav>
-
-  
 </article>
+  
+  
+    </div></section>
+  
+
 
 </section>
         
