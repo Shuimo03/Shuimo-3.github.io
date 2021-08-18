@@ -64,6 +64,103 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-MIT-6-824-SP2021-Lab1笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2021-08-01T03:07:40.000Z" itemprop="datePublished">2021-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/">MIT 6.824 SP2021 Lab1笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="废话"><a href="#废话" class="headerlink" title="废话"></a>废话</h2><p>这是目前做过所有公开课里面最难的一次了，很多人都说第一个Lab简单，可能是对比后面的Lab比较简单吧，这次涉及到内容太多了，比如并发，RPC，就算给答案给代码去抄，也蛮难理解的，我的代码基本上是抄@呆呆，艾特不出来，就贴上大佬的知乎个人页吧。</p>
+<p>呆呆<a href="http://www.zhihu.com![图标](https://pic3.zhimg.com/v2-3a0b4d9e651a8b899e6a515266bcb486_ipico.jpg)">www.zhihu.com![图标](https://pic3.zhimg.com/v2-3a0b4d9e651a8b899e6a515266bcb486_ipico.jpg)</a></p>
+<p>这门课想获得最大的收益应该是自己独立动手完成代码，先看reading，然后看video，再回到reading，这样去动手写代码可能能够写出来。</p>
+<p>我之前是只看了reading，看video我会犯困，里面很多概念没了解过，所以前几次觉得论文看懂了，可以去写代码了，但是还是两眼蒙蔽。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>Lab1是要通过MapReduce这篇论文来实现一个简单版本的分布式MapReduce，我们将要实现worker进程来调用Map和Reduce函数，通过它们来读取或写入文件，同时coordinator进程分配任务给workers，并且还要处理失败的workers，具体工作流程和细节可以去看论文，<strong>21版本中的master被改成了coordinator，也和论文中的master对应上了</strong>。</p>
+<p>worker有一个以及一个以上，它们可以并行处理。master只有一个，在现实的系统中，worker应该是运在不同的机器上，但是在lab中，我们只需要运行在一台机器上就可以了。</p>
+<p>worker通过RPC向coordinator申请任务(task)，从一个或者多个文件读取任务的输入，然后执行任务，并将任务的输出写入一个或者多个文件。</p>
+<p>如果有worker没有在规定的时间内完成它的task，在Lab中这个时间是10秒，那coordinator应该注意到并且把这个task给其他的worker。</p>
+<p>Lab已经给了部分代码，在main包下面，这些代码不用去修改，但是可以去在运行官方给的例子的时候，可以去调试。</p>
+<p>我们只需要去实现mr下面的三个文件就可以了。</p>
+<ul>
+<li>mr/coordinator.go</li>
+<li>mr/worker.go</li>
+<li>mr/rpc.go</li>
+</ul>
+<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><p>因为MIT6.824都是通过Go来实现的，所以需要先安装Go和学习Go，下面给出了go的安装和学习教程:</p>
+<ul>
+<li>安装 <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/go.html">https://pdos.csail.mit.edu/6.824/labs/go.html</a></li>
+<li>教程 <a target="_blank" rel="noopener" href="https://tour.golang.org/">https://tour.golang.org/</a></li>
+</ul>
+<p>Git的配置不用多说了，获取初始化Lab</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git clone git://g.csail.mit.edu/6.824-golabs-2021 6.824</span><br><span class="line">$ cd 6.824</span><br><span class="line">$ ls</span><br><span class="line">Makefile src</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+
+<p>这里有一个小例子，对应了论文中的统计，这里回顾一下这个例子，首先输入的是一个文本文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0: Deer Bear River</span><br><span class="line">1: Car Car River</span><br><span class="line">2: Deer Car Bear</span><br></pre></td></tr></table></figure>
+
+<p>master分配map任务给workers，在map阶段，则workers将文本分为一行一行，并对每一行的单词出现的次数做一次统计，map会将重复的key去除。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Deer Bear River</span><br><span class="line">Deer 1</span><br><span class="line">Bear 1</span><br><span class="line">River 1</span><br><span class="line"></span><br><span class="line">Car Car River</span><br><span class="line">Car 1</span><br><span class="line">Car 1</span><br><span class="line">River 1</span><br><span class="line"></span><br><span class="line">Deer Car Bear</span><br><span class="line">Deer 1</span><br><span class="line">Car 1</span><br><span class="line">Bear 1</span><br></pre></td></tr></table></figure>
+
+<p>回头在看论文，Map输出的应该是一对键值对。</p>
+<p>接着第二步，再把相同的单词放在一起，通过reduce处理最后输出。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Bear 1</span><br><span class="line">Bear 1</span><br><span class="line"></span><br><span class="line">Car 1</span><br><span class="line">Car 1</span><br><span class="line">Car 1</span><br><span class="line"></span><br><span class="line">Deer 1</span><br><span class="line">Deer 1</span><br></pre></td></tr></table></figure>
+
+<p>最后得到的结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Bear 2</span><br><span class="line">Car 3</span><br><span class="line">Deer 2</span><br><span class="line">River 2</span><br></pre></td></tr></table></figure>
+
+<p>这里只是个人的理解，具体的细节还是要去看论文。</p>
+<h2 id="代码思路"><a href="#代码思路" class="headerlink" title="代码思路"></a>代码思路</h2><p>整体来看就是worker向coordinator申请任务，或者coordinator分配任务给worker，然后它们之间是通过RPC通信的。所以打算先从RPC入手，注意worker是可以多个并行执行的。</p>
+<p>先来看下map函数和reduce函数，使用wc.go作为例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// The map function is called once for each file of input. The first</span><br><span class="line">// argument is the name of the input file, and the second is the</span><br><span class="line">// file&#x27;s complete contents. You should ignore the input file name,</span><br><span class="line">// and look only at the contents argument. The return value is a slice</span><br><span class="line">// of key/value pairs.</span><br><span class="line">//</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">func Map(filename string, contents string) []mr.KeyValue &#123;</span><br><span class="line">   // function to detect word separators.</span><br><span class="line">   ff := func(r rune) bool &#123; return !unicode.IsLetter(r) &#125;</span><br><span class="line"></span><br><span class="line">   // split contents into an array of words.</span><br><span class="line">   words := strings.FieldsFunc(contents, ff)</span><br><span class="line"></span><br><span class="line">   kva := []mr.KeyValue&#123;&#125;</span><br><span class="line">   for _, w := range words &#123;</span><br><span class="line">      kv := mr.KeyValue&#123;w, &quot;1&quot;&#125;</span><br><span class="line">      kva = append(kva, kv)</span><br><span class="line">   &#125;</span><br><span class="line">   return kva</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// The reduce function is called once for each key generated by the</span><br><span class="line">// map tasks, with a list of all the values created for that key by</span><br><span class="line">// any map task.</span><br><span class="line">//</span><br><span class="line">func Reduce(key string, values []string) string &#123;</span><br><span class="line">   // return the number of occurrences of this word.</span><br><span class="line">   return strconv.Itoa(len(values))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>map函数的意思是：每个输入的文件调用一次map，filename是输入文件的名字，contents是文件的完整内容，应该忽略文件名，只关注文件的内容，map将会返回一对键值对。</p>
+<p>就是worker如果执行的是map任务，那worker就需要从filename中读取contents，然后从contents解析出KV键值对，最后把这个kv键值对传给用户自自定义的Map函数，最后通过Map函数来生产输出中间的kv键值对，并缓存在内存中。</p>
+<p>这里的map和Map是有去别的，Map函数是属于用户自定义的，而map是属于mapreduce这个框架的。</p>
+<p>mapreduce函数的意思是：map任务生成的每个键都会调用一次 reduce 函数，其中包含由任何map任务。</p>
+<p>具体的例子已经在上面讲过了。</p>
+<h3 id="rpc-go"><a href="#rpc-go" class="headerlink" title="rpc.go"></a>rpc.go</h3><p>RPC简单来说就是一台主机调用另外一台主机上的方法或者函数的通信框架，本地的调用就是LPC，因为是coordinator分配任务给worker的，所以就需要定义任务的类型，类型有两种：Map和Reduce，coordinator是一个调度进程，所以就只有一个，但是worker是多进程的，所以为了区别每个worker就需要定义它们的ID，就是用进程ID作为它们的ID好了，也方便调试，最后是任务的数量和完成的时间。</p>
+<p>根据这些信息，我们大概也就晓得要怎么完成rpc.go了。</p>
+<h3 id="worker-go"><a href="#worker-go" class="headerlink" title="worker.go"></a>worker.go</h3><p>worker对于我这种菜鸡来说还是有点难度的，先来看个简单的例子和处理流程，首先是master分配给worker任务，woker要去执行任务的时候，有一个前提条件就是：它得是空闲状态，如果不是空闲状态还不能分配。</p>
+<p>接着识别是什么类型的任务，一共就两种map和reduce，目前到这里，大体思路是有了，用伪代码来表示就是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if(workerStatus == leisure)&#123;</span><br><span class="line">    switch master.taskType:</span><br><span class="line">    case Map:</span><br><span class="line">        todo map</span><br><span class="line">    CASE Reude:</span><br><span class="line">        todo reduce</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行完任务之后，重置woker状态为空闲，但是要注意，这里的worker是并行执行的，也就是说workerA执行map任务，还有wokerB执行reduce任务，并且每个任务都有一个时间(10秒)，如果没有在规定的时间里面完成任务，那它就不能继续执行，而是把这个任务转给其他worker做。</p>
+<h3 id="coordinator-go"><a href="#coordinator-go" class="headerlink" title="coordinator.go"></a>coordinator.go</h3><p>master是负责分配任务的，同时它还需要检测所有的worker状态，还有task的任务状态，是否完成等等，应该是三个里面最难的一个，还要面对并发问题。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/LebronAl/MIT6.824-2021/blob/master/docs/lab1.md">MIT6.824-2021/lab1.md at master · LebronAl/MIT6.824-2021 (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://mr-dai.github.io/mit-6824-lab1/">MIT 6.824 Lab 1 - 实现 MapReduce - Robert Peng’s Blog (mr-dai.github.io)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=Rz8JCS9TfOQ&amp;t=1s">https://www.youtube.com/watch?v=Rz8JCS9TfOQ&amp;t=1s</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/" data-id="ckrsmqijz0001bgtu3arm5b9p" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-关于博客补坑" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/08/01/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2%E8%A1%A5%E5%9D%91/" class="article-date">
@@ -121,7 +218,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDK%E6%BA%90%E7%A0%81/" rel="tag">JDK源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDK%E6%BA%90%E7%A0%81/" rel="tag">JDK源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9B%86%E5%90%88/" rel="tag">Java集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
     </div>
   </div>
 
@@ -131,7 +228,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JDK%E6%BA%90%E7%A0%81/" style="font-size: 10px;">JDK源码</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 20px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
+      <a href="/tags/JDK%E6%BA%90%E7%A0%81/" style="font-size: 10px;">JDK源码</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java%E9%9B%86%E5%90%88/" style="font-size: 10px;">Java集合</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 20px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
     </div>
   </div>
 
@@ -153,6 +250,10 @@
       <ul>
         
           <li>
+            <a href="/2021/08/18/Java%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/">Java集合总结</a>
+          </li>
+        
+          <li>
             <a href="/2021/08/12/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/">Java内存区域</a>
           </li>
         
@@ -166,10 +267,6 @@
         
           <li>
             <a href="/2021/08/02/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%A4%8D%E4%B9%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">操作系统复习-进程与线程</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/02/MapRedcude%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">MapRedcude论文笔记</a>
           </li>
         
       </ul>
