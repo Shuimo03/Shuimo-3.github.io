@@ -64,6 +64,254 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Restful-API使用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" class="article-date">
+  <time datetime="2021-08-01T03:12:26.000Z" itemprop="datePublished">2021-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/">Restful API使用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>REST 是一种基于超媒体构建分布式系统的架构风格。 REST 独立于任何基础协议，并且不一定绑定到 HTTP。 但是，最常见的 REST 实现使用 HTTP 作为应用程序协议。</p>
+<p>基于 HTTP 的 REST 的主要优势在于它使用开放标准，不会绑定 API 的实现，也不会将客户端应用程序绑定到任何具体实现。</p>
+<h3 id="RESTful-API主要原则"><a href="#RESTful-API主要原则" class="headerlink" title="RESTful API主要原则"></a>RESTful API主要原则</h3><ol>
+<li>RESTful API围绕资源进行设计，资源可以由客户端访问任何类型的对象、数据或者服务。</li>
+<li>每个资源都一个标识符，能够唯一标识该资源的URL。</li>
+<li>客户端通过交换资源的表达方式来和服务交互，主流的是JSON作为交换格式。</li>
+<li>RESTful API使用统一接口，这有助于分离客户端和服务实现，对于基于HTTP构建的 RESTful API，统一接口包括使用标准的HTTP谓词对资源执行操作，最常见的是GET、POST、PUT、PATCH、DELETE。</li>
+<li>资源名用复数形式表示</li>
+<li>REST API 使用无状态请求模型。 HTTP 请求应是独立的并可按任意顺序发生，因此保留请求之间的瞬时状态信息并不可行。 信息的唯一存储位置就在资源内，并且每个请求应是原子操作。 此约束可让 Web 服务获得高度可伸缩性，因为无需保留客户端与特定服务器之间的关联。 任何服务器可以处理来自任何客户端的任何请求。</li>
+</ol>
+<h3 id="CRUD对应的HTTP标准操作"><a href="#CRUD对应的HTTP标准操作" class="headerlink" title="CRUD对应的HTTP标准操作"></a>CRUD对应的HTTP标准操作</h3><p>对于资源的具体类型，由HTTP动词来决定，常用的HTTP动词有以下五个(括号内是对应的SQL命令) 1. GET（SELECT）：从服务器取出资源（一项或多项）。 2. POST（CREATE）：在服务器新建一个资源。 3. PUT（UPDATE）：在服务器更新资源（客户端提供改变后的完整资源）。 4. PATCH（UPDATE）：在服务器更新资源（客户端提供改变的属性）。 5. DELETE（DELETE）：从服务器删除资源。</p>
+<h3 id="RESTful-API例子"><a href="#RESTful-API例子" class="headerlink" title="RESTful API例子"></a>RESTful API例子</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET/books:获取所有图书的信息</span><br><span class="line">GET/books/id:获取某本图书信息</span><br></pre></td></tr></table></figure>
+
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>这里使用springboot中的几个注解来完成一些基本的操作，首先是根据id来查询某个信息，比如根据id查询图书信息，这里只关注controller层。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@ApiOperation(&quot;输入id获取对应id的图书信息&quot;)</span><br><span class="line">    @GetMapping(value = &quot;/api/get/books/id/&#123;id&#125;&quot;)</span><br><span class="line">        public JSONArray findByTreeId(@PathVariable(value = &quot;id&quot;) Integer id)&#123;</span><br><span class="line">        JSONArray jsonArray = new JSONArray();</span><br><span class="line">        jsonArray.add(mapService.getTreeInformation(id));</span><br><span class="line">        return jsonArray;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @ApiOperation(&quot;显示所有图书信息的信息&quot;)</span><br><span class="line">    @GetMapping(&quot;/api/get/trees&quot;)</span><br><span class="line">    public List&lt;book&gt; getAllBook()&#123;</span><br><span class="line">        return bookService.getAllBook();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h3><p>跟着 Github 学习 Restful HTTP API 设计 | Cizixs Write Herecizixs.com</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/azure/architecture/best-practices/api-designdocs.microsoft.com">https://docs.microsoft.com/zh-cn/azure/architecture/best-practices/api-designdocs.microsoft.com</a></p>
+<p>Restful API 的设计规范novoland.github.io</p>
+<p>RESTful API 设计指南<a href="http://www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)">www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)</a></p>
+<p>Resources in the REST APIdocs.github.com</p>
+<p>Restful API设计最佳实践kaelzhang81.github.io<img src="https://pic1.zhimg.com/v2-4fe2dee7f91519e25c43f5c629c6d36c_180x120.jpg" alt="图标"></p>
+<p>spring boot restful API 从零到一完整实践 - 阿月很乖echocow.cn<img src="https://pic1.zhimg.com/v2-f61637e962a36880f427e0501d3b5a40_180x120.jpg" alt="图标"></p>
+<p>RESTful API 设计指南<a href="http://www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)">www.ruanyifeng.com![图标](https://pic1.zhimg.com/v2-0ef2a140955f9707655a043a431289fc_180x120.jpg)</a></p>
+<p>Restful API设计最佳实践kaelzhang81.github.io<img src="https://pic1.zhimg.com/v2-4fe2dee7f91519e25c43f5c629c6d36c_180x120.jpg" alt="图标"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" data-id="ckrsmqijv0000bgtu8c025voe" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-记录一次服务器被当矿机解决方法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="article-date">
+  <time datetime="2021-08-01T03:11:07.000Z" itemprop="datePublished">2021-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">记录一次服务器被当矿机解决方法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>腾讯云之前发来过警告说服务器被攻击了，当时是在tmp目录下，有一个文件无法删除，chmod 777 修改文件都没有办法，还好那个时候没有安装什么东西，于是就重装了，最近跑了一个docker服务，发现每次都会无缘无故多出两个镜像，一个是ubuntu，一个是其他的，后来每次自己的镜像总会消失，并且CPU占用率就居然有90%。。 发现是一个kdevtmpfsi进程，通过Google发现是一个挖矿病毒。。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ol>
+<li>使用top命令，查看那个程序占用率CPU最高，一般是50%或者90%，接着使用kill -9 PID 杀掉这个进程，但是还会回来，是因为写了定时任务。</li>
+<li>接着使用find / -name kdevtmpfsi和find / -name kinsing，找到这些文件，并且删除，这里有一个坑的地方在于，可能根本删不掉，就算是root权限都不行，可以使用chattr工具。</li>
+<li>crontab -l查看定时任务，如果这里有权限的话，就可以crontab -e把定时任务删除。</li>
+</ol>
+<h3 id="防护措施"><a href="#防护措施" class="headerlink" title="防护措施"></a>防护措施</h3><p>主要原因还是因为对docker不熟悉，刚刚接触上手，这个病毒主要是通过扫描docker端口2375，可以在docker.service，把-H 0.0.0.0:2375改了，或者是在云服务器中的安全组里面关闭端口，同时修改ssh端口。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-id="ckrsmqik40008bgtu5w16f73w" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-一-序言-SQL编译器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" class="article-date">
+  <time datetime="2021-08-01T03:10:35.000Z" itemprop="datePublished">2021-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/">(一)序言-SQL编译器</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>上个学期本来打算写一个关系数据库来作为毕设的，但是懒癌和拖延症发作，就拖到了这个学期，正好又开了编译原理这门课，就可以顺道把SQL的编译器来完成。</p>
+<h3 id="关于这个系列"><a href="#关于这个系列" class="headerlink" title="关于这个系列"></a>关于这个系列</h3><p>这个系列主要还是注重编译器的前端，同时记录编译原理这门课的过程，前期使用antlr4来完成Lexer和Grammar，这样可以减少工作量，打算等全部完成之后，再重新手写一个编译器。</p>
+<h3 id="antlr4介绍"><a href="#antlr4介绍" class="headerlink" title="antlr4介绍"></a>antlr4介绍</h3><p>这里引用一下官方的介绍就是:</p>
+<p>ANTLR (ANother Tool for Language Recognition) is a powerful parser generator for reading, processing, executing, or translating structured text or binary files. It’s widely used to build languages, tools, and frameworks. From a grammar, ANTLR generates a parser that can build and walk parse trees.</p>
+<p>简单来说就是，antlr是一个强大的语法生成器工具，可以用来读取，生产，执行和翻译二进制文件。</p>
+<p>你可以用它来实现编译器的前端(Lexer和Grammar).</p>
+<h3 id="Lexer-词法分析器"><a href="#Lexer-词法分析器" class="headerlink" title="Lexer 词法分析器"></a>Lexer 词法分析器</h3><p>一个词法分析器主要任务是读入源代码的字符，然后将它们组成词素(token)，然后生成并输出一个词法单元序列，每个此法单元对应一个词素，这个词法单元序列被输出到词法分析器进行语法分析，词法分析器还需要和符号表进行匹配。</p>
+<p>当词法分析器发现一个标识符的词素的时候，还需要将这个词素添加到符号表里面。</p>
+<p>简单来说就是，当我们平时把代码写好，运行的时候，词法分析器会先去读取代码中每一个字符，通过某种匹配算法，来检查这个是关键字还是其他字符。</p>
+<p>这里使用ANTLR4来编写一个词法分析器，需要新建一个LexerFileName.g4，代码文件名和lexer grammar同名，在这个文件里面可以自己定义语法规则，最后通过anltr4 LexerFileName.g4 来生成三个文件，分别是: 1. LexerFileName.java 2. LexerFileName.interp 3. LexerFileName.token</p>
+<p>LexerFileName.g4只是一个语法规则文件，想要继续实现这个词法解析器，去把LexerFileName.java中内容实现了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" data-id="ckrsmqik10003bgtuhreq3taa" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-docker学习笔记1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" class="article-date">
+  <time datetime="2021-08-01T03:09:08.000Z" itemprop="datePublished">2021-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/">docker学习笔记1</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="导论"><a href="#导论" class="headerlink" title="导论"></a>导论</h2><p>什么是docker？docker是一种允许开发者，系统管理等等，轻松的将应用部署在沙盒(又被称为容器)之中的工具。</p>
+<p>以便在本地(host)操作系统上运行，比如Linux上，docker的好处在于，它运行用户将应用以及所有依赖打包到软件开发的标准单元中。</p>
+<p>docker是基于Linux内核的cgroup，namespace，以及OverlayFS 类的 Union FS 等技术，对进程进行封装隔离，属于操作系统层面的虚拟化。</p>
+<p><img src="https://pic3.zhimg.com/v2-77de1c34603d6dd8e1a384b07e4f8162_b.png" alt="img"></p>
+<h3 id="docker和虚拟机的区别"><a href="#docker和虚拟机的区别" class="headerlink" title="docker和虚拟机的区别"></a>docker和虚拟机的区别</h3><p>这里参考了 Stack OverFlow(<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-virtual-machine">containers - How is Docker different from a virtual machine? - Stack Overflow</a>)上一个老哥的回答，原话如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Docker originally used LinuX Containers (LXC), but later switched to runC (formerly known as libcontainer), which runs in the same operating system as its host. This allows it to share a lot of the host operating system resources. Also, it uses a layered filesystem (AuFS) and manages networking.</span><br><span class="line"></span><br><span class="line">AuFS is a layered file system, so you can have a read only part and a write part which are merged together. One could have the common parts of the operating system as read only (and shared amongst all of your containers) and then give each container its own mount for writing.</span><br><span class="line"></span><br><span class="line">So, let&#x27;s say you have a 1 GB container image; if you wanted to use a full VM, you would need to have 1 GB x number of VMs you want. With Docker and AuFS you can share the bulk of the 1 GB between all the containers and if you have 1000 containers you still might only have a little over 1 GB of space for the containers OS (assuming they are all running the same OS image).</span><br><span class="line"></span><br><span class="line">A full virtualized system gets its own set of resources allocated to it, and does minimal sharing. You get more isolation, but it is much heavier (requires more resources). With Docker you get less isolation, but the containers are lightweight (require fewer resources). So you could easily run thousands of containers on a host, and it won&#x27;t even blink. Try doing that with Xen, and unless you have a really big host, I don&#x27;t think it is possible.</span><br><span class="line"></span><br><span class="line">A full virtualized system usually takes minutes to start, whereas Docker/LXC/runC containers take seconds, and often even less than a second.</span><br><span class="line"></span><br><span class="line">There are pros and cons for each type of virtualized system. If you want full isolation with guaranteed resources, a full VM is the way to go. If you just want to isolate processes from each other and want to run a ton of them on a reasonably sized host, then Docker/LXC/runC seems to be the way to go.</span><br></pre></td></tr></table></figure>
+
+<p>docker原先使用的技术是用了LinuX Containers，但是在0.7版本开始就不再使用了，而是使用runC，之前被称为libcontainer，在和主机相同的操作系统中运行，它允许分享许多主机资源。</p>
+<p>此外还使用了分层文件系统(AUFS)来管理网络。</p>
+<p>因为AUFS是一个分层的文件系统，所以可以有一个只读部分和写部分结合在一起，可以把操作系统的公共部分设置为只读部分，并且在所有容器之间共享，然后给每个容器分配自己的位置进行写操作。</p>
+<p>假设有一个1GB的容器镜像，如果是虚拟机(VM)的话，就要1GB x 所需要的VM，但是通过docker和AUFS，可以在所有的容器之间共享大部分1GB的空间。</p>
+<p>通过下面两张图片来总结以下</p>
+<p><img src="https://pic2.zhimg.com/v2-bfc621cec1c2e321cf2724093bdc8ae5_b.png" alt="img"></p>
+<p><img src="https://pic3.zhimg.com/v2-20496661e09e8946ce6da0a4441bdece_b.png" alt="img"></p>
+<p>虚拟机需要模拟一整台机器，包括硬件在内，每台虚拟机都必须要一个操作系统，而docker不需要，docker只需要必要的二进制和库就可以了。</p>
+<p>基于以上，个人对docker的理解是，docker相当于很多相同的资源和内容可以共享，而虚拟机则是每一台都要一模一样的资源，所以可能会造成资源浪费。</p>
+<h3 id="虚拟机和docker的对比"><a href="#虚拟机和docker的对比" class="headerlink" title="虚拟机和docker的对比"></a>虚拟机和docker的对比</h3><ul>
+<li>docker的启动速度很快，属于秒级别的，虚拟机通常需要几分钟去启动。</li>
+<li>docker需要的资源少，并且在操作系统级别进行虚拟化，docker容器和内核交互，几乎没有性能损耗，虚拟机需要通过和Hypervisor层还有内核层一起才能交互。</li>
+<li>因为docker所需要的资源少，docker的架构可以共用一个内核与共享应用程序库，所以相对虚拟机来说，在同样的硬件环境下，docker运行的数量要比虚拟机的数量多。</li>
+<li>安全性方面，虚拟机要比docker更加安全，因为docker的租户root和宿主机root相同，一旦容器内的用户从普通用户权限升级为root权限，它就直接具备了宿主机的root权限，从而对宿主机进行越级操作，之前服务器就因为这样被搞了好几次。虚拟机租户root权限和宿主机的root虚拟机权限是分离的，并且虚拟机利用如Intel的VT-d和VT-x的ring-1硬件隔离技术，这种隔离技术可以防止虚拟机突破和彼此交互，而容器至今还没有任何形式的硬件隔离，这使得容器容易受到攻击。</li>
+<li>高可用和可恢复性：docker对业务的高可用支持是通过快速重新部署实现的。虚拟化具备负载均衡，高可用，容错，迁移和数据保护等经过生产实践检验的成熟保障机制，VMware可承诺虚拟机99.999%高可用，保证业务连续性。</li>
+<li>部署和交付：docker通过Dockerfile，可以在多台服务器或者一台服务器上，快速部署，虚拟机通过镜像实现环境交付的一致性，但镜像分发无法体系化。</li>
+</ul>
+<p>| 特性       | 容器               | 虚拟机       | | ———- | —————— | ———— | | 启动       | 秒级               | 分钟级       | | 硬盘使用   | 一般为MB           | 一般为GB     | | 性能       | 接近原生           | 弱于         | | 系统支持量 | 单机支持上千个容器 | 一般为几十个 |</p>
+<h3 id="什么是容器？"><a href="#什么是容器？" class="headerlink" title="什么是容器？"></a>什么是容器？</h3><p>容器简单来说，容器就是机器上和主机上所有其他进程隔离的另一个进程，通过namespaces 和cgroups。</p>
+<h3 id="为什么使用容器？"><a href="#为什么使用容器？" class="headerlink" title="为什么使用容器？"></a>为什么使用容器？</h3><p>因为容器提供了一种逻辑打包机制，可以从应用程序的实际运行环境中抽象出应用程序，这种分离让基于容器的应用程序可以很轻松的进行部署，不管是目标环境还是私有数据中心，甚至开发人员的工作机。</p>
+<p>从操作角度来看，除了可移植性之外，还可以对资源进行更细粒度的控制，从而提高基础设施的效率，更好的使用计算资源。</p>
+<h3 id="什么是容器镜像？"><a href="#什么是容器镜像？" class="headerlink" title="什么是容器镜像？"></a>什么是容器镜像？</h3><p>镜像提供了容器的运行时所需要的程序、库、资源、配置等文件之外，还包含了一些为运行时准备的一些配置参数，比如匿名卷，环境变量，用户等。</p>
+<p>镜像可以看成一个特殊的文件系统，因为它包含了容器的文件系统，所以镜像必须包含应用程序所需要的所有内容：</p>
+<ul>
+<li>所有的依赖项</li>
+<li>配置</li>
+<li>脚本</li>
+<li>二进制文件等等</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/v2-820aee2a33654099d87cdd2b7a1ce741_b.jpg" alt="img"></p>
+<h2 id="拓展知识"><a href="#拓展知识" class="headerlink" title="拓展知识"></a>拓展知识</h2><ul>
+<li>cgroup</li>
+<li>namespace</li>
+<li>OverlayFS</li>
+<li>UnionFS</li>
+<li>runC</li>
+<li>containerd</li>
+<li>AUFS</li>
+<li>写时复制</li>
+<li>联合挂载</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-virtual-machine">containers - How is Docker different from a virtual machine? - Stack Overflow</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pangguoping/articles/5515286.html">Docker容器与虚拟机区别 - unixfbi.com - 博客园 (cnblogs.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/48174633">( docker容器与虚拟机有什么区别？ - 知乎 (zhihu.com)</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" data-id="ckrsmqik30005bgtud9zf7vk7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-MIT-6-824-SP2021-Lab1笔记" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/" class="article-date">
@@ -218,7 +466,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDK%E6%BA%90%E7%A0%81/" rel="tag">JDK源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9B%86%E5%90%88/" rel="tag">Java集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDK%E6%BA%90%E7%A0%81/" rel="tag">JDK源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9B%86%E5%90%88/" rel="tag">Java集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" rel="tag">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
     </div>
   </div>
 
@@ -228,7 +476,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JDK%E6%BA%90%E7%A0%81/" style="font-size: 10px;">JDK源码</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java%E9%9B%86%E5%90%88/" style="font-size: 10px;">Java集合</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 20px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
+      <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/JDK%E6%BA%90%E7%A0%81/" style="font-size: 10px;">JDK源码</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java%E9%9B%86%E5%90%88/" style="font-size: 10px;">Java集合</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 20px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" style="font-size: 10px;">后端开发</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
     </div>
   </div>
 
@@ -250,23 +498,23 @@
       <ul>
         
           <li>
+            <a href="/2021/08/27/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">Go内存管理</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/21/%E6%90%AD%E5%BB%BAgin%E7%8E%AF%E5%A2%83/">搭建gin环境</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/19/rbac%E6%9D%83%E9%99%90%E8%AE%BE%E8%AE%A1/">rbac权限设计</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/18/%E7%AC%AC%E4%B8%89%E6%96%B9%E4%B8%8E%E7%94%A8%E6%88%B7%E8%A1%A8%E8%AE%BE%E8%AE%A1/">第三方与用户表设计</a>
+          </li>
+        
+          <li>
             <a href="/2021/08/18/Java%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/">Java集合总结</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/12/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/">Java内存区域</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/09/Java%E7%9A%84%E9%94%81/">Java的锁</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/05/HashMap%E7%9A%84%E5%8E%9F%E7%90%86%E7%90%86%E8%A7%A3/">HashMap的原理理解</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/02/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%A4%8D%E4%B9%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">操作系统复习-进程与线程</a>
           </li>
         
       </ul>

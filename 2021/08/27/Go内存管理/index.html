@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Go内存管理 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Go内存分配器核心组件 heapArena：保存整个虚拟地址空间。 mheap：分配的堆，在页大小为8KB的粒度上进行管理。 mspan：是mheap上管理的一连串的页 mcentral：收集了给定大小等级的所有span mcache：为per-P的缓存  其中页是向操作系统申请内存的最小单位，目前设计为8KB。 内存分配器内存中有两个重要区域：  栈区域 堆区域  程序中的数据和变量都会被分配到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go内存管理">
+<meta property="og:url" content="http://example.com/2021/08/27/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Go内存分配器核心组件 heapArena：保存整个虚拟地址空间。 mheap：分配的堆，在页大小为8KB的粒度上进行管理。 mspan：是mheap上管理的一连串的页 mcentral：收集了给定大小等级的所有span mcache：为per-P的缓存  其中页是向操作系统申请内存的最小单位，目前设计为8KB。 内存分配器内存中有两个重要区域：  栈区域 堆区域  程序中的数据和变量都会被分配到">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-08-27T08:30:42.000Z">
+<meta property="article:modified_time" content="2021-08-27T08:31:24.934Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Go内存管理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/27/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="article-date">
+  <time datetime="2021-08-27T08:30:42.000Z" itemprop="datePublished">2021-08-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Go内存管理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Go内存分配器核心组件"><a href="#Go内存分配器核心组件" class="headerlink" title="Go内存分配器核心组件"></a>Go内存分配器核心组件</h2><ul>
+<li>heapArena：保存整个虚拟地址空间。</li>
+<li>mheap：分配的堆，在页大小为8KB的粒度上进行管理。</li>
+<li>mspan：是mheap上管理的一连串的页</li>
+<li>mcentral：收集了给定大小等级的所有span</li>
+<li>mcache：为per-P的缓存</li>
+</ul>
+<p><strong>其中页是向操作系统申请内存的最小单位，目前设计为8KB。</strong></p>
+<h2 id="内存分配器"><a href="#内存分配器" class="headerlink" title="内存分配器"></a>内存分配器</h2><p>内存中有两个重要区域：</p>
+<ul>
+<li>栈区域</li>
+<li>堆区域</li>
+</ul>
+<p><strong>程序中的数据和变量都会被分配到程序所在的虚拟内存中，函数调用，返回值以及局部变量大部分都会被分配在栈上</strong>，这一部分内存由编译器管理。</p>
+<p>传统意义上的栈被Go的运行时霸占，不开发给用户态代码，而传统意义上的堆内存被Go运行时划分为两个部分：</p>
+<ul>
+<li>一部分是被Go运行时自身所需要的堆内存，被成功为堆外内存。</li>
+<li>还有一部分是用于Go用户态代码所在的堆内存，被称为Go堆。</li>
+</ul>
+<p>Go程序的执行是基于goroutine的，goroutine和普通程序一样都有栈和堆的概念，但是Go的运行时屏蔽掉了这两个概念，<strong>只有在运行时区域的时候分别对应goroutine执行栈和Go堆。</strong></p>
+<p>当函数返回的时候，在栈上就会被回收，栈中的对象都会被回收，不需要GC标记，但是堆比较麻烦一些，<strong>因为Go支持垃圾回收，只要对象在堆上生存，Go 的运行时 GC 就会在 后台将对应的内存进行标记从而能够在垃圾回收的时候将对应的内存回收，进而增加了开销。</strong></p>
+<h3 id="内存分配器设计原理"><a href="#内存分配器设计原理" class="headerlink" title="内存分配器设计原理"></a>内存分配器设计原理</h3><p>内存管理一般分为以下三种不同的组件：</p>
+<ul>
+<li>用户程序(Mutator)</li>
+<li>分配器(Allocator)</li>
+<li>收集器(Collector)</li>
+</ul>
+<p>当用户程序申请内存的时候，它会通过分配器来申请新内存，而分配器会从堆中初始化相应的内存区域。</p>
+<h3 id="分配方法"><a href="#分配方法" class="headerlink" title="分配方法"></a>分配方法</h3><p>分配方法一般是两种：</p>
+<ul>
+<li>线性分配器</li>
+<li>空闲链表分配器</li>
+</ul>
+<h3 id="线性分配器-Bump-Allocator"><a href="#线性分配器-Bump-Allocator" class="headerlink" title="线性分配器(Bump Allocator)"></a>线性分配器(Bump Allocator)</h3><p>线性分配法虽然是一种高效的分配方法，但是有较大的局限性，<strong>使用线性分配器的时候，只要在内存中维护一个指向内存特定位置的指针，如果用户程序向分配器申请内存的话，分配器只需要检查剩余的空闲内存，返回分配的内存区域并且修改指针所在的内存位置。</strong></p>
+<p>这样做的好处是<strong>执行速度较快并且复杂度也低</strong>，但是缺点在 <strong>如果分配过的内存被回收的话，线性分配器没有办法重新利用起来。</strong></p>
+<p>和线性复杂性相搭配的算法有：</p>
+<ul>
+<li>标记压缩(Mark-Compact)</li>
+<li>复制回收(Copying GC)</li>
+<li>分代回收(Generational GC)</li>
+</ul>
+<h3 id="空闲链表分配器-Free-List-Allocator"><a href="#空闲链表分配器-Free-List-Allocator" class="headerlink" title="空闲链表分配器(Free-List Allocator)"></a>空闲链表分配器(Free-List Allocator)</h3><p>因为不同的内存块通过指针构成了链表，所以使用这种方法的分配器可以重新使用回收的资源，但是因为分配内存的时候需要遍历链表，所以它的时间复杂度是O(n)。空闲链表分配器可以选择不同的策略在链表中的内存块中进行选择，常见的如下：</p>
+<ul>
+<li>首次适应(First-Fit): 从链表头开始遍历，选择第一个大小大于申请内存的内存块。</li>
+<li>循环首次适应(Next-Fit): 从上次遍历的结束位置开始遍历，选择第一个大小大于申请内存的内存块。</li>
+<li>最优适应(Best-Fit)：从链表头遍历整个链表，选择最合适的内存块。</li>
+<li>隔离适应(Segregated-Fit)： 将内存分割成多个链表，每个链表中的内存块大小相同，申请内存时先找到满足条件的链表，再从链表中选择合适的内存块；</li>
+</ul>
+<h3 id="分级分配"><a href="#分级分配" class="headerlink" title="分级分配"></a>分级分配</h3><p>线程缓存分配(Thread-Caching Malloc，TCMalloc)是用来分配内存的机制，它比glibc中的malloc还要快，Go的内存分配器就是借鉴了这种方式，<strong>它的核心是使用多级缓存将对象根据大小分类，并且按照类别实施不同的分类策略。</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">类别</th>
+<th align="center">大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">微对象</td>
+<td align="center"><code>(0, 16B)</code></td>
+</tr>
+<tr>
+<td align="center">小对象</td>
+<td align="center"><code>[16B, 32KB]</code></td>
+</tr>
+<tr>
+<td align="center">大对象</td>
+<td align="center"><code>(32KB, +∞)</code></td>
+</tr>
+</tbody></table>
+<h3 id="多级缓存"><a href="#多级缓存" class="headerlink" title="多级缓存"></a>多级缓存</h3><p>内存分配器除了会区别大小不同的对象之外，还会把内存分成不同的级别分别管理，TCMalloc和Go运行时分配器都会引入以下三个组件:</p>
+<ul>
+<li>线程缓存(Thread Cache)</li>
+<li>中心缓存(Central Cache)</li>
+<li>页堆(Page Heap)</li>
+</ul>
+<p>线程缓存属于每一个独立的线程，它能满足线程上绝大多数的内存分配需求，因为不会涉及到多线程，所以也不会考虑到使用互斥锁来保护内存，这也可以减少锁竞争带来的性能损耗。</p>
+<p>当线程缓存不能满足需求的时候，运行时就会使用中心缓存来作为补充解决小对象的内存分配，<strong>遇到32k以上的对象时，内存分配器就会选择页堆直接分配大内存。</strong></p>
+<h3 id="虚拟内存布局"><a href="#虚拟内存布局" class="headerlink" title="虚拟内存布局"></a>虚拟内存布局</h3><ul>
+<li>线性内存</li>
+<li>稀疏内存</li>
+</ul>
+<p><strong>在1.10以及之前的版本中，Go使用线性内存，在1.10之后Go使用了稀疏的堆内存来替代了连续的线性内存</strong>，解决了内存带来的限制以及在特殊情况下可能出现的问题。</p>
+<h3 id="线性内存"><a href="#线性内存" class="headerlink" title="线性内存"></a>线性内存</h3><p>Go在启动的时候会虚拟化整个内存区域，如下三个区域：</p>
+<ul>
+<li>spans：存放着指向内存管理单元runtime.mspan指针，每个内存单元都会管理几页的内存空间，每页大小为8KB。</li>
+<li>bitmap：用来标识arena区域中那些地址保存了对象，位图中的每个字节都会表示堆区中的32字节是否空闲。</li>
+<li>arena：区域是真正的堆区，<strong>运行时会把8KB看作一页，这些内存中存储了所有在堆上初始化的对象。</strong></li>
+</ul>
+<p>分别预留了512MB,16GB以及512GB的内存空间，这些内存空间并不是真正的物理内存，而是虚拟内存。</p>
+<p>对于任意一个地址，我们都可以根据arena的基地址计算出该地址所在的页数并且通过spans数组获得管理该片内存的管理单元，<strong>spans数组中多个连续的位置可能都对应着一个runtime.mspan结构。</strong></p>
+<h3 id="线性内存的不足"><a href="#线性内存的不足" class="headerlink" title="线性内存的不足"></a>线性内存的不足</h3><p>Go会在垃圾回收的时候根据指针的地址判断对象是否在堆中，并通过之前介绍的过程找到管理该对象的runtime.mspan，<strong>这些都是建立在堆区内存是连续的假设</strong>上，<strong>这种方式虽然简单，但是在C和Go混合使用的时候就会导致程序崩溃。</strong></p>
+<ul>
+<li>分配的内存地址会发送冲突，导致堆的初始化和扩容失败。</li>
+<li>没有被预留的大块内存可能会被分配给 C 语言的二进制，导致扩容后的堆不连续。</li>
+</ul>
+<p><strong>线性的堆内存需要预留大块的内存空间，但是申请大块的内存空间而不使用是不切实际的，不预留内存空间却会在特殊场景下造成程序崩溃。</strong></p>
+<h3 id="稀疏内存"><a href="#稀疏内存" class="headerlink" title="稀疏内存"></a>稀疏内存</h3><p>使用稀疏内存布局可以移除堆大小的上线，还可以解决C和Go混合使用的地址空间冲突问题，不过因为时稀疏内存管理，所以就会失去内存的连续性，这样就会导致内存管理变的复杂。</p>
+<p>运行时使用二维数组管理所有的内存，每个单元都会管理64MB。</p>
+<h3 id="地址空间"><a href="#地址空间" class="headerlink" title="地址空间"></a>地址空间</h3><p>因为所有的内存最终都要从操作系统中申请，所以Go的运行时构造了操作系统的内存管理抽象层，该抽象层在运行时管理的内存空间分为以下四种状态：</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>None</td>
+<td>内存没有被保留或者映射，是地址空间默认的状态。</td>
+</tr>
+<tr>
+<td>Reserved</td>
+<td>运行时持有该地址空间，但是访问该内存会导致错误。</td>
+</tr>
+<tr>
+<td>Prepared</td>
+<td>内存被保留，一般没有对应的物理内存访问该片内存的行为是未定义的可以快速转换到 <code>Ready</code> 状态</td>
+</tr>
+<tr>
+<td>Ready</td>
+<td>可以被安全访问</td>
+</tr>
+</tbody></table>
+<p>运行时使用Linux提供的mmap，munmap和madvise等系统调用实现了操作系统的内存管理抽象层，抹平了不同操作系统的差异，为运行时提供了更加方便的接口，除了 Linux 之外，运行时还实现了 BSD、Darwin、Plan9 以及 Windows 等平台上抽象层。</p>
+<h2 id="内存管理组件"><a href="#内存管理组件" class="headerlink" title="内存管理组件"></a>内存管理组件</h2><ul>
+<li>内存管理单元</li>
+<li>线程缓存</li>
+<li>中心缓存</li>
+<li>页堆</li>
+</ul>
+<h2 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h2><p><strong>堆上所有的对象都是通过调用runtime.newobject函数分配内存的</strong>，该函数会调用runtime.mallocgc来分配指定大小的内存，这也是用户程序在堆上申请内存空间的必经函数。</p>
+<h3 id="对象大小"><a href="#对象大小" class="headerlink" title="对象大小"></a>对象大小</h3><p>对象大小可以分成三种：</p>
+<ul>
+<li>微对象(0,16B)：先使用微型分配器，再依次尝试线程缓存、中心缓存和堆分配内存；</li>
+<li>小对象([16KB,32KB])： 依次尝试使用线程缓存、中心缓存和堆分配内存；</li>
+<li>大对象(32KB, +∞)：直接在堆上分配内存；</li>
+</ul>
+<h4 id="微对象"><a href="#微对象" class="headerlink" title="微对象"></a>微对象</h4><p><strong>Go运行时将小于16字节的对象划分微对象，它会使用线程缓存上的微分配器来提高微对象分配的性能，主要使用它来分配较小的字符串以及逃逸的临时变量。</strong>微分配器可以将多个较小的内存分配请求合入同一个内存块中，<strong>只有当内存块中的所有对象都需要被回收时，整片内存才可能被回收。</strong></p>
+<h4 id="小对象"><a href="#小对象" class="headerlink" title="小对象"></a>小对象</h4><p>小对象是指大小为16字节到32字节的对象，以及所有小于16字节的指针类型对象，小对象的分配可以被分成以下三个步骤：</p>
+<ul>
+<li>确定分配对象的大小以及跨度类runtime.spanClass。</li>
+<li>从线程缓存，中心缓存或者堆中获取内存管理单元并从内存管理单元找到空闲的内存空间。</li>
+<li>调用runtime.memclrNoHeapPointers清空空闲内存中的所有数据。</li>
+</ul>
+<h4 id="大对象"><a href="#大对象" class="headerlink" title="大对象"></a>大对象</h4><p>运行时对于大于32KB的大对象进行单独处理，<strong>不会从线程缓存中或者中心缓存中获取内存管理单元，而是直接使用runtime.mcache.allocLarge分配大片内存，也就是直接从Go堆上进行分配。</strong></p>
+<p>runtime.mcache.allocLarge会计算分配该对象所需要的页数，它按照8KB的倍数在堆上申请内存。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-memory-allocator/">Go 语言内存分配器的实现原理 | Go 语言设计与实现 (draveness.me)</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.design/under-the-hood/zh-cn/part2runtime/ch07alloc/basic/">7.1 设计原则 | Go 语言原本 (golang.design)</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/27/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" data-id="cksu3iyqi0000y4tu0pczbh9i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/" rel="tag">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/08/21/%E6%90%AD%E5%BB%BAgin%E7%8E%AF%E5%A2%83/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">搭建gin环境</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDK%E6%BA%90%E7%A0%81/" rel="tag">JDK源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9B%86%E5%90%88/" rel="tag">Java集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" rel="tag">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/JDK%E6%BA%90%E7%A0%81/" style="font-size: 10px;">JDK源码</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java%E9%9B%86%E5%90%88/" style="font-size: 10px;">Java集合</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 20px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" style="font-size: 10px;">后端开发</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">August 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/08/27/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">Go内存管理</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/21/%E6%90%AD%E5%BB%BAgin%E7%8E%AF%E5%A2%83/">搭建gin环境</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/19/rbac%E6%9D%83%E9%99%90%E8%AE%BE%E8%AE%A1/">rbac权限设计</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/18/%E7%AC%AC%E4%B8%89%E6%96%B9%E4%B8%8E%E7%94%A8%E6%88%B7%E8%A1%A8%E8%AE%BE%E8%AE%A1/">第三方与用户表设计</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/18/Java%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/">Java集合总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
