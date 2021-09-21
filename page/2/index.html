@@ -64,6 +64,103 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-MapRedcude论文笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/02/MapRedcude%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2021-08-02T02:34:30.000Z" itemprop="datePublished">2021-08-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/02/MapRedcude%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">MapRedcude论文笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h3><ul>
+<li>MapReduce是什么？</li>
+<li>MapReduce如何实现？</li>
+<li>什么是Map？</li>
+<li>什么是Reduce？</li>
+</ul>
+<p>MapReduce是一个编程模型，同时也是一个能够处理和生成超大数据集的算法模型，用户首先创建一个Map函数处理一个基于KV数据集合，输出中间基于KV的数据集合。</p>
+<p>然后在创建一个Reduce函数用来合并所有具有相同中间key值的中间value值。</p>
+<p>MapReduce的产生背景Google程序员为了处理海量的原始数据而实现的，比如文档抓取，Web请求日志等等，也有为了处理计算机各种类型的衍生数据，比如倒排索引，Web文档的图结构的各种表示形式等。</p>
+<h3 id="MapReduce搭建配置"><a href="#MapReduce搭建配置" class="headerlink" title="MapReduce搭建配置"></a>MapReduce搭建配置</h3><p>论文中MapReduce的程序都是能够在大量的普通配置的计算机上实现并行处理的，MapReduce只关心以下几点：</p>
+<ul>
+<li>如何分割数据</li>
+<li>如何在大量的计算机组成的集群上进行调度</li>
+<li>集群中计算机的错误处理</li>
+<li>管理集群中计算机的必要通信</li>
+</ul>
+<p>一个典型的MapReude算法模型都是几千台机器组成，处理以TB计算的数据。</p>
+<h3 id="MapReduce解决了什么？"><a href="#MapReduce解决了什么？" class="headerlink" title="MapReduce解决了什么？"></a>MapReduce解决了什么？</h3><p>在没有MapReduce之前，如果输入的数据量特别大，比如1TB左右，又想要在短时间内处理，或者说是能够接受的时间内完成，考虑到单机的性能，就需要将这些计算分布在其他主机上，但是这就涉及到了如何并行计算，如何分发数据，如何处理错误，这些问题综合在一起就不再是简单的输入输出处理了。</p>
+<h3 id="Map函数"><a href="#Map函数" class="headerlink" title="Map函数"></a>Map函数</h3><p>Map是接受输入并对输入进行处理的一个函数，举个例子，输入的是一辆汽车，通过map函数，最后输出的是这辆汽车原来的零件。</p>
+<h3 id="Reduce函数"><a href="#Reduce函数" class="headerlink" title="Reduce函数"></a>Reduce函数</h3><p>如果Map是对汽车进行拆解，那Reduce就是对拆解完之后的零件，进行拼装，那能不能还原回去呢？</p>
+<h4 id="单词统计的例子"><a href="#单词统计的例子" class="headerlink" title="单词统计的例子"></a>单词统计的例子</h4><p>打个比方，有一个待输入的文本，首先通过Map函数，对文本进行处理，对每个单词出现的次数进行统计，然后输出成一个KV数据集合，Reduce把Map函数产生的每一个特定的词的次数累加起来。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">From fairest creatures we desire increase,</span><br></pre></td></tr></table></figure>
+
+<p>Map函数处理：</p>
+<p>(From,1)</p>
+<p>(fairest,1)</p>
+<p>(creatures,1)</p>
+<p>(we,1)</p>
+<p>(desire,1)</p>
+<p>(increase,1)</p>
+<h3 id="MapReduce应用例子"><a href="#MapReduce应用例子" class="headerlink" title="MapReduce应用例子"></a>MapReduce应用例子</h3><ul>
+<li>Distributed Grep</li>
+<li>Count of URL Access Frequency </li>
+<li>Reverse Web-Link Graph</li>
+<li>Term-Vector per Host</li>
+<li>Inverted Index</li>
+<li>Distributed Sort</li>
+</ul>
+<h3 id="MapReduce实现"><a href="#MapReduce实现" class="headerlink" title="MapReduce实现"></a>MapReduce实现</h3><p>MapReduce模型的实现有很多种，具体实现还是要看使用场景，比如一种实现是适用于小型的共享内存方法的机器，另外一种实现方式则适用于大型 NUMA 架构的多处理器的主机，而有的实现方式更适合大型的网络连接集群。</p>
+<p>如果是为了测试，可以使用docker来模拟MapReduce实现。</p>
+<h3 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h3><p>通过将Map调用的输入数据自动分割为M个数据片段集合，Map调用被分布到多台机器上执行，输入的数据片段能够在不同的机器上并行处理，使用分区函数Map调用产生的中间key值被分成R个不同分区，Reduce调用也被分不到多态机器上执行，分区数量R和分数函数都是通过用户来指定。</p>
+<ol>
+<li>将输入的文件分成M数据片段，每个数据片段大小一般在16MB到64MB，可以通过可选参数来控制每个数据片段大小，然后通过用户程序在机器创建大量的程序副本。</li>
+<li>程序副本由两个程序组成，master和worker，通过master分配任务，由M个Map任务和R个Reduce任务将会被分配，master将一个Map任务或者Reduce任务分配给一个空闲的worker。</li>
+<li>如果worker是被分配到了map任务，那它就会读取相关输入数据片段，从输入的数据片段中解析出KV集合，然后把KV集合传递给用户自定义的Map函数，再通过Map函数生成输出的中间KV集合缓存在内存中。</li>
+<li>缓存中的KV集合通过分区函数分成R个区域，之后周期性的写入到本地磁盘上，缓存中KV集合在本地磁盘上的存储位置将会传回给master，再由master把这些存储位置传送给Reduce worker。</li>
+<li>当Reduce woker程序接收到master程序发送过来的数据存储位置信息之后，使用RPC从Map worker所在的主机上的磁盘上读取缓存数据，当Reduce worker读取了所有的中间数据之后，通过对key进行排序，让具有相同的key值聚合在一起。因为许多不同的key值会映射到相同的reduce任务上，所有就需要进行排序，如果中间数据量太大，没有办法在内存中排序的话，就需要使用外部排序。</li>
+<li>当reduce worker程序遍历排序之后的中间数据，对每一个唯一的中间key值，reduce worker程序会将这个key值和它相关的中间value值得集合传递给用户自定义得Reduce函数，Redcude函数得输出被追加到所属分区得输出文件。</li>
+<li>当所有得Map和Reduce任务都完成之后，master唤醒用户程序，在这个时候，在用户程序里对MapReduce 调用才返回。</li>
+</ol>
+<p>为什么要把输入的文件分成16MB到64MB的数据片段呢？这是因为如果要把输入数据分成相同的数据片段大小并不是一件容易的事情，有的输入文件大有的输入文件小，虽然有些线程会比其他线程更早完成任务，通过调度算法去完成下一个任务，但是这样的话，最后完成的时间取决于最大的文件。</p>
+<p>而如果划分为固定大小的数据片段，然后分到各个进程里面，这样一来的话， 即使有一些进程可以处理更多的数据，我们也可以分配更多的数据给它。</p>
+<h3 id="Master-数据结构"><a href="#Master-数据结构" class="headerlink" title="Master 数据结构"></a>Master 数据结构</h3><p>Master的数据结构记录着每个Map和Reduce任务状态(空间、工作或完成)，以及Worker机器的标识(非空闲任务机器)的标识。</p>
+<p>对于每个已经完成的Map任务，master存储了Map任务产生的R个中间文件存储区域大小和位置，当Map任务完成的时候，Map接收到位置和大小更新信息，这些信息被逐步递增的推给那些正在工作的Reduce任务。</p>
+<h3 id="容错性-Fault-Tolerance"><a href="#容错性-Fault-Tolerance" class="headerlink" title="容错性(Fault Tolerance)"></a>容错性(Fault Tolerance)</h3><h4 id="worker失败"><a href="#worker失败" class="headerlink" title="worker失败"></a>worker失败</h4><p>master会周期性的ping一圈集群中的每个worker，如果在一个规定的时间内worker没有发出响应信息，master就会把这个worker标记为失效。</p>
+<p>失效worker上所有的Map任务会被重置为初始状态，之后把这些任务安排给其他的worker，同样的，如果是Redcue任务也会被重新置为空闲状态，等待重新调度。</p>
+<h4 id="master失败"><a href="#master失败" class="headerlink" title="master失败"></a>master失败</h4><p>master失败就比较麻烦，因为MapReduce只有一个master进程，如果它失败了，就会终止MapReduce运算，客户可以检查到这个状态，并且可以根据需要重新执行MapReduce操作。</p>
+<h3 id="存储位置"><a href="#存储位置" class="headerlink" title="存储位置"></a>存储位置</h3><p>MapReduce尽量把输入数据(由GFS管理)存储在集群中机器的本地磁盘上来节省网络带宽，GFS把每个文件按64MB一个Blokc分隔，每个Block保存在多台机器上，环境就存放了多份拷贝(一般是3个拷贝)。MapReduce的maser在调度Map任务的时候会考虑输入文件的位置信息，尽量将一个Map任务调度在包含相关输入数据拷贝的机器上执行。</p>
+<p>如果失败了，那master就会尝试在保存有输入数据拷贝的机器附近的机器上执行 Map 任务。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/08/02/MapRedcude%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" data-id="cktth1nfp000blwtu4k2ic5g8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Restful-API使用" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" class="article-date">
@@ -115,7 +212,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" data-id="ckrsmqijv0000bgtu8c025voe" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/08/01/Restful-API%E4%BD%BF%E7%94%A8/" data-id="cktth1nfq000dlwtufw5w8rdf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li></ul>
@@ -160,7 +257,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-id="ckrsmqik40008bgtu5w16f73w" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/08/01/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E5%BD%93%E7%9F%BF%E6%9C%BA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-id="cktth1ng1000qlwtu4a1t9dom" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li></ul>
@@ -209,7 +306,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" data-id="ckrsmqik10003bgtuhreq3taa" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/08/01/%E4%B8%80-%E5%BA%8F%E8%A8%80-SQL%E7%BC%96%E8%AF%91%E5%99%A8/" data-id="cktth1nfx000llwtu0piv96mh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
@@ -300,7 +397,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" data-id="ckrsmqik30005bgtud9zf7vk7" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/08/01/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" data-id="cktth1nfs000flwtuez8kb413" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li></ul>
@@ -397,7 +494,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/" data-id="ckrsmqijz0001bgtu3arm5b9p" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/08/01/MIT-6-824-SP2021-Lab1%E7%AC%94%E8%AE%B0/" data-id="cktth1nfn0009lwtub1iy7de3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li></ul>
@@ -436,7 +533,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/08/01/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2%E8%A1%A5%E5%9D%91/" data-id="ckrsmqik20004bgtuafzud4bv" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/08/01/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2%E8%A1%A5%E5%9D%91/" data-id="cktth1nfz000nlwtubf5m1bwr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/blog/" rel="tag">blog</a></li></ul>
@@ -466,7 +563,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDK%E6%BA%90%E7%A0%81/" rel="tag">JDK源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9B%86%E5%90%88/" rel="tag">Java集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" rel="tag">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDK%E6%BA%90%E7%A0%81/" rel="tag">JDK源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9B%86%E5%90%88/" rel="tag">Java集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li></ul>
     </div>
   </div>
 
@@ -476,7 +573,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/JDK%E6%BA%90%E7%A0%81/" style="font-size: 10px;">JDK源码</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java%E9%9B%86%E5%90%88/" style="font-size: 10px;">Java集合</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 20px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" style="font-size: 10px;">后端开发</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a>
+      <a href="/tags/Go/" style="font-size: 20px;">Go</a> <a href="/tags/JDK%E6%BA%90%E7%A0%81/" style="font-size: 10px;">JDK源码</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java%E9%9B%86%E5%90%88/" style="font-size: 10px;">Java集合</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/docker/" style="font-size: 20px;">docker</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="font-size: 20px;">分布式系统</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 20px;">后端</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">计算机网络</a>
     </div>
   </div>
 
@@ -485,7 +582,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">August 2021</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">August 2021</a></li></ul>
     </div>
   </div>
 
@@ -498,23 +595,23 @@
       <ul>
         
           <li>
+            <a href="/2021/09/21/CS144-Lab0/">CS144 Lab0</a>
+          </li>
+        
+          <li>
+            <a href="/2021/09/06/etcdRaft%E6%BA%90%E7%A0%81/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2021/09/06/Go%E7%9A%84%E9%94%81%E4%BD%BF%E7%94%A8/">Go的锁使用</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/29/docker%E7%9A%84%E9%95%9C%E5%83%8F%E4%B8%8E%E5%AE%B9%E5%99%A8/">docker的镜像与容器</a>
+          </li>
+        
+          <li>
             <a href="/2021/08/27/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">Go内存管理</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/21/%E6%90%AD%E5%BB%BAgin%E7%8E%AF%E5%A2%83/">搭建gin环境</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/19/rbac%E6%9D%83%E9%99%90%E8%AE%BE%E8%AE%A1/">rbac权限设计</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/18/%E7%AC%AC%E4%B8%89%E6%96%B9%E4%B8%8E%E7%94%A8%E6%88%B7%E8%A1%A8%E8%AE%BE%E8%AE%A1/">第三方与用户表设计</a>
-          </li>
-        
-          <li>
-            <a href="/2021/08/18/Java%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/">Java集合总结</a>
           </li>
         
       </ul>
