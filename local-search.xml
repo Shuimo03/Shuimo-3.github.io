@@ -4,6 +4,152 @@
   
   
   <entry>
+    <title>监控方法论(一): Google黄金指标与RED方法和USE方法</title>
+    <link href="/2023/11/25/%E7%9B%91%E6%8E%A7%E6%96%B9%E6%B3%95%E8%AE%BA-%E4%B8%80-Google%E9%BB%84%E9%87%91%E6%8C%87%E6%A0%87%E4%B8%8ERED%E6%96%B9%E6%B3%95%E5%92%8CUSE%E6%96%B9%E6%B3%95/"/>
+    <url>/2023/11/25/%E7%9B%91%E6%8E%A7%E6%96%B9%E6%B3%95%E8%AE%BA-%E4%B8%80-Google%E9%BB%84%E9%87%91%E6%8C%87%E6%A0%87%E4%B8%8ERED%E6%96%B9%E6%B3%95%E5%92%8CUSE%E6%96%B9%E6%B3%95/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>从零实现一个exporter(零)-exporter基本概念</title>
+    <link href="/2023/11/25/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAexporter-%E9%9B%B6-exporter%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/"/>
+    <url>/2023/11/25/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAexporter-%E9%9B%B6-exporter%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
+    
+    <content type="html"><![CDATA[<h2 id="Exporter简介"><a href="#Exporter简介" class="headerlink" title="Exporter简介"></a>Exporter简介</h2><p>云原生模式下的主流监控已经变成Prometheus为主的一套监控技术栈，下图是Prometheus架构:</p><p><img src="https://prometheus.io/assets/architecture.png" alt="Prometheus architecture"></p><p>而Exporter类似于Agent，它负责收集指定指标，它可以独立出来单独运行，也可以和程序集合在一起。打个比方，之前的中间件，比如Redis，Kafka，ES这些都没有集成Exporter，而在云原生中，就需要通过operator去集成。而一些比较新的中间件，比如pulsar，ClickHouse等等则已经集成了，不需要去创建。</p><p>通过架构图可以看出来，Exporter收集到信息之后并不是主动pull到Prometheus上，而是创建一个内部http服务器，暴露&#x2F;metrics端点，由Prometheus定期去轮询这些Exporter，之后存放在Prometheus中。</p><h3 id="Metrics"><a href="#Metrics" class="headerlink" title="Metrics"></a>Metrics</h3><p>具体写代码之前，我们需要明白什么是Metics，也就是指标。Metics是一个二元组:&lt;value: timestamp&gt;。表示这个指标在某个时间段的值是多少，举个例子，一个图片压缩服务，它的指标如下所示:</p><ol><li><strong>处理速度（Processing Speed）：</strong><ul><li><strong>指标：</strong> 每秒处理的图片数量、平均处理时间等。</li><li><strong>原因：</strong> 了解服务的处理能力，确保它满足预期的性能需求。</li></ul></li><li><strong>资源利用率（Resource Utilization）：</strong><ul><li><strong>指标：</strong> CPU 使用率、内存使用率、磁盘空间使用率等。</li><li><strong>原因：</strong> 监测服务的资源消耗，预防潜在的性能瓶颈和资源耗尽问题。</li></ul></li><li><strong>请求成功率（Success Rate）：</strong><ul><li><strong>指标：</strong> 成功处理的请求比例、失败请求比例等。</li><li><strong>原因：</strong> 确保服务按预期处理请求，并及时检测和解决任何处理失败的问题。</li></ul></li><li><strong>请求队列长度（Request Queue Length）：</strong><ul><li><strong>指标：</strong> 待处理请求的队列长度。</li><li><strong>原因：</strong> 监控请求队列长度，避免请求积压导致性能下降。</li></ul></li><li><strong>错误率（Error Rate）：</strong><ul><li><strong>指标：</strong> 处理中发生错误的请求比例。</li><li><strong>原因：</strong> 跟踪服务的错误率，及时发现并解决潜在问题。</li></ul></li><li><strong>网络延迟（Network Latency）：</strong><ul><li><strong>指标：</strong> 请求的网络往返时间（Round-Trip Time，RTT）。</li><li><strong>原因：</strong> 确保网络延迟在可接受范围内，避免用户体验差。</li></ul></li><li><strong>系统负载（System Load）：</strong><ul><li><strong>指标：</strong> 系统的平均负载。</li><li><strong>原因：</strong> 监控系统的负载，预防过载导致的性能下降。</li></ul></li><li><strong>缓存命中率（Cache Hit Rate）：</strong><ul><li><strong>指标：</strong> 图片压缩服务的缓存命中率。</li><li><strong>原因：</strong> 了解缓存的效果，提高性能和降低对底层存储系统的依赖。</li></ul></li><li><strong>服务可用性（Service Availability）：</strong><ul><li><strong>指标：</strong> 服务的可用性百分比。</li><li><strong>原因：</strong> 确保服务随时可用，通过监控可用性识别潜在的故障。</li></ul></li><li><strong>服务响应时间（Service Response Time）：</strong><ul><li><strong>指标：</strong> 请求到达服务并获得响应的时间。</li><li><strong>原因：</strong> 监测服务的响应时间，确保它在用户期望的范围内。</li></ul></li></ol><h3 id="Metrics-type"><a href="#Metrics-type" class="headerlink" title="Metrics  type"></a>Metrics  type</h3><p>了解完Metrics之后，需要了解下关于Metrics Type，一共有四种核心类型:</p><ul><li><a href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter </a>: counter是一个累计指标，代表一个指标只会增不会减，它只有在重启和重置才会为零。可以使用它来表示已经处理过的请求数量，已经完成的任务数量，或者错误数量。</li><li><a href="https://prometheus.io/docs/concepts/metric_types/#gauge">Gauge </a>: Gauge是一个代表单个数值的指标，可以任意上升或下降。比如当前内存使用量或者进程数量，以及并发请求数量。</li><li><a href="https://prometheus.io/docs/concepts/metric_types/#histogram">Histogram </a> histogram对观测数量(通常是请求持续时间或响应大小等)进行采样，并将其计数在可配置桶中，它还提供了所有观测值的综合。</li><li><a href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary </a> : 有点类似于Historygram，summary观测值一般是请求持续时间和响应大小之类的，并且提供观测值总和还有所有观测值总数。可以用来表示P99&#x2F;P95等等。</li></ul><h3 id="Prometheus-client"><a href="#Prometheus-client" class="headerlink" title="Prometheus client"></a>Prometheus client</h3><p>client暂时没什么好说的，之前提到的metrics相关操作支持比较好的客户端是:</p><ul><li>Go</li><li>Java</li><li>Python</li><li>Ruby</li><li>.Net</li></ul><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul><li><a href="https://prometheus.io/docs/instrumenting/writing_exporters/#writing-exporters">https://prometheus.io/docs/instrumenting/writing_exporters/#writing-exporters</a></li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Observability</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Linux存储学习(一)基本知识</title>
+    <link href="/2023/10/22/Linux%E5%AD%98%E5%82%A8%E5%AD%A6%E4%B9%A0-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"/>
+    <url>/2023/10/22/Linux%E5%AD%98%E5%82%A8%E5%AD%A6%E4%B9%A0-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>对Linux存储方面的知识比较杂，没有整理相关知识，相关笔记是为了记录这一块的知识。</p><h2 id="存储协议"><a href="#存储协议" class="headerlink" title="存储协议"></a>存储协议</h2><h3 id="PCIe"><a href="#PCIe" class="headerlink" title="PCIe"></a>PCIe</h3><h3 id="SATA-Serial-Advanced-Technology-Attachment"><a href="#SATA-Serial-Advanced-Technology-Attachment" class="headerlink" title="SATA(Serial Advanced Technology Attachment)"></a>SATA(Serial Advanced Technology Attachment)</h3><h3 id="SAS-Serial-Attached-SCSI"><a href="#SAS-Serial-Attached-SCSI" class="headerlink" title="SAS(Serial Attached  SCSI)"></a>SAS(Serial Attached  SCSI)</h3><h3 id="AHCI-Advanced-Host-Controller-Interface"><a href="#AHCI-Advanced-Host-Controller-Interface" class="headerlink" title="AHCI(Advanced Host Controller Interface)"></a>AHCI(Advanced Host Controller Interface)</h3><h2 id="存储介质"><a href="#存储介质" class="headerlink" title="存储介质"></a>存储介质</h2><h3 id="HHD"><a href="#HHD" class="headerlink" title="HHD"></a>HHD</h3><h3 id="SSD"><a href="#SSD" class="headerlink" title="SSD"></a>SSD</h3><h3 id="NVMe"><a href="#NVMe" class="headerlink" title="NVMe"></a>NVMe</h3><h2 id="存储类型"><a href="#存储类型" class="headerlink" title="存储类型"></a>存储类型</h2><h3 id="对象存储"><a href="#对象存储" class="headerlink" title="对象存储"></a>对象存储</h3><h3 id="文件存储"><a href="#文件存储" class="headerlink" title="文件存储"></a>文件存储</h3><h3 id="块存储"><a href="#块存储" class="headerlink" title="块存储"></a>块存储</h3><h2 id="本地存储"><a href="#本地存储" class="headerlink" title="本地存储"></a>本地存储</h2><p>在Linux操作系统中，对于调用存储相关API的应用程序来说，所有设备都是以文件形式使用的。比如说网络程序使用socket打开一个套接字，返回结果是一个文件描述符。</p><h2 id="网络存储"><a href="#网络存储" class="headerlink" title="网络存储"></a>网络存储</h2><h2 id="虚拟文件系统-Virtual-File-System-VFS"><a href="#虚拟文件系统-Virtual-File-System-VFS" class="headerlink" title="虚拟文件系统(Virtual File System,VFS)"></a>虚拟文件系统(Virtual File System,VFS)</h2><h2 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h2><h3 id="ext2-3-4"><a href="#ext2-3-4" class="headerlink" title="ext2&#x2F;3&#x2F;4"></a>ext2&#x2F;3&#x2F;4</h3><h3 id="zfs"><a href="#zfs" class="headerlink" title="zfs"></a>zfs</h3><h2 id="存储评价指标"><a href="#存储评价指标" class="headerlink" title="存储评价指标"></a>存储评价指标</h2><h3 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h3><p>业界有相关存储性能委员会(Storage Performance Council,SPC)发布相应测试规范和相关测试工作集。典型的测试工作集包括以下内容:</p><ul><li>SPC-1: 主要评估存储系统面向事务性业务的性能。</li><li>SPC-2: 评估不同业务类型，大规模连续数据访问的存储系统的性能，如大量文件并发性访问、视频点播业务等。</li><li>SPC-3: 提供应用层的模拟，如存储管理、内容管理、信息生命周期等性能。</li></ul><h3 id="可靠性标准"><a href="#可靠性标准" class="headerlink" title="可靠性标准"></a>可靠性标准</h3><p>在不同领域有不同标准，但是以下内容是通用性标准:</p><ol><li>数据可用性</li><li>数据完整性</li><li>数据安全性</li></ol><h3 id="功能性标准"><a href="#功能性标准" class="headerlink" title="功能性标准"></a>功能性标准</h3><p>如是否符合业界定义的规范，不同的国家有不同的标准。这一块可以参考类似于EMC、华为、NetApp提供的产品。</p><h3 id="能耗标准"><a href="#能耗标准" class="headerlink" title="能耗标准"></a>能耗标准</h3><p>主要用来评估存储系统在不同负载情况下的消耗，如果在相同负载下，功耗消耗越小的越有竞争力。因为这个标准涉及到运维的代价以及成本代价。所以数据中心的运行者对这个指标比较关心。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>storage</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>homeLab搭建全过程</title>
+    <link href="/2023/10/21/homeLab%E6%90%AD%E5%BB%BA%E5%85%A8%E8%BF%87%E7%A8%8B/"/>
+    <url>/2023/10/21/homeLab%E6%90%AD%E5%BB%BA%E5%85%A8%E8%BF%87%E7%A8%8B/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前段时间把手上的MBP2015给换掉了，这个时候就空出一台mini PC。之前一直想尝试PVE或者ESXI。但是尝试了几次发现上手比较困难，关键问题还是对Linux掌握的不够熟悉。其实主要就是WiFi比较麻烦，如果搞定了网络连接就非常简单了。</p><h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul><li>宿主机操作系统: win11</li><li>CPU AMD zen3 锐龙5000 8核16线程</li><li>内存条 三星DDR4 3200 32*2</li><li>硬盘<ul><li>SSD 三星980 pro 2T</li><li>HDD 西部数据 2T</li></ul></li></ul><p>主要是跑K8S集群和备份数据的作用。</p><h2 id="集群配置"><a href="#集群配置" class="headerlink" title="集群配置"></a>集群配置</h2><p>虚拟化使用了VMware，创建虚拟机非常的简单，包括后续弄几台机器也是一样的，就是比较麻烦，因为使用DHCP每次IP都会发生变化，而K8S apiserver如果发生了IP变化就会导致etcd无法和apiserver进行交互。所以就需要设置静态IP，这样就会非常麻烦了，为了解决这个问题，想到了批量装机的方法。这里简单回忆一下，过去的有一段时间了。</p><p>首先将VMware中的网络模式设置为NAT模式:</p><p><img src="/../public/img/homeLab/natpng.png" alt="NAT设置"></p><p>之后需要修改VMware8网卡，设置好IP地址，子网掩码等相关配置。</p><p><strong>TODO相关图片</strong></p><p>修改完成之后来到虚拟机中，修改虚拟机配置;</p><p><strong>TODO相关图片</strong></p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>homeLab</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>MapReduce论文笔记</title>
+    <link href="/2023/10/16/MapReduce%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"/>
+    <url>/2023/10/16/MapReduce%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在学MIT 6.824的时候，它的第一个Lab要求实现一个单机并发版本的MapReduce，所以这篇文章主要记录关于MapReduce和实验对应的内容。</p><h2 id="Programming-Model"><a href="#Programming-Model" class="headerlink" title="Programming Model"></a>Programming Model</h2><p>这里主要介绍了MapReduce的编程模型，它会接收一组键值对作为输入任务，同时输出一对键值对作为结果。它提供了两个函数给用户使用, 需要注意的是Map和Reduce都需要用户自己来实现:</p><ul><li>Map: 接收一对键值对，如何生成相关一组值。将所有相同中间键的中间值组合在一起，之后传输给Reduce函数。</li><li>Reduce: 接受一个中间键和与该键相关的一组值, 将这些值合并在一起，形成一个可能更小的值集合。通常，每次调用Reduce函数只会生成零个或一个输出值。中间值通过一个迭代器(iterator)传递给用户的Reduce函数。这允许我们处理那些太大以至于无法在内存中存储的值列表。</li></ul><p>具体来说，Map函数负责将输入数据映射为中间键&#x2F;值对，这些中间键&#x2F;值对将按照键的相同性被分组，然后传递给Reduce函数。Reduce函数则负责处理这些分组后的中间值，将它们合并在一起，生成最终的输出键&#x2F;值对。</p><p>这种分离的处理方式允许MapReduce框架高效地处理大规模数据，并且让用户专注于编写特定的处理逻辑，而不需要担心底层的数据分发和整合。</p><h3 id="经典的例子-单词统计-world-count"><a href="#经典的例子-单词统计-world-count" class="headerlink" title="经典的例子-单词统计(world count)"></a>经典的例子-单词统计(world count)</h3><p><strong>Map函数：</strong></p><ul><li>输入：一个文档的名称（key）和该文档的内容（value）。</li><li>处理：Map函数遍历文档的内容，将文档内容分割成单词。对于每个单词，Map函数发出中间键&#x2F;值对，其中键是单词（word），值是固定的字符串“1”（表示该单词出现了一次）。</li><li>输出：多个中间键&#x2F;值对，例如（”apple”, “1”），（”orange”, “1”），等等。</li></ul><p><strong>Reduce函数：</strong></p><ul><li>输入：一个单词（key）和该单词的计数列表（values）。</li><li>处理：Reduce函数迭代计数列表，将所有计数相加，得到该单词的总出现次数。</li><li>输出：一个键&#x2F;值对，其中键是单词，值是该单词的总出现次数，转换为字符串形式。</li></ul><h3 id="更多例子"><a href="#更多例子" class="headerlink" title="更多例子"></a>更多例子</h3><h4 id="分布式Grep（分布式文本搜索）"><a href="#分布式Grep（分布式文本搜索）" class="headerlink" title="分布式Grep（分布式文本搜索）"></a>分布式Grep（分布式文本搜索）</h4><h4 id="统计URL访问频率"><a href="#统计URL访问频率" class="headerlink" title="统计URL访问频率"></a>统计URL访问频率</h4><h4 id="反向Web链接图"><a href="#反向Web链接图" class="headerlink" title="反向Web链接图"></a>反向Web链接图</h4><h4 id="每个主机的词项向量（文本摘要）"><a href="#每个主机的词项向量（文本摘要）" class="headerlink" title="每个主机的词项向量（文本摘要）"></a>每个主机的词项向量（文本摘要）</h4><h2 id="MapReduce工作流程"><a href="#MapReduce工作流程" class="headerlink" title="MapReduce工作流程"></a>MapReduce工作流程</h2><p><img src="https://pic1.zhimg.com/80/v2-5642ac8d1e37098be1c97836341a7210_720w.webp" alt="img"></p><p>用户程序中的MapReduce库会先将输入文件切分为M个片段，通常每个片段在16MB到64MB之间，具体大小可以让用户通过参数进行指定。之后创建多个程序副本。</p><p>副本角色分为两种: master和worker，集群中只有一个master副本，剩下都是worker副本。master会对worker进行任务分配，这里有M个Map任务以及R个Reduce任务要进行分配。master会给每个空闲的worker分配一个map任务或者一个reduce任务。</p><p>被分配到map任务的worker会读取相关输入数据片段，之后会从数据数据中解析出键值对，并将它们传入到用户自定义Map函数中。Map函数所生成的中间键值对会被缓存在内存中。</p><p>每隔一段时间，被缓存的键值对会被写入到本地硬盘，并通过分区函数分到R个区域内。这些被缓存的键值对在本地磁盘的位置会被传回master。master负责将这些位置转发给执行reduce操作的worker。</p><p>当master将这些位置告诉了某个执行reduce的worker，该worker就会使用RPC的方式去从保存了这些缓存数据的map worker的本地磁盘中读取数据。当一个reduce worker读取完了所有的中间数据后，它就会根据中间键进行排序，这样使得具有相同键值的数据可以聚合在一起。之所以需要排序是因为通常许多不同的key会映射到同一个reduce任务中。如果中间数据的数量太过庞大而无法放在内存中，那就需要使用外部排序。</p><p>reduce worker会对排序后的中间数据进行遍历。然后，对于遇到的每个唯一的中间键，reduce worker会将该key和对应的中间value的集合传入用户所提供的Reduce函数中。Reduce函数生成的输出会被追加到这个reduce分区的输出文件中。</p><p>当所有的map任务和reduce任务完成后，master会唤醒用户程序。此时，用户程序会结束对MapReduce的调用。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>distributed system</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>MIT6.824-Lab1-MapReduce</title>
+    <link href="/2023/10/16/MIT6-824-Lab1-MapReduce/"/>
+    <url>/2023/10/16/MIT6-824-Lab1-MapReduce/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。</p><h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><p>Lab要求我们实现一个分布式MapReduce，在之前背景中也介绍了:</p><ul><li>coordinator</li><li>worker</li></ul><p>我们只需要实现一个coordinator就好，但是有一个或多个并行运行的worker。在真实的分布式系统中，worker都是分布在不同的机器上面。但是在这个Lab中所有的程序都运行在一台机器上。worker想要通过远程调用(RPC)和coordinator进行通信。每个worker都会向coordinator请求任务从一个或多个文件中读取任务的输入数据，执行任务，然后将任务的输出写入一个或多个文件。如果一个worker没有在合理时间内完成任务（在这个Lab中，规定为十秒），coordinator应该能够察觉到，并将同样的任务分配给另一个worker。</p><p>我们需要修改以下代码来完成实验:</p><ul><li>mr&#x2F;coordinator.go</li><li>mr&#x2F;worker.go</li><li>mr&#x2F;rpc.go</li></ul><h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>完成代码之后，我们需要验证是否正确。首先需要构建word-count插件:</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">go build -buildmode=plugin ../mrapps/wc.go</span><br></code></pre></td></tr></table></figure><p>在main文件夹中，运行coordinator</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">rm</span> mr-out*<br>$ go run mrcoordinator.go pg-*.txt<br></code></pre></td></tr></table></figure><p>这里的<code>pg-*.txt</code>参数是输入文件；每个文件对应一个“split”，是一个Map任务的输入。</p><p>接着在一个新的窗口或者打开多个窗口来运行worker程序:</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ go run mrworker.go wc.so<br></code></pre></td></tr></table></figure><p>当workers和coordinator完成的时候，查看输出文件mr-out-*，Lab完成的时候，输出文件排序应该是有序的，类似于这样:</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cat</span> mr-out-* | <span class="hljs-built_in">sort</span> | more<br>A 509<br>ABOUT 2<br>ACT 8<br>...<br></code></pre></td></tr></table></figure><p>最后运行测试脚本:</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cd</span> ~/6.5840/src/main<br>$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br></code></pre></td></tr></table></figure><p>在coordinator无法正常结束的情况下，测试脚本会一直挂起。你可以在<code>mr/coordinator.go</code>文件的<code>Done</code>函数中将<code>ret := false</code>改为<code>ret := true</code>，这样协调器会立即退出。然后再次运行测试脚本</p><p>当完成之后，输出结果如下就是表示测试通过了:</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br>--- <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting indexer <span class="hljs-built_in">test</span>.<br>--- indexer <span class="hljs-built_in">test</span>: PASS<br>*** Starting map parallelism <span class="hljs-built_in">test</span>.<br>--- map parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting reduce parallelism <span class="hljs-built_in">test</span>.<br>--- reduce parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting job count <span class="hljs-built_in">test</span>.<br>--- job count <span class="hljs-built_in">test</span>: PASS<br>*** Starting early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>.<br>--- early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting crash <span class="hljs-built_in">test</span>.<br>--- crash <span class="hljs-built_in">test</span>: PASS<br>*** PASSED ALL TESTS<br>$<br></code></pre></td></tr></table></figure><h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>distributed system</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>redis-proxy初探</title>
+    <link href="/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/"/>
+    <url>/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>redis</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>redis集群模式</title>
+    <link href="/2023/10/07/redis%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/"/>
+    <url>/2023/10/07/redis%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/</url>
+    
+    <content type="html"><![CDATA[<h2 id="redis集群"><a href="#redis集群" class="headerlink" title="redis集群"></a>redis集群</h2><p>redis集群是为了解决redis单机上线而设计出来的，</p><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>redis</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>SRE理解</title>
     <link href="/2023/09/28/SRE%E7%90%86%E8%A7%A3/"/>
     <url>/2023/09/28/SRE%E7%90%86%E8%A7%A3/</url>
