@@ -16,22 +16,22 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="背景这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。 任务Lab要求我们实现一个分布式Map">
+    <meta name="description" content="Redis Exporter实现根据之前的知识，这里以redis举例来实现一个exporter并且最终通过grafana来展示。 Redis Metrics编写代码之前，先选好一些Metrics指标，首先需要明确一点的是指标不是越多越好，因为在关键时刻，像排错等场景。看到那么多指标会无法下手，所以要根据具体场景来挑选，可以先选出一些通用的指标，以及redis在场景中扮演什么样的角色进行挑选。并不是">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MIT6.824-Lab1-MapReduce">
-<meta property="og:url" content="http://example.com/2023/10/16/MIT6-824-Lab1-MapReduce/index.html">
+<meta property="og:title" content="从零实现一个exporter(一)-redis-exporter实现">
+<meta property="og:url" content="http://example.com/2023/11/25/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAexporter-%E4%B8%80-redis-exporter%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="背景这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。 任务Lab要求我们实现一个分布式Map">
+<meta property="og:description" content="Redis Exporter实现根据之前的知识，这里以redis举例来实现一个exporter并且最终通过grafana来展示。 Redis Metrics编写代码之前，先选好一些Metrics指标，首先需要明确一点的是指标不是越多越好，因为在关键时刻，像排错等场景。看到那么多指标会无法下手，所以要根据具体场景来挑选，可以先选出一些通用的指标，以及redis在场景中扮演什么样的角色进行挑选。并不是">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-10-16T07:51:06.000Z">
-<meta property="article:modified_time" content="2023-11-29T09:08:53.987Z">
+<meta property="article:published_time" content="2023-11-25T11:44:06.000Z">
+<meta property="article:modified_time" content="2023-11-25T13:19:58.190Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="distributed system">
+<meta property="article:tag" content="Observability">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>MIT6.824-Lab1-MapReduce - Hexo</title>
+  <title>从零实现一个exporter(一)-redis-exporter实现 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +197,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="MIT6.824-Lab1-MapReduce"></span>
+            <span id="subtitle" data-typed-text="从零实现一个exporter(一)-redis-exporter实现"></span>
           
         </div>
 
@@ -208,8 +208,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-10-16 15:51" pubdate>
-          October 16, 2023 pm
+        <time datetime="2023-11-25 19:44" pubdate>
+          November 25, 2023 pm
         </time>
       </span>
     
@@ -220,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k words
+          631 words
         
       </span>
     
@@ -231,7 +231,7 @@
         
         
         
-          14 mins
+          6 mins
         
       </span>
     
@@ -268,46 +268,28 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">MIT6.824-Lab1-MapReduce</h1>
+            <h1 id="seo-header">从零实现一个exporter(一)-redis-exporter实现</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。</p>
-<h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><p>Lab要求我们实现一个分布式MapReduce，在之前背景中也介绍了:</p>
-<ul>
-<li>coordinator</li>
-<li>worker</li>
+                <h2 id="Redis-Exporter实现"><a href="#Redis-Exporter实现" class="headerlink" title="Redis Exporter实现"></a>Redis Exporter实现</h2><p>根据之前的知识，这里以redis举例来实现一个exporter并且最终通过grafana来展示。</p>
+<h2 id="Redis-Metrics"><a href="#Redis-Metrics" class="headerlink" title="Redis Metrics"></a>Redis Metrics</h2><p>编写代码之前，先选好一些Metrics指标，首先需要明确一点的是指标不是越多越好，因为在关键时刻，像排错等场景。看到那么多指标会无法下手，所以要根据具体场景来挑选，可以先选出一些通用的指标，以及redis在场景中扮演什么样的角色进行挑选。并不是挑选好之后就不用管了，我们还需要进行一些调整。这里挑选出服务端和客户端指标。</p>
+<h3 id="监控方法论"><a href="#监控方法论" class="headerlink" title="监控方法论"></a>监控方法论</h3><ul>
+<li>USE</li>
+<li>黄金指标</li>
 </ul>
-<p>我们只需要实现一个coordinator就好，但是有一个或多个并行运行的worker。在真实的分布式系统中，worker都是分布在不同的机器上面。但是在这个Lab中所有的程序都运行在一台机器上。worker想要通过远程调用(RPC)和coordinator进行通信。每个worker都会向coordinator请求任务从一个或多个文件中读取任务的输入数据，执行任务，然后将任务的输出写入一个或多个文件。如果一个worker没有在合理时间内完成任务（在这个Lab中，规定为十秒），coordinator应该能够察觉到，并将同样的任务分配给另一个worker。</p>
-<p>我们需要修改以下代码来完成实验:</p>
-<ul>
-<li>mr&#x2F;coordinator.go</li>
-<li>mr&#x2F;worker.go</li>
-<li>mr&#x2F;rpc.go</li>
+<h3 id="通用指标"><a href="#通用指标" class="headerlink" title="通用指标"></a>通用指标</h3><ul>
+<li>P90</li>
+<li>P95</li>
+<li>P99</li>
 </ul>
-<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>完成代码之后，我们需要验证是否正确。首先需要构建word-count插件:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">go build -buildmode=plugin ../mrapps/wc.go</span><br></code></pre></td></tr></table></figure>
-
-<p>在main文件夹中，运行coordinator</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">rm</span> mr-out*<br>$ go run mrcoordinator.go pg-*.txt<br></code></pre></td></tr></table></figure>
-
-<p>这里的<code>pg-*.txt</code>参数是输入文件；每个文件对应一个“split”，是一个Map任务的输入。</p>
-<p>接着在一个新的窗口或者打开多个窗口来运行worker程序:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ go run mrworker.go wc.so<br></code></pre></td></tr></table></figure>
-
-<p>当workers和coordinator完成的时候，查看输出文件mr-out-*，Lab完成的时候，输出文件排序应该是有序的，类似于这样:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cat</span> mr-out-* | <span class="hljs-built_in">sort</span> | more<br>A 509<br>ABOUT 2<br>ACT 8<br>...<br></code></pre></td></tr></table></figure>
-
-<p>最后运行测试脚本:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cd</span> ~/6.5840/src/main<br>$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br></code></pre></td></tr></table></figure>
-
-<p>在coordinator无法正常结束的情况下，测试脚本会一直挂起。你可以在<code>mr/coordinator.go</code>文件的<code>Done</code>函数中将<code>ret := false</code>改为<code>ret := true</code>，这样协调器会立即退出。然后再次运行测试脚本</p>
-<p>当完成之后，输出结果如下就是表示测试通过了:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br>--- <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting indexer <span class="hljs-built_in">test</span>.<br>--- indexer <span class="hljs-built_in">test</span>: PASS<br>*** Starting map parallelism <span class="hljs-built_in">test</span>.<br>--- map parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting reduce parallelism <span class="hljs-built_in">test</span>.<br>--- reduce parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting job count <span class="hljs-built_in">test</span>.<br>--- job count <span class="hljs-built_in">test</span>: PASS<br>*** Starting early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>.<br>--- early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting crash <span class="hljs-built_in">test</span>.<br>--- crash <span class="hljs-built_in">test</span>: PASS<br>*** PASSED ALL TESTS<br>$<br></code></pre></td></tr></table></figure>
-
-<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><h3 id="worker"><a href="#worker" class="headerlink" title="worker"></a>worker</h3><h3 id="master"><a href="#master" class="headerlink" title="master"></a>master</h3><h3 id="rpc"><a href="#rpc" class="headerlink" title="rpc"></a>rpc</h3><h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
-<li>master如何去分配任务类型？比如是根据什么原因给某个worker分配map或者reduce任务的？</li>
+<h3 id="场景指标"><a href="#场景指标" class="headerlink" title="场景指标"></a>场景指标</h3><p>考虑redis作为缓存场景来使用。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://cloud.google.com/memorystore/docs/redis/monitoring-metrics?hl=zh-cn">https://cloud.google.com/memorystore/docs/redis/monitoring-metrics?hl=zh-cn</a></li>
+<li><a target="_blank" rel="noopener" href="https://help.aliyun.com/zh/redis/user-guide/view-monitoring-data?spm=a2c4g.11186623.0.i7">https://help.aliyun.com/zh/redis/user-guide/view-monitoring-data?spm=a2c4g.11186623.0.i7</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/239/48574#redis-.E8.8A.82.E7.82.B9.E7.9B.91.E6.8E.A7">https://cloud.tencent.com/document/product/239/48574#redis-.E8.8A.82.E7.82.B9.E7.9B.91.E6.8E.A7</a></li>
+<li><a target="_blank" rel="noopener" href="https://doc.yun.ccb.com/tcloud/Oss/CloudMonitoring/CloudMonitorIndex/RedisMonitorIndexList">https://doc.yun.ccb.com/tcloud/Oss/CloudMonitoring/CloudMonitorIndex/RedisMonitorIndexList</a></li>
 </ul>
 
                 
@@ -321,7 +303,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/distributed-system/" class="print-no-link">#distributed system</a>
+        <a href="/tags/Observability/" class="print-no-link">#Observability</a>
       
     </div>
   
@@ -333,8 +315,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>MIT6.824-Lab1-MapReduce</div>
-      <div>http://example.com/2023/10/16/MIT6-824-Lab1-MapReduce/</div>
+      <div>从零实现一个exporter(一)-redis-exporter实现</div>
+      <div>http://example.com/2023/11/25/从零实现一个exporter-一-redis-exporter实现/</div>
     </div>
     <div class="license-meta">
       
@@ -346,7 +328,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>October 16, 2023</div>
+          <div>November 25, 2023</div>
         </div>
       
       
@@ -378,9 +360,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/10/16/MapReduce%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" title="MapReduce论文笔记">
+                      <a href="/2023/12/03/note/" title="MIT6.824-LC2-Note">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">MapReduce论文笔记</span>
+                        <span class="hidden-mobile">MIT6.824-LC2-Note</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -388,8 +370,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/" title="redis-proxy初探">
-                        <span class="hidden-mobile">redis-proxy初探</span>
+                      <a href="/2023/11/25/%E7%9B%91%E6%8E%A7%E6%96%B9%E6%B3%95%E8%AE%BA-%E4%B8%80-Google%E9%BB%84%E9%87%91%E6%8C%87%E6%A0%87%E4%B8%8ERED%E6%96%B9%E6%B3%95%E5%92%8CUSE%E6%96%B9%E6%B3%95/" title="监控方法论(一): Google黄金指标与RED方法和USE方法">
+                        <span class="hidden-mobile">监控方法论(一): Google黄金指标与RED方法和USE方法</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

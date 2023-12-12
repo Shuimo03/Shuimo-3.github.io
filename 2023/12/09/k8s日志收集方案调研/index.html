@@ -16,22 +16,25 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="背景这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。 任务Lab要求我们实现一个分布式Map">
+    <meta name="description" content="背景之前每次查看日志的时候都是使用logs -f对应容器这样去查看，这样的好处是简单，但是每次都这样去弄太麻烦了，而且日志一多起来查找起来也非常麻烦，所以正好借此机会做一次日志收集平台展示调研方案。 需求因为我是个人集群，所以在集群配置上不会很高，节点也不会有很多，是一个标准三节点，同时上面还跑着其他中间件等等。所以对资源消耗大的日志收集方案就不考虑，再一个是我的日志不需要保留很长时间，1-3天日">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MIT6.824-Lab1-MapReduce">
-<meta property="og:url" content="http://example.com/2023/10/16/MIT6-824-Lab1-MapReduce/index.html">
+<meta property="og:title" content="k8s日志收集方案调研">
+<meta property="og:url" content="http://example.com/2023/12/09/k8s%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="背景这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。 任务Lab要求我们实现一个分布式Map">
+<meta property="og:description" content="背景之前每次查看日志的时候都是使用logs -f对应容器这样去查看，这样的好处是简单，但是每次都这样去弄太麻烦了，而且日志一多起来查找起来也非常麻烦，所以正好借此机会做一次日志收集平台展示调研方案。 需求因为我是个人集群，所以在集群配置上不会很高，节点也不会有很多，是一个标准三节点，同时上面还跑着其他中间件等等。所以对资源消耗大的日志收集方案就不考虑，再一个是我的日志不需要保留很长时间，1-3天日">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-10-16T07:51:06.000Z">
-<meta property="article:modified_time" content="2023-11-29T09:08:53.987Z">
+<meta property="og:image" content="c:\Users\wuliang\AppData\Roaming\Typora\typora-user-images\image-20231209192802879.png">
+<meta property="og:image" content="c:\Users\wuliang\AppData\Roaming\Typora\typora-user-images\image-20231209195748655.png">
+<meta property="article:published_time" content="2023-12-09T10:37:48.000Z">
+<meta property="article:modified_time" content="2023-12-10T04:01:36.827Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="distributed system">
+<meta property="article:tag" content="Observability">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="c:\Users\wuliang\AppData\Roaming\Typora\typora-user-images\image-20231209192802879.png">
   
   
   
-  <title>MIT6.824-Lab1-MapReduce - Hexo</title>
+  <title>k8s日志收集方案调研 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="MIT6.824-Lab1-MapReduce"></span>
+            <span id="subtitle" data-typed-text="k8s日志收集方案调研"></span>
           
         </div>
 
@@ -208,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-10-16 15:51" pubdate>
-          October 16, 2023 pm
+        <time datetime="2023-12-09 18:37" pubdate>
+          December 9, 2023 pm
         </time>
       </span>
     
@@ -220,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k words
+          429 words
         
       </span>
     
@@ -231,7 +234,7 @@
         
         
         
-          14 mins
+          4 mins
         
       </span>
     
@@ -268,48 +271,22 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">MIT6.824-Lab1-MapReduce</h1>
+            <h1 id="seo-header">k8s日志收集方案调研</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。</p>
-<h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><p>Lab要求我们实现一个分布式MapReduce，在之前背景中也介绍了:</p>
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前每次查看日志的时候都是使用logs -f对应容器这样去查看，这样的好处是简单，但是每次都这样去弄太麻烦了，而且日志一多起来查找起来也非常麻烦，所以正好借此机会做一次日志收集平台展示调研方案。</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>因为我是个人集群，所以在集群配置上不会很高，节点也不会有很多，是一个标准三节点，同时上面还跑着其他中间件等等。所以对资源消耗大的日志收集方案就不考虑，再一个是我的日志不需要保留很长时间，1-3天日志就完全够了。像ELK这种就太重了，虽然K8S集群上有一套ES集群了。总结一下就是以下需求:</p>
 <ul>
-<li>coordinator</li>
-<li>worker</li>
+<li>轻量级，对资源要求不高。</li>
+<li>日志存放时间不需要太长。</li>
+<li>对查询友好，能够准确做到像logs -f xxx一样，并且可以显示重点信息。</li>
 </ul>
-<p>我们只需要实现一个coordinator就好，但是有一个或多个并行运行的worker。在真实的分布式系统中，worker都是分布在不同的机器上面。但是在这个Lab中所有的程序都运行在一台机器上。worker想要通过远程调用(RPC)和coordinator进行通信。每个worker都会向coordinator请求任务从一个或多个文件中读取任务的输入数据，执行任务，然后将任务的输出写入一个或多个文件。如果一个worker没有在合理时间内完成任务（在这个Lab中，规定为十秒），coordinator应该能够察觉到，并将同样的任务分配给另一个worker。</p>
-<p>我们需要修改以下代码来完成实验:</p>
-<ul>
-<li>mr&#x2F;coordinator.go</li>
-<li>mr&#x2F;worker.go</li>
-<li>mr&#x2F;rpc.go</li>
-</ul>
-<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>完成代码之后，我们需要验证是否正确。首先需要构建word-count插件:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">go build -buildmode=plugin ../mrapps/wc.go</span><br></code></pre></td></tr></table></figure>
-
-<p>在main文件夹中，运行coordinator</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">rm</span> mr-out*<br>$ go run mrcoordinator.go pg-*.txt<br></code></pre></td></tr></table></figure>
-
-<p>这里的<code>pg-*.txt</code>参数是输入文件；每个文件对应一个“split”，是一个Map任务的输入。</p>
-<p>接着在一个新的窗口或者打开多个窗口来运行worker程序:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ go run mrworker.go wc.so<br></code></pre></td></tr></table></figure>
-
-<p>当workers和coordinator完成的时候，查看输出文件mr-out-*，Lab完成的时候，输出文件排序应该是有序的，类似于这样:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cat</span> mr-out-* | <span class="hljs-built_in">sort</span> | more<br>A 509<br>ABOUT 2<br>ACT 8<br>...<br></code></pre></td></tr></table></figure>
-
-<p>最后运行测试脚本:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cd</span> ~/6.5840/src/main<br>$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br></code></pre></td></tr></table></figure>
-
-<p>在coordinator无法正常结束的情况下，测试脚本会一直挂起。你可以在<code>mr/coordinator.go</code>文件的<code>Done</code>函数中将<code>ret := false</code>改为<code>ret := true</code>，这样协调器会立即退出。然后再次运行测试脚本</p>
-<p>当完成之后，输出结果如下就是表示测试通过了:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br>--- <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting indexer <span class="hljs-built_in">test</span>.<br>--- indexer <span class="hljs-built_in">test</span>: PASS<br>*** Starting map parallelism <span class="hljs-built_in">test</span>.<br>--- map parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting reduce parallelism <span class="hljs-built_in">test</span>.<br>--- reduce parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting job count <span class="hljs-built_in">test</span>.<br>--- job count <span class="hljs-built_in">test</span>: PASS<br>*** Starting early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>.<br>--- early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting crash <span class="hljs-built_in">test</span>.<br>--- crash <span class="hljs-built_in">test</span>: PASS<br>*** PASSED ALL TESTS<br>$<br></code></pre></td></tr></table></figure>
-
-<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><h3 id="worker"><a href="#worker" class="headerlink" title="worker"></a>worker</h3><h3 id="master"><a href="#master" class="headerlink" title="master"></a>master</h3><h3 id="rpc"><a href="#rpc" class="headerlink" title="rpc"></a>rpc</h3><h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
-<li>master如何去分配任务类型？比如是根据什么原因给某个worker分配map或者reduce任务的？</li>
-</ul>
-
+<h2 id="收集方案"><a href="#收集方案" class="headerlink" title="收集方案"></a>收集方案</h2><h3 id="EFK-Elasticsearch-Filebeat-Kibana"><a href="#EFK-Elasticsearch-Filebeat-Kibana" class="headerlink" title="EFK(Elasticsearch&#x2F;Filebeat&#x2F;Kibana)"></a>EFK(Elasticsearch&#x2F;Filebeat&#x2F;Kibana)</h3><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><h4 id="资源消耗"><a href="#资源消耗" class="headerlink" title="资源消耗"></a>资源消耗</h4><p>可以看到资源占用率非常高:</p>
+<p><img src="C:\Users\wuliang\AppData\Roaming\Typora\typora-user-images\image-20231209192802879.png" srcset="/img/loading.gif" lazyload alt="image-20231209192802879"></p>
+<p><img src="C:\Users\wuliang\AppData\Roaming\Typora\typora-user-images\image-20231209195748655.png" srcset="/img/loading.gif" lazyload alt="image-20231209195748655"></p>
+<h3 id="loki"><a href="#loki" class="headerlink" title="loki"></a>loki</h3><h4 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h4><h4 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h4><h4 id="资源消耗-1"><a href="#资源消耗-1" class="headerlink" title="资源消耗"></a>资源消耗</h4><h3 id="FC-Filebeat-clickhouse"><a href="#FC-Filebeat-clickhouse" class="headerlink" title="FC(&#x2F;Filebeat&#x2F;clickhouse)"></a>FC(&#x2F;Filebeat&#x2F;clickhouse)</h3><h4 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h4><h4 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h4><h4 id="资源消耗-2"><a href="#资源消耗-2" class="headerlink" title="资源消耗"></a>资源消耗</h4><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>
                 
               </div>
             
@@ -321,7 +298,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/distributed-system/" class="print-no-link">#distributed system</a>
+        <a href="/tags/Observability/" class="print-no-link">#Observability</a>
       
     </div>
   
@@ -333,8 +310,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>MIT6.824-Lab1-MapReduce</div>
-      <div>http://example.com/2023/10/16/MIT6-824-Lab1-MapReduce/</div>
+      <div>k8s日志收集方案调研</div>
+      <div>http://example.com/2023/12/09/k8s日志收集方案调研/</div>
     </div>
     <div class="license-meta">
       
@@ -346,7 +323,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>October 16, 2023</div>
+          <div>December 9, 2023</div>
         </div>
       
       
@@ -378,9 +355,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/10/16/MapReduce%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" title="MapReduce论文笔记">
+                      <a href="/2023/12/11/GoogleFileSystem%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" title="GoogleFileSystem论文笔记">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">MapReduce论文笔记</span>
+                        <span class="hidden-mobile">GoogleFileSystem论文笔记</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -388,8 +365,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/" title="redis-proxy初探">
-                        <span class="hidden-mobile">redis-proxy初探</span>
+                      <a href="/2023/12/03/note/" title="MIT6.824-LC2-Note">
+                        <span class="hidden-mobile">MIT6.824-LC2-Note</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

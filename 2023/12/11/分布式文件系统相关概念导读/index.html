@@ -16,22 +16,22 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="背景这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。 任务Lab要求我们实现一个分布式Map">
+    <meta name="description" content="思考 存储系统如何保存应用状态？ 如何为存储系统来设计它的高可用性与容错性？ 如何控制失败次数？如何设计一个存储系统的SLA？ 分布式存储系统如何在性能问题和一致性问题之间平衡？ 分布式存储系统如何在容错性和一致性之间保持平衡？ CAP理论在分布式存储系统中起到什么样子的作用？ 如何为K8S设计一个分布式存储系统？ S3存储系统是如何保证一致性，容错性等问题？ 面对并发或者并行请求操作，分布式系统">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MIT6.824-Lab1-MapReduce">
-<meta property="og:url" content="http://example.com/2023/10/16/MIT6-824-Lab1-MapReduce/index.html">
+<meta property="og:title" content="分布式文件系统相关概念导读">
+<meta property="og:url" content="http://example.com/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="背景这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。 任务Lab要求我们实现一个分布式Map">
+<meta property="og:description" content="思考 存储系统如何保存应用状态？ 如何为存储系统来设计它的高可用性与容错性？ 如何控制失败次数？如何设计一个存储系统的SLA？ 分布式存储系统如何在性能问题和一致性问题之间平衡？ 分布式存储系统如何在容错性和一致性之间保持平衡？ CAP理论在分布式存储系统中起到什么样子的作用？ 如何为K8S设计一个分布式存储系统？ S3存储系统是如何保证一致性，容错性等问题？ 面对并发或者并行请求操作，分布式系统">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-10-16T07:51:06.000Z">
-<meta property="article:modified_time" content="2023-11-29T09:08:53.987Z">
+<meta property="article:published_time" content="2023-12-11T02:55:32.000Z">
+<meta property="article:modified_time" content="2023-12-12T06:26:54.261Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="distributed system">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>MIT6.824-Lab1-MapReduce - Hexo</title>
+  <title>分布式文件系统相关概念导读 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +197,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="MIT6.824-Lab1-MapReduce"></span>
+            <span id="subtitle" data-typed-text="分布式文件系统相关概念导读"></span>
           
         </div>
 
@@ -208,8 +208,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-10-16 15:51" pubdate>
-          October 16, 2023 pm
+        <time datetime="2023-12-11 10:55" pubdate>
+          December 11, 2023 am
         </time>
       </span>
     
@@ -220,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k words
+          242 words
         
       </span>
     
@@ -231,7 +231,7 @@
         
         
         
-          14 mins
+          3 mins
         
       </span>
     
@@ -268,46 +268,23 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">MIT6.824-Lab1-MapReduce</h1>
+            <h1 id="seo-header">分布式文件系统相关概念导读</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。</p>
-<h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><p>Lab要求我们实现一个分布式MapReduce，在之前背景中也介绍了:</p>
-<ul>
-<li>coordinator</li>
-<li>worker</li>
-</ul>
-<p>我们只需要实现一个coordinator就好，但是有一个或多个并行运行的worker。在真实的分布式系统中，worker都是分布在不同的机器上面。但是在这个Lab中所有的程序都运行在一台机器上。worker想要通过远程调用(RPC)和coordinator进行通信。每个worker都会向coordinator请求任务从一个或多个文件中读取任务的输入数据，执行任务，然后将任务的输出写入一个或多个文件。如果一个worker没有在合理时间内完成任务（在这个Lab中，规定为十秒），coordinator应该能够察觉到，并将同样的任务分配给另一个worker。</p>
-<p>我们需要修改以下代码来完成实验:</p>
-<ul>
-<li>mr&#x2F;coordinator.go</li>
-<li>mr&#x2F;worker.go</li>
-<li>mr&#x2F;rpc.go</li>
-</ul>
-<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>完成代码之后，我们需要验证是否正确。首先需要构建word-count插件:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">go build -buildmode=plugin ../mrapps/wc.go</span><br></code></pre></td></tr></table></figure>
-
-<p>在main文件夹中，运行coordinator</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">rm</span> mr-out*<br>$ go run mrcoordinator.go pg-*.txt<br></code></pre></td></tr></table></figure>
-
-<p>这里的<code>pg-*.txt</code>参数是输入文件；每个文件对应一个“split”，是一个Map任务的输入。</p>
-<p>接着在一个新的窗口或者打开多个窗口来运行worker程序:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ go run mrworker.go wc.so<br></code></pre></td></tr></table></figure>
-
-<p>当workers和coordinator完成的时候，查看输出文件mr-out-*，Lab完成的时候，输出文件排序应该是有序的，类似于这样:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cat</span> mr-out-* | <span class="hljs-built_in">sort</span> | more<br>A 509<br>ABOUT 2<br>ACT 8<br>...<br></code></pre></td></tr></table></figure>
-
-<p>最后运行测试脚本:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ <span class="hljs-built_in">cd</span> ~/6.5840/src/main<br>$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br></code></pre></td></tr></table></figure>
-
-<p>在coordinator无法正常结束的情况下，测试脚本会一直挂起。你可以在<code>mr/coordinator.go</code>文件的<code>Done</code>函数中将<code>ret := false</code>改为<code>ret := true</code>，这样协调器会立即退出。然后再次运行测试脚本</p>
-<p>当完成之后，输出结果如下就是表示测试通过了:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ bash test-mr.sh<br>*** Starting <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>.<br>--- <span class="hljs-built_in">wc</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting indexer <span class="hljs-built_in">test</span>.<br>--- indexer <span class="hljs-built_in">test</span>: PASS<br>*** Starting map parallelism <span class="hljs-built_in">test</span>.<br>--- map parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting reduce parallelism <span class="hljs-built_in">test</span>.<br>--- reduce parallelism <span class="hljs-built_in">test</span>: PASS<br>*** Starting job count <span class="hljs-built_in">test</span>.<br>--- job count <span class="hljs-built_in">test</span>: PASS<br>*** Starting early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>.<br>--- early <span class="hljs-built_in">exit</span> <span class="hljs-built_in">test</span>: PASS<br>*** Starting crash <span class="hljs-built_in">test</span>.<br>--- crash <span class="hljs-built_in">test</span>: PASS<br>*** PASSED ALL TESTS<br>$<br></code></pre></td></tr></table></figure>
-
-<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><h3 id="worker"><a href="#worker" class="headerlink" title="worker"></a>worker</h3><h3 id="master"><a href="#master" class="headerlink" title="master"></a>master</h3><h3 id="rpc"><a href="#rpc" class="headerlink" title="rpc"></a>rpc</h3><h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
-<li>master如何去分配任务类型？比如是根据什么原因给某个worker分配map或者reduce任务的？</li>
+                <h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
+<li>存储系统如何保存应用状态？</li>
+<li>如何为存储系统来设计它的高可用性与容错性？</li>
+<li>如何控制失败次数？如何设计一个存储系统的SLA？</li>
+<li>分布式存储系统如何在性能问题和一致性问题之间平衡？</li>
+<li>分布式存储系统如何在容错性和一致性之间保持平衡？</li>
+<li>CAP理论在分布式存储系统中起到什么样子的作用？</li>
+<li>如何为K8S设计一个分布式存储系统？</li>
+<li>S3存储系统是如何保证一致性，容错性等问题？</li>
+<li>面对并发或者并行请求操作，分布式系统应该如何处理？</li>
+<li>节点上磁盘介质的读写性能会有多大影响？</li>
+<li>数据如何从内存到磁盘？又是怎么样从磁盘中恢复出来？</li>
 </ul>
 
                 
@@ -333,8 +310,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>MIT6.824-Lab1-MapReduce</div>
-      <div>http://example.com/2023/10/16/MIT6-824-Lab1-MapReduce/</div>
+      <div>分布式文件系统相关概念导读</div>
+      <div>http://example.com/2023/12/11/分布式文件系统相关概念导读/</div>
     </div>
     <div class="license-meta">
       
@@ -346,7 +323,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>October 16, 2023</div>
+          <div>December 11, 2023</div>
         </div>
       
       
@@ -378,18 +355,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/10/16/MapReduce%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" title="MapReduce论文笔记">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">MapReduce论文笔记</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/" title="redis-proxy初探">
-                        <span class="hidden-mobile">redis-proxy初探</span>
+                      <a href="/2023/12/11/GoogleFileSystem%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" title="GoogleFileSystem论文笔记">
+                        <span class="hidden-mobile">GoogleFileSystem论文笔记</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
