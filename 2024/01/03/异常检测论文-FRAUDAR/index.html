@@ -16,22 +16,22 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="思考 存储系统如何保存应用状态？ 如何为存储系统来设计它的高可用性与容错性？ 如何控制失败次数？如何设计一个存储系统的SLA？ 分布式存储系统如何在性能问题和一致性问题之间平衡？ 分布式存储系统如何在容错性和一致性之间保持平衡？ CAP理论在分布式存储系统中起到什么样子的作用？ 如何为K8S设计一个分布式存储系统？ S3存储系统是如何保证一致性，容错性等问题？ 面对并发或者并行请求操作，分布式系统">
+    <meta name="description" content="背景解决的问题算法应用场景伪装 随机伪装 有偏伪装 劫持账户  抗伪装异常指标定义 点异常 边异常  公理算法流程思考 最开始的时候，如何定义或者判断是异常值？">
 <meta property="og:type" content="article">
-<meta property="og:title" content="分布式文件系统相关概念导读">
-<meta property="og:url" content="http://example.com/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/index.html">
+<meta property="og:title" content="异常检测论文-FRAUDAR">
+<meta property="og:url" content="http://example.com/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E8%AE%BA%E6%96%87-FRAUDAR/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="思考 存储系统如何保存应用状态？ 如何为存储系统来设计它的高可用性与容错性？ 如何控制失败次数？如何设计一个存储系统的SLA？ 分布式存储系统如何在性能问题和一致性问题之间平衡？ 分布式存储系统如何在容错性和一致性之间保持平衡？ CAP理论在分布式存储系统中起到什么样子的作用？ 如何为K8S设计一个分布式存储系统？ S3存储系统是如何保证一致性，容错性等问题？ 面对并发或者并行请求操作，分布式系统">
+<meta property="og:description" content="背景解决的问题算法应用场景伪装 随机伪装 有偏伪装 劫持账户  抗伪装异常指标定义 点异常 边异常  公理算法流程思考 最开始的时候，如何定义或者判断是异常值？">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-12-11T02:55:32.000Z">
-<meta property="article:modified_time" content="2023-12-12T06:26:54.261Z">
+<meta property="article:published_time" content="2024-01-03T02:01:40.000Z">
+<meta property="article:modified_time" content="2024-01-03T02:20:05.548Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="distributed system">
+<meta property="article:tag" content="AIOPS">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>分布式文件系统相关概念导读 - Hexo</title>
+  <title>异常检测论文-FRAUDAR - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +197,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="分布式文件系统相关概念导读"></span>
+            <span id="subtitle" data-typed-text="异常检测论文-FRAUDAR"></span>
           
         </div>
 
@@ -208,8 +208,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-12-11 10:55" pubdate>
-          December 11, 2023 am
+        <time datetime="2024-01-03 10:01" pubdate>
+          January 3, 2024 am
         </time>
       </span>
     
@@ -220,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          242 words
+          70 words
         
       </span>
     
@@ -231,7 +231,7 @@
         
         
         
-          3 mins
+          1 mins
         
       </span>
     
@@ -268,23 +268,23 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">分布式文件系统相关概念导读</h1>
+            <h1 id="seo-header">异常检测论文-FRAUDAR</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
-<li>存储系统如何保存应用状态？</li>
-<li>如何为存储系统来设计它的高可用性与容错性？</li>
-<li>如何控制失败次数？如何设计一个存储系统的SLA？</li>
-<li>分布式存储系统如何在性能问题和一致性问题之间平衡？</li>
-<li>分布式存储系统如何在容错性和一致性之间保持平衡？</li>
-<li>CAP理论在分布式存储系统中起到什么样子的作用？</li>
-<li>如何为K8S设计一个分布式存储系统？</li>
-<li>S3存储系统是如何保证一致性，容错性等问题？</li>
-<li>面对并发或者并行请求操作，分布式系统应该如何处理？</li>
-<li>节点上磁盘介质的读写性能会有多大影响？</li>
-<li>数据如何从内存到磁盘？又是怎么样从磁盘中恢复出来？</li>
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h2 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题"></a>解决的问题</h2><h2 id="算法应用场景"><a href="#算法应用场景" class="headerlink" title="算法应用场景"></a>算法应用场景</h2><h2 id="伪装"><a href="#伪装" class="headerlink" title="伪装"></a>伪装</h2><ul>
+<li>随机伪装</li>
+<li>有偏伪装</li>
+<li>劫持账户</li>
+</ul>
+<h2 id="抗伪装"><a href="#抗伪装" class="headerlink" title="抗伪装"></a>抗伪装</h2><h2 id="异常指标定义"><a href="#异常指标定义" class="headerlink" title="异常指标定义"></a>异常指标定义</h2><ul>
+<li>点异常</li>
+<li>边异常</li>
+</ul>
+<h3 id="公理"><a href="#公理" class="headerlink" title="公理"></a>公理</h3><h2 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h2><h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
+<li>最开始的时候，如何定义或者判断是异常值？</li>
+<li></li>
 </ul>
 
                 
@@ -298,7 +298,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/distributed-system/" class="print-no-link">#distributed system</a>
+        <a href="/tags/AIOPS/" class="print-no-link">#AIOPS</a>
       
     </div>
   
@@ -310,8 +310,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>分布式文件系统相关概念导读</div>
-      <div>http://example.com/2023/12/11/分布式文件系统相关概念导读/</div>
+      <div>异常检测论文-FRAUDAR</div>
+      <div>http://example.com/2024/01/03/异常检测论文-FRAUDAR/</div>
     </div>
     <div class="license-meta">
       
@@ -323,7 +323,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>December 11, 2023</div>
+          <div>January 3, 2024</div>
         </div>
       
       
@@ -355,9 +355,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/12/18/Machines%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" title="Machines论文笔记">
+                      <a href="/2024/01/06/%E8%BF%9E%E6%8E%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84HomeLab/" title="连接同一个局域网下的HomeLab">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Machines论文笔记</span>
+                        <span class="hidden-mobile">连接同一个局域网下的HomeLab</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -365,8 +365,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/12/11/GoogleFileSystem%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" title="GoogleFileSystem论文笔记">
-                        <span class="hidden-mobile">GoogleFileSystem论文笔记</span>
+                      <a href="/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B-%E4%B8%80-%E5%AF%BC%E8%AE%BA/" title="异常检测(一)-导论">
+                        <span class="hidden-mobile">异常检测(一)-导论</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -4,6 +4,101 @@
   
   
   <entry>
+    <title>连接同一个局域网下的HomeLab</title>
+    <link href="/2024/01/06/%E8%BF%9E%E6%8E%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84HomeLab/"/>
+    <url>/2024/01/06/%E8%BF%9E%E6%8E%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84HomeLab/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>因为之前搬家，搭建好的HomeLab使用的是静态IP，所以当搬家完之后，就需要重新配置过。</p><h2 id="局域网内ping测试"><a href="#局域网内ping测试" class="headerlink" title="局域网内ping测试"></a>局域网内ping测试</h2><p>之前远程连接用的是Windows自带的，相关配置不需要修改，只需要修改下IP即可。但是想要使用HomeLab里面的各种服务，比如说虚拟机搭建的K8S集群，或者说访问Web服务，这里还不够。</p><p><img src="/../images/homelab/image-20240106094829307.png" alt="image-20240106094829307"></p><p>当我把HomeLab防火墙关闭掉的时候，就可以ping通:</p><p><img src="/../images/homelab/image-20240106100630877.png" alt="image-20240106100630877"></p><p>很明显这样做风险太大，可以通过出入站规则来控制。</p><h2 id="访问HomeLab服务"><a href="#访问HomeLab服务" class="headerlink" title="访问HomeLab服务"></a>访问HomeLab服务</h2><p>顾名思义，出站规则就是HomeLab将内部流量转发出来，而入站规则是将流量发送到HomeLab中:</p><p><img src="/../images/homelab/image-20240106101650232.png" alt="image-20240106101837654"></p><p>大致如上图所示，假设需要访问HomeLab上服务就添加对应规则即可。但是访问VMware虚拟机会比较麻烦，因为VMware虚拟机中使用了NAT服务，IP又被转换了一次。为了能够访问到VMware虚拟机，需要在进行一次修改。</p><h3 id="Vmware虚拟机服务访问"><a href="#Vmware虚拟机服务访问" class="headerlink" title="Vmware虚拟机服务访问"></a>Vmware虚拟机服务访问</h3><p>这里需要把VMware的Vmnet8网卡进行编辑，让它充当一个NAT角色:</p><p><img src="/../images/homelab/image-20240106110929962.png" alt="image-20240106110929962"></p><p>在控制面板&gt;&gt;网络和 Internet&gt;&gt;网络连接中选择VMnet8网卡，然后修改它的ipv4属性:</p><p><img src="C:\Users\wuliang\AppData\Roaming\Typora\typora-user-images\image-20240106112216306.png" alt="image-20240106112216306"></p><p><img src="C:\Users\wuliang\AppData\Roaming\Typora\typora-user-images\image-20240106112231398.png" alt="image-20240106112231398"></p><p>IP地址和默认网关应该都在同一个网段里面，这一段和虚拟机地址差不多。</p><p><img src="/../images/homelab/image-20240108195652154.png" alt="image-20240108195652154"></p><p>设置完成之后，需要回到虚拟机中修改下网卡配置:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim /etc/sysconfig/network-scripts/ifcfg-xxxx <span class="hljs-comment">#这里是你的网卡名称</span><br><br></code></pre></td></tr></table></figure><p><img src="/../images/homelab/image-20240108195849802.png" alt="image-20240108195849802"></p><p>设置前面的网关IP</p><p><img src="/../images/homelab/image-20240106174326377.png" alt="image-20240106174326377"></p><p>之后在这里对Vmnet8网卡编辑:</p><ul><li>点击 VMware 的「编辑(e)」，选择「虚拟机网络编辑器」</li><li>选择 VMnet8 ，在点击「NAT 设置」</li></ul><p><img src="/../images/homelab/image-20240106111012702.png" alt="image-20240106111012702"></p><p><img src="/../images/homelab/image-20240106111122057.png" alt="image-20240106111122057"></p><p>最后配置入站和出站规则:</p><p><img src="/../images/homelab/image-20240106180154166.png" alt="image-20240106180154166"></p><p><img src="/../images/homelab/image-20240106180211844.png" alt="image-20240106180211844"></p><p>这个时候同一个局域网下的机器只需要通过ssh连接HomeLabIP+port，我这里是22，就可以直接使用了</p><p><img src="/../images/homelab/image-20240108200109422.png" alt="image-20240108200109422"></p><h2 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h2><ul><li><a href="https://zhuanlan.zhihu.com/p/130984945">https://zhuanlan.zhihu.com/p/130984945</a></li><li><a href="https://mengxiaoxing.top/2021/09/18/vmnat%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F%E5%B1%80%E5%9F%9F%E7%BD%91%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BA/">https://mengxiaoxing.top/2021/09/18/vmnat%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F%E5%B1%80%E5%9F%9F%E7%BD%91%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BA/</a></li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>homeLab</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>异常检测论文-FRAUDAR</title>
+    <link href="/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E8%AE%BA%E6%96%87-FRAUDAR/"/>
+    <url>/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E8%AE%BA%E6%96%87-FRAUDAR/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h2 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题"></a>解决的问题</h2><h2 id="算法应用场景"><a href="#算法应用场景" class="headerlink" title="算法应用场景"></a>算法应用场景</h2><h2 id="伪装"><a href="#伪装" class="headerlink" title="伪装"></a>伪装</h2><ul><li>随机伪装</li><li>有偏伪装</li><li>劫持账户</li></ul><h2 id="抗伪装"><a href="#抗伪装" class="headerlink" title="抗伪装"></a>抗伪装</h2><h2 id="异常指标定义"><a href="#异常指标定义" class="headerlink" title="异常指标定义"></a>异常指标定义</h2><ul><li>点异常</li><li>边异常</li></ul><h3 id="公理"><a href="#公理" class="headerlink" title="公理"></a>公理</h3><h2 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h2><h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul><li>最开始的时候，如何定义或者判断是异常值？</li><li></li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>AIOPS</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>异常检测(一)-导论</title>
+    <link href="/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B-%E4%B8%80-%E5%AF%BC%E8%AE%BA/"/>
+    <url>/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B-%E4%B8%80-%E5%AF%BC%E8%AE%BA/</url>
+    
+    <content type="html"><![CDATA[<h2 id="异常检测"><a href="#异常检测" class="headerlink" title="异常检测"></a>异常检测</h2><h3 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h3><h3 id="异常分类"><a href="#异常分类" class="headerlink" title="异常分类"></a>异常分类</h3><ul><li>点异常</li><li>连续性异常</li><li>上下文异常(监控场景)</li></ul><h3 id="异常检测应用场景"><a href="#异常检测应用场景" class="headerlink" title="异常检测应用场景"></a>异常检测应用场景</h3><h2 id="模型类型-Model-Type"><a href="#模型类型-Model-Type" class="headerlink" title="模型类型(Model Type)"></a>模型类型(Model Type)</h2><ul><li>有监督-DNN</li><li>半监督-oneClass-SVM</li><li>无监督-AutoEncoder</li><li>Hybrid</li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>AIOPS</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>springboot微服务容器化流程</title>
+    <link href="/2023/12/28/springboot%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%E5%8C%96%E6%B5%81%E7%A8%8B/"/>
+    <url>/2023/12/28/springboot%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%E5%8C%96%E6%B5%81%E7%A8%8B/</url>
+    
+    <content type="html"><![CDATA[<h2 id="spring-cloud"><a href="#spring-cloud" class="headerlink" title="spring cloud"></a>spring cloud</h2><h2 id="kubernetes"><a href="#kubernetes" class="headerlink" title="kubernetes"></a>kubernetes</h2>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Microservice</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Machines论文笔记</title>
+    <link href="/2023/12/18/Machines%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"/>
+    <url>/2023/12/18/Machines%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/</url>
+    
+    <content type="html"><![CDATA[<h2 id="The-Design-of-a-Practical-System-for-Fault-Tolerant-Virtual-Machines"><a href="#The-Design-of-a-Practical-System-for-Fault-Tolerant-Virtual-Machines" class="headerlink" title="The Design of a Practical System for Fault-Tolerant Virtual Machines"></a>The Design of a Practical System for Fault-Tolerant Virtual Machines</h2><h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><h3 id=""><a href="#" class="headerlink" title=""></a></h3>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>distributed system</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>分布式文件系统相关概念导读</title>
     <link href="/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/"/>
     <url>/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/</url>
