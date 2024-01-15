@@ -224,6 +224,166 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2024/01/14/K8S%E8%8A%82%E7%82%B9NotReady%E6%8E%92%E9%94%99%E6%80%9D%E8%B7%AF/" target="_self">
+          K8S节点NotReady排错思路
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/14/K8S%E8%8A%82%E7%82%B9NotReady%E6%8E%92%E9%94%99%E6%80%9D%E8%B7%AF/" target="_self">
+        <div>
+          背景在K8S中这种问题节点出现问题导致NotReady的情况并不少见，比如资源不足导致节点不可用，这里简单介绍下我遇到的情况以及我是如何解决的。 排查思路我使用的是VMware虚拟化出来的三个节点，一个master两个node，在kubectl get node的时候发现节点不可用:  以往一般会直接去重启对应节点机器，但是集群是重启过的，进一步查看原因，使用kubectl describe no
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-01-14 18:17" pubdate>
+              2024-01-14
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/kubernetes/">#kubernetes</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" target="_self">
+          client-go组件使用与原理
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" target="_self">
+        <div>
+          背景之前大部分时间都在用client-go进行开发，也用过informer做一些有意思的事情，但是很多细节方面的东西没有注意，这次算是对client-go原理进行一个整理。 架构设计client-go类型client-go支持四种类型客户端对象来和api server进行交互:  RESTClient ClientSet DynamicClient DiscoveryClient  其他三种都是基
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-01-12 11:43" pubdate>
+              2024-01-12
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/kubernetes/">#kubernetes</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/01/12/kubernetes%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%A7%A3%E6%9E%90/" target="_self">
+          kubernetes架构设计解析
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/12/kubernetes%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%A7%A3%E6%9E%90/" target="_self">
+        <div>
+          背景之前对kubernetes有过一些简单的了解，但是并没有去深入的去理解每个组件之间是如何工作的，所以正好复习一下。 概要首先看下官方给出来的架构图:  可以看到架构组件分为两类:  控制平面(control plane) 节点(node)  控制平面组件如下:  kube-api-server etcd scheduler Controller Manager cloud-controller
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-01-12 09:37" pubdate>
+              2024-01-12
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/kubernetes/">#kubernetes</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" target="_self">
+          从零实现一个operator(1)-kubebuilder实现redis operator
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" target="_self">
+        <div>
+          operator实现步骤正式开始使用kubebuilder来实现operator，关于operator原理可以看之前文章介绍，根据官网教程中的步骤来初始化一个operator项目: 1kubebuilder init --domain my.domain --repo my.domain/guestbook #修改这里的my.domain和my.domain/guestbook  之后kubebu
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-01-11 14:33" pubdate>
+              2024-01-11
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/kubernetes/">#kubernetes</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-0-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/" target="_self">
           从零实现一个operator(0)-前期准备
         </a>
@@ -442,166 +602,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2023-12-18 13:08" pubdate>
               2023-12-18
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/distributed-system/">#distributed system</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/" target="_self">
-          分布式文件系统相关概念导读
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/" target="_self">
-        <div>
-          思考 存储系统如何保存应用状态？ 如何为存储系统来设计它的高可用性与容错性？ 如何控制失败次数？如何设计一个存储系统的SLA？ 分布式存储系统如何在性能问题和一致性问题之间平衡？ 分布式存储系统如何在容错性和一致性之间保持平衡？ CAP理论在分布式存储系统中起到什么样子的作用？ 如何为K8S设计一个分布式存储系统？ S3存储系统是如何保证一致性，容错性等问题？ 面对并发或者并行请求操作，分布式系统
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-11 10:55" pubdate>
-              2023-12-11
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/distributed-system/">#distributed system</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/11/GoogleFileSystem%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" target="_self">
-          GoogleFileSystem论文笔记
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/11/GoogleFileSystem%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" target="_self">
-        <div>
-          背景GFS(Google File System)是为了解决Google 数据处理需求快速增长的需求而发明的。它是一个大型数据密集型应用分布式文件系统，运行在廉价的商业硬件上。GFS 与以前的分布式文件系统有许多相同的目标，例如性能、可扩展性、可靠性和可用性。不同之处在于它提供了容错能力。 GFS特点组件容错性首先组成GFS系统成本不高，都是运行在廉价的商业硬件上，并且是上百数千台。所以有部分机器
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-11 10:31" pubdate>
-              2023-12-11
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/distributed-system/">#distributed system</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/09/k8s%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/" target="_self">
-          k8s日志收集方案调研
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/09/k8s%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/" target="_self">
-        <div>
-          背景之前每次查看日志的时候都是使用logs -f对应容器这样去查看，这样的好处是简单，但是每次都这样去弄太麻烦了，而且日志一多起来查找起来也非常麻烦，所以正好借此机会做一次日志收集平台展示调研方案。 需求因为我是个人集群，所以在集群配置上不会很高，节点也不会有很多，是一个标准三节点，同时上面还跑着其他中间件等等。所以对资源消耗大的日志收集方案就不考虑，再一个是我的日志不需要保留很长时间，1-3天日
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-09 18:37" pubdate>
-              2023-12-09
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Observability/">#Observability</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/03/note/" target="_self">
-          MIT6.824-LC2-Note
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/03/note/" target="_self">
-        <div>
-          storage System 无状态应用 有状态应用 存储系统设计难点 高性能 数据格式 分布式系统 多磁盘 多网卡   容错设计 容错性 多副本复制   数据同步 一致性问题 一致性协议 一致性性能   持久化存储 读写性能提升    GFS 高性能  复制  容错    集群规模(&gt;&#x3D;1000节点)  master角色设计  不一致性(inconsistencies)  磁盘介
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-03 20:22" pubdate>
-              2023-12-03
             </time>
           </div>
         

@@ -224,6 +224,166 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/" target="_self">
+          分布式文件系统相关概念导读
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/11/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%E5%AF%BC%E8%AF%BB/" target="_self">
+        <div>
+          思考 存储系统如何保存应用状态？ 如何为存储系统来设计它的高可用性与容错性？ 如何控制失败次数？如何设计一个存储系统的SLA？ 分布式存储系统如何在性能问题和一致性问题之间平衡？ 分布式存储系统如何在容错性和一致性之间保持平衡？ CAP理论在分布式存储系统中起到什么样子的作用？ 如何为K8S设计一个分布式存储系统？ S3存储系统是如何保证一致性，容错性等问题？ 面对并发或者并行请求操作，分布式系统
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-11 10:55" pubdate>
+              2023-12-11
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/distributed-system/">#distributed system</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/11/GoogleFileSystem%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" target="_self">
+          GoogleFileSystem论文笔记
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/11/GoogleFileSystem%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" target="_self">
+        <div>
+          背景GFS(Google File System)是为了解决Google 数据处理需求快速增长的需求而发明的。它是一个大型数据密集型应用分布式文件系统，运行在廉价的商业硬件上。GFS 与以前的分布式文件系统有许多相同的目标，例如性能、可扩展性、可靠性和可用性。不同之处在于它提供了容错能力。 GFS特点组件容错性首先组成GFS系统成本不高，都是运行在廉价的商业硬件上，并且是上百数千台。所以有部分机器
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-11 10:31" pubdate>
+              2023-12-11
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/distributed-system/">#distributed system</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/09/k8s%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/" target="_self">
+          k8s日志收集方案调研
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/09/k8s%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/" target="_self">
+        <div>
+          背景之前每次查看日志的时候都是使用logs -f对应容器这样去查看，这样的好处是简单，但是每次都这样去弄太麻烦了，而且日志一多起来查找起来也非常麻烦，所以正好借此机会做一次日志收集平台展示调研方案。 需求因为我是个人集群，所以在集群配置上不会很高，节点也不会有很多，是一个标准三节点，同时上面还跑着其他中间件等等。所以对资源消耗大的日志收集方案就不考虑，再一个是我的日志不需要保留很长时间，1-3天日
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-09 18:37" pubdate>
+              2023-12-09
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Observability/">#Observability</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/03/note/" target="_self">
+          MIT6.824-LC2-Note
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/03/note/" target="_self">
+        <div>
+          storage System 无状态应用 有状态应用 存储系统设计难点 高性能 数据格式 分布式系统 多磁盘 多网卡   容错设计 容错性 多副本复制   数据同步 一致性问题 一致性协议 一致性性能   持久化存储 读写性能提升    GFS 高性能  复制  容错    集群规模(&gt;&#x3D;1000节点)  master角色设计  不一致性(inconsistencies)  磁盘介
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-03 20:22" pubdate>
+              2023-12-03
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/distributed-system/">#distributed system</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2023/11/25/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAexporter-%E4%B8%80-redis-exporter%E5%AE%9E%E7%8E%B0/" target="_self">
           从零实现一个exporter(一)-redis-exporter实现
         </a>
@@ -451,166 +611,6 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/distributed-system/">#distributed system</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/10/16/MIT6-824-Lab1-MapReduce/" target="_self">
-          MIT6.824-Lab1-MapReduce
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/10/16/MIT6-824-Lab1-MapReduce/" target="_self">
-        <div>
-          背景这个Lab主要是参考了MapReduce这篇论文实现的，所以只需要读懂了MapReduce中2-3章节就可以了。我们需要实现worker，他主要有两个任务分别是Map和Reduce，来分别读取和写入文件。同时还有一个coordinator ，它有两个任务: 分配任务给worker和处理失败任务。Lab还给出了一个参考代码:mrsequential.go。 任务Lab要求我们实现一个分布式Map
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-10-16 15:51" pubdate>
-              2023-10-16
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/distributed-system/">#distributed system</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/" target="_self">
-          redis-proxy初探
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/" target="_self">
-        <div>
-          
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-10-07 13:55" pubdate>
-              2023-10-07
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/redis/">#redis</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/10/07/redis%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/" target="_self">
-          redis集群模式
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/10/07/redis%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/" target="_self">
-        <div>
-          redis集群redis集群是为了解决redis单机上线而设计出来的， 参考资料
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-10-07 13:55" pubdate>
-              2023-10-07
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/redis/">#redis</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/09/28/SRE%E7%90%86%E8%A7%A3/" target="_self">
-          SRE理解
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/09/28/SRE%E7%90%86%E8%A7%A3/" target="_self">
-        <div>
-          背景之前有一段时间做过半个月的SRE，当时并没有完全理解这个岗位是做什么的。后面兜兜转转又做回了SRE，这里总结下工作几个月来对SRE的理解，以及一些工作内容，同时还参考了别人对SRE的介绍。 SRE定义SRE(site reliability engineer)在各种社区上被说成是运维，是背锅的。或者干脆说SRE是devops是运维这种；这里简单说下我对SRE的理解，SRE主要是负责三个核心内容
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-09-28 14:42" pubdate>
-              2023-09-28
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/SRE/">#SRE</a>
             
           </div>
         

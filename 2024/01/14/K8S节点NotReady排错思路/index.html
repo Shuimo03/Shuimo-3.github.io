@@ -16,22 +16,28 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="operator基本概念在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。 看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说o">
+    <meta name="description" content="背景在K8S中这种问题节点出现问题导致NotReady的情况并不少见，比如资源不足导致节点不可用，这里简单介绍下我遇到的情况以及我是如何解决的。 排查思路我使用的是VMware虚拟化出来的三个节点，一个master两个node，在kubectl get node的时候发现节点不可用:  以往一般会直接去重启对应节点机器，但是集群是重启过的，进一步查看原因，使用kubectl describe no">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从零实现一个operator(0)-前期准备">
-<meta property="og:url" content="http://example.com/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-0-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/index.html">
+<meta property="og:title" content="K8S节点NotReady排错思路">
+<meta property="og:url" content="http://example.com/2024/01/14/K8S%E8%8A%82%E7%82%B9NotReady%E6%8E%92%E9%94%99%E6%80%9D%E8%B7%AF/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="operator基本概念在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。 看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说o">
+<meta property="og:description" content="背景在K8S中这种问题节点出现问题导致NotReady的情况并不少见，比如资源不足导致节点不可用，这里简单介绍下我遇到的情况以及我是如何解决的。 排查思路我使用的是VMware虚拟化出来的三个节点，一个master两个node，在kubectl get node的时候发现节点不可用:  以往一般会直接去重启对应节点机器，但是集群是重启过的，进一步查看原因，使用kubectl describe no">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-01-11T05:30:02.000Z">
-<meta property="article:modified_time" content="2024-01-11T06:32:17.511Z">
+<meta property="og:image" content="http://example.com/images/K8S/image-20240114182639915.png">
+<meta property="og:image" content="http://example.com/images/K8S/image-20240114182853476.png">
+<meta property="og:image" content="http://example.com/images/K8S/image-20240114183016235.png">
+<meta property="og:image" content="http://example.com/images/K8S/image-20240114183223918.png">
+<meta property="og:image" content="http://example.com/images/K8S/image-20240114183255962.png">
+<meta property="article:published_time" content="2024-01-14T10:17:22.000Z">
+<meta property="article:modified_time" content="2024-01-15T12:58:39.785Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/K8S/image-20240114182639915.png">
   
   
   
-  <title>从零实现一个operator(0)-前期准备 - Hexo</title>
+  <title>K8S节点NotReady排错思路 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +203,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="从零实现一个operator(0)-前期准备"></span>
+            <span id="subtitle" data-typed-text="K8S节点NotReady排错思路"></span>
           
         </div>
 
@@ -208,8 +214,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-11 13:30" pubdate>
-          January 11, 2024 pm
+        <time datetime="2024-01-14 18:17" pubdate>
+          January 14, 2024 pm
         </time>
       </span>
     
@@ -220,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.6k words
+          359 words
         
       </span>
     
@@ -231,7 +237,7 @@
         
         
         
-          22 mins
+          3 mins
         
       </span>
     
@@ -268,71 +274,24 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">从零实现一个operator(0)-前期准备</h1>
+            <h1 id="seo-header">K8S节点NotReady排错思路</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="operator基本概念"><a href="#operator基本概念" class="headerlink" title="operator基本概念"></a>operator基本概念</h2><p>在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。</p>
-<p>看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说operator，可以保证当前温度就是你的期望状态。</p>
-<p>回到K8S本身，K8S本身就有很多这种控制器，举个例子，deployment就是一个典型的控制器:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-deployment</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">matchLabels:</span><br>      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">template:</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">containers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.14.2</span><br>        <span class="hljs-attr">ports:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br></code></pre></td></tr></table></figure>
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在K8S中这种问题节点出现问题导致NotReady的情况并不少见，比如资源不足导致节点不可用，这里简单介绍下我遇到的情况以及我是如何解决的。</p>
+<h2 id="排查思路"><a href="#排查思路" class="headerlink" title="排查思路"></a>排查思路</h2><p>我使用的是VMware虚拟化出来的三个节点，一个master两个node，在kubectl get node的时候发现节点不可用:</p>
+<p><img src="/../images/K8S/image-20240114182639915.png" srcset="/img/loading.gif" lazyload alt="image-20240114182639915"></p>
+<p>以往一般会直接去重启对应节点机器，但是集群是重启过的，进一步查看原因，使用kubectl describe node node1</p>
+<p><img src="/../images/K8S/image-20240114182853476.png" srcset="/img/loading.gif" lazyload alt="image-20240114182853476"></p>
+<p>可以看到kublet启动了，并且上报了对应节点状态，接着看到kube-proxy出现了问题，所以将思路聚焦在节点网络上:</p>
+<p><img src="/../images/K8S/image-20240114183016235.png" srcset="/img/loading.gif" lazyload alt="image-20240114183016235"></p>
+<p>节点上网卡并没有启动，所以只需要启动网卡即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">nmcli networking on<br>nmcli connection up ens160 <span class="hljs-comment">#这里替换成你的网卡名称</span><br></code></pre></td></tr></table></figure>
 
-<p>这里我们只关心replicas，这是我的一个期望状态，我希望有3个Pod被创建同时在运行。Deployment会创建一个 replicasets， replicasets会帮助我们创建3个Pod。这里先不关心细节。也就说控制器会按照期望值去创建Pod数量。</p>
-<p>通过前面的铺垫可以清楚的知道operator是什么了，可以简单粗暴地认为operator&#x3D;resource+controller，resource就是deployment,replicasets,pod等等。controller就是deployment controller。</p>
-<p>K8S中虽然有各种各样的controller，但是肯定也会有K8S不支持的，去修改源码难度太大，并且会造成高耦合。所以K8S提供了CRD(CustomResourceDefinitions)。有了这个我们就可以实现自己的operator了。</p>
-<h2 id="demo设计"><a href="#demo设计" class="headerlink" title="demo设计"></a>demo设计</h2><p>这里我们设计一个redis operator，这一块像ucloud和ot-redis-operator都是有现成的，一般情况下，可以根据这些去做二次开发，但是因为是从零开始，所以这里就自己造轮子。redis有单机模式(Standalone)，集群模式(Cluster)，哨兵模式(Sentinel)，主从模式(Replication)；为了方便，先实现单机模式。</p>
-<h2 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h2><ul>
-<li>手动实现</li>
-<li>operator SDK</li>
-<li>kubebuilder</li>
-</ul>
-<h3 id="手动实现"><a href="#手动实现" class="headerlink" title="手动实现"></a>手动实现</h3><p>手动实现的好处是可以帮助我们更加深入的了解Operator工作原理，但是会增加开发和维护成本。并且会有大量的重复。</p>
-<h3 id="operator-SDK"><a href="#operator-SDK" class="headerlink" title="operator SDK"></a>operator SDK</h3><p>Operator SDK 是一个由 CoreOS（现在是 Red Hat 的一部分）提供的开发框架，用于简化 Kubernetes Operator 的创建过程。它主要关注于快速开发、测试和迭代 Operator。Operator SDK 提供了三种主要的 Operator 类型：Go、Ansible 和 Helm。其中，Go 类型的 Operator 是 SDK 的核心。</p>
-<p><strong>特点：</strong></p>
-<ol>
-<li><strong>代码生成：</strong> 提供了命令行工具，可以轻松生成 Operator 所需的代码模板，包括 Custom Resource Definitions（CRD）和 Controller 的基本结构。</li>
-<li><strong>快速开发：</strong> 提供了一系列的库和工具，帮助开发者迅速搭建 Operator，减少重复性工作。</li>
-<li><strong>内置测试框架：</strong> 集成了测试框架，方便进行单元测试和集成测试。</li>
-<li><strong>支持多版本：</strong> 支持 Go 版本的 Operator，可以用于创建不同版本的 CRD。</li>
-</ol>
-<p><strong>优势：</strong></p>
-<ol>
-<li><strong>快速开发：</strong> 提供了一些开发 Operator 所需的基础设施，可以加速开发过程。</li>
-<li><strong>代码生成：</strong> 自动生成大部分模板代码，减少了重复性劳动。</li>
-<li><strong>集成测试：</strong> 内置了测试框架，支持容易进行集成测试。</li>
-</ol>
-<p><strong>劣势：</strong></p>
-<ol>
-<li><strong>定制性差：</strong> 相对于手动实现，可能定制性较差，不够灵活。</li>
-<li><strong>学习成本：</strong> 学习使用 SDK 的一些概念和工具可能需要一些时间</li>
-</ol>
-<h3 id="kubebuilder"><a href="#kubebuilder" class="headerlink" title="kubebuilder"></a>kubebuilder</h3><p>Kubebuilder 是另一个强大的 Operator 开发框架，构建在 controller-runtime 和 controller-tools 之上，提供了更高级的特性。</p>
-<p><strong>特点：</strong></p>
-<ol>
-<li><strong>强大的框架：</strong> Kubebuilder 提供了一个强大的框架，使开发者能够创建和管理 Kubernetes Operator，同时提供高级的特性。</li>
-<li><strong>代码生成：</strong> 类似于 Operator SDK，Kubebuilder 提供了代码生成工具，帮助生成 CRD、Controller 和一些基础代码。</li>
-<li><strong>支持多版本：</strong> 支持定义多个 API 版本，方便进行迭代和演进。</li>
-<li><strong>控制器运行时：</strong> 使用 controller-runtime 库，提供了用于编写控制器的核心运行时框架。</li>
-</ol>
-<p><strong>优势：</strong></p>
-<ol>
-<li><strong>强大的框架：</strong> Kubebuilder 是一个基于 controller-runtime 和 controller-tools 的强大框架，提供了一些高级特性。</li>
-<li><strong>代码生成：</strong> 类似于 Operator SDK，提供了代码生成工具，减少了开发工作量。</li>
-<li><strong>支持多种 API 版本：</strong> 支持定义多个 API 版本，方便进行迭代和演进。</li>
-</ol>
-<p><strong>劣势：</strong></p>
-<ol>
-<li><strong>学习成本：</strong> 学习 Kubebuilder 框架可能相对较复杂，需要一些时间来掌握。</li>
-</ol>
-<p>Kubebuilder 适用于对 Operator 需求较为复杂、需要高级特性的项目。它提供了强大的框架和工具，支持构建复杂的 Operator。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这里我们先使用kubebuilder来实现redis operator，之后再根据kubebuilder去自己实现一套控制器相关代码。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/extend-kubernetes/operator/">https://kubernetes.io/zh-cn/docs/concepts/extend-kubernetes/operator/</a></li>
-<li><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/architecture/controller/">https://kubernetes.io/zh-cn/docs/concepts/architecture/controller/</a></li>
-<li><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/</a></li>
-<li><a target="_blank" rel="noopener" href="https://ot-redis-operator.netlify.app/docs/overview/">https://ot-redis-operator.netlify.app/docs/overview/</a></li>
-</ul>
+<p><img src="/../images/K8S/image-20240114183223918.png" srcset="/img/loading.gif" lazyload alt="image-20240114183223918"></p>
+<p><img src="/../images/K8S/image-20240114183255962.png" srcset="/img/loading.gif" lazyload alt="image-20240114183255962"></p>
+<p>问题解决，最后一个node2同样的排查思路。</p>
 
                 
               </div>
@@ -357,8 +316,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>从零实现一个operator(0)-前期准备</div>
-      <div>http://example.com/2024/01/11/从零实现一个operator-0-前期准备/</div>
+      <div>K8S节点NotReady排错思路</div>
+      <div>http://example.com/2024/01/14/K8S节点NotReady排错思路/</div>
     </div>
     <div class="license-meta">
       
@@ -370,7 +329,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>January 11, 2024</div>
+          <div>January 14, 2024</div>
         </div>
       
       
@@ -402,18 +361,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" title="从零实现一个operator(1)-kubebuilder实现redis operator">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">从零实现一个operator(1)-kubebuilder实现redis operator</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/01/06/%E8%BF%9E%E6%8E%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84HomeLab/" title="连接同一个局域网下的HomeLab">
-                        <span class="hidden-mobile">连接同一个局域网下的HomeLab</span>
+                      <a href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" title="client-go组件使用与原理">
+                        <span class="hidden-mobile">client-go组件使用与原理</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

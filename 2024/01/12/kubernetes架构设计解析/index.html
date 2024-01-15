@@ -16,22 +16,26 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="operator基本概念在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。 看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说o">
+    <meta name="description" content="背景之前对kubernetes有过一些简单的了解，但是并没有去深入的去理解每个组件之间是如何工作的，所以正好复习一下。 概要首先看下官方给出来的架构图:  可以看到架构组件分为两类:  控制平面(control plane) 节点(node)  控制平面组件如下:  kube-api-server etcd scheduler Controller Manager cloud-controller">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从零实现一个operator(0)-前期准备">
-<meta property="og:url" content="http://example.com/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-0-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/index.html">
+<meta property="og:title" content="kubernetes架构设计解析">
+<meta property="og:url" content="http://example.com/2024/01/12/kubernetes%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="operator基本概念在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。 看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说o">
+<meta property="og:description" content="背景之前对kubernetes有过一些简单的了解，但是并没有去深入的去理解每个组件之间是如何工作的，所以正好复习一下。 概要首先看下官方给出来的架构图:  可以看到架构组件分为两类:  控制平面(control plane) 节点(node)  控制平面组件如下:  kube-api-server etcd scheduler Controller Manager cloud-controller">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-01-11T05:30:02.000Z">
-<meta property="article:modified_time" content="2024-01-11T06:32:17.511Z">
+<meta property="og:image" content="https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg">
+<meta property="og:image" content="http://example.com/..%5Cimages%5CK8S%5Cimage-20240112111009089.png">
+<meta property="og:image" content="d:\code\blog\source\images\K8S\image-20240112131548620.png">
+<meta property="article:published_time" content="2024-01-12T01:37:35.000Z">
+<meta property="article:modified_time" content="2024-01-12T05:52:21.317Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg">
   
   
   
-  <title>从零实现一个operator(0)-前期准备 - Hexo</title>
+  <title>kubernetes架构设计解析 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +201,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="从零实现一个operator(0)-前期准备"></span>
+            <span id="subtitle" data-typed-text="kubernetes架构设计解析"></span>
           
         </div>
 
@@ -208,8 +212,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-11 13:30" pubdate>
-          January 11, 2024 pm
+        <time datetime="2024-01-12 09:37" pubdate>
+          January 12, 2024 am
         </time>
       </span>
     
@@ -220,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.6k words
+          3.7k words
         
       </span>
     
@@ -231,7 +235,7 @@
         
         
         
-          22 mins
+          31 mins
         
       </span>
     
@@ -268,71 +272,88 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">从零实现一个operator(0)-前期准备</h1>
+            <h1 id="seo-header">kubernetes架构设计解析</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="operator基本概念"><a href="#operator基本概念" class="headerlink" title="operator基本概念"></a>operator基本概念</h2><p>在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。</p>
-<p>看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说operator，可以保证当前温度就是你的期望状态。</p>
-<p>回到K8S本身，K8S本身就有很多这种控制器，举个例子，deployment就是一个典型的控制器:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-deployment</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">matchLabels:</span><br>      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">template:</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">containers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.14.2</span><br>        <span class="hljs-attr">ports:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br></code></pre></td></tr></table></figure>
-
-<p>这里我们只关心replicas，这是我的一个期望状态，我希望有3个Pod被创建同时在运行。Deployment会创建一个 replicasets， replicasets会帮助我们创建3个Pod。这里先不关心细节。也就说控制器会按照期望值去创建Pod数量。</p>
-<p>通过前面的铺垫可以清楚的知道operator是什么了，可以简单粗暴地认为operator&#x3D;resource+controller，resource就是deployment,replicasets,pod等等。controller就是deployment controller。</p>
-<p>K8S中虽然有各种各样的controller，但是肯定也会有K8S不支持的，去修改源码难度太大，并且会造成高耦合。所以K8S提供了CRD(CustomResourceDefinitions)。有了这个我们就可以实现自己的operator了。</p>
-<h2 id="demo设计"><a href="#demo设计" class="headerlink" title="demo设计"></a>demo设计</h2><p>这里我们设计一个redis operator，这一块像ucloud和ot-redis-operator都是有现成的，一般情况下，可以根据这些去做二次开发，但是因为是从零开始，所以这里就自己造轮子。redis有单机模式(Standalone)，集群模式(Cluster)，哨兵模式(Sentinel)，主从模式(Replication)；为了方便，先实现单机模式。</p>
-<h2 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h2><ul>
-<li>手动实现</li>
-<li>operator SDK</li>
-<li>kubebuilder</li>
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前对kubernetes有过一些简单的了解，但是并没有去深入的去理解每个组件之间是如何工作的，所以正好复习一下。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>首先看下官方给出来的架构图:</p>
+<p><img src="https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg" srcset="/img/loading.gif" lazyload alt="Components of Kubernetes"></p>
+<p>可以看到架构组件分为两类:</p>
+<ul>
+<li>控制平面(control plane)</li>
+<li>节点(node)</li>
 </ul>
-<h3 id="手动实现"><a href="#手动实现" class="headerlink" title="手动实现"></a>手动实现</h3><p>手动实现的好处是可以帮助我们更加深入的了解Operator工作原理，但是会增加开发和维护成本。并且会有大量的重复。</p>
-<h3 id="operator-SDK"><a href="#operator-SDK" class="headerlink" title="operator SDK"></a>operator SDK</h3><p>Operator SDK 是一个由 CoreOS（现在是 Red Hat 的一部分）提供的开发框架，用于简化 Kubernetes Operator 的创建过程。它主要关注于快速开发、测试和迭代 Operator。Operator SDK 提供了三种主要的 Operator 类型：Go、Ansible 和 Helm。其中，Go 类型的 Operator 是 SDK 的核心。</p>
-<p><strong>特点：</strong></p>
-<ol>
-<li><strong>代码生成：</strong> 提供了命令行工具，可以轻松生成 Operator 所需的代码模板，包括 Custom Resource Definitions（CRD）和 Controller 的基本结构。</li>
-<li><strong>快速开发：</strong> 提供了一系列的库和工具，帮助开发者迅速搭建 Operator，减少重复性工作。</li>
-<li><strong>内置测试框架：</strong> 集成了测试框架，方便进行单元测试和集成测试。</li>
-<li><strong>支持多版本：</strong> 支持 Go 版本的 Operator，可以用于创建不同版本的 CRD。</li>
-</ol>
-<p><strong>优势：</strong></p>
-<ol>
-<li><strong>快速开发：</strong> 提供了一些开发 Operator 所需的基础设施，可以加速开发过程。</li>
-<li><strong>代码生成：</strong> 自动生成大部分模板代码，减少了重复性劳动。</li>
-<li><strong>集成测试：</strong> 内置了测试框架，支持容易进行集成测试。</li>
-</ol>
-<p><strong>劣势：</strong></p>
-<ol>
-<li><strong>定制性差：</strong> 相对于手动实现，可能定制性较差，不够灵活。</li>
-<li><strong>学习成本：</strong> 学习使用 SDK 的一些概念和工具可能需要一些时间</li>
-</ol>
-<h3 id="kubebuilder"><a href="#kubebuilder" class="headerlink" title="kubebuilder"></a>kubebuilder</h3><p>Kubebuilder 是另一个强大的 Operator 开发框架，构建在 controller-runtime 和 controller-tools 之上，提供了更高级的特性。</p>
-<p><strong>特点：</strong></p>
-<ol>
-<li><strong>强大的框架：</strong> Kubebuilder 提供了一个强大的框架，使开发者能够创建和管理 Kubernetes Operator，同时提供高级的特性。</li>
-<li><strong>代码生成：</strong> 类似于 Operator SDK，Kubebuilder 提供了代码生成工具，帮助生成 CRD、Controller 和一些基础代码。</li>
-<li><strong>支持多版本：</strong> 支持定义多个 API 版本，方便进行迭代和演进。</li>
-<li><strong>控制器运行时：</strong> 使用 controller-runtime 库，提供了用于编写控制器的核心运行时框架。</li>
-</ol>
-<p><strong>优势：</strong></p>
-<ol>
-<li><strong>强大的框架：</strong> Kubebuilder 是一个基于 controller-runtime 和 controller-tools 的强大框架，提供了一些高级特性。</li>
-<li><strong>代码生成：</strong> 类似于 Operator SDK，提供了代码生成工具，减少了开发工作量。</li>
-<li><strong>支持多种 API 版本：</strong> 支持定义多个 API 版本，方便进行迭代和演进。</li>
-</ol>
-<p><strong>劣势：</strong></p>
-<ol>
-<li><strong>学习成本：</strong> 学习 Kubebuilder 框架可能相对较复杂，需要一些时间来掌握。</li>
-</ol>
-<p>Kubebuilder 适用于对 Operator 需求较为复杂、需要高级特性的项目。它提供了强大的框架和工具，支持构建复杂的 Operator。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这里我们先使用kubebuilder来实现redis operator，之后再根据kubebuilder去自己实现一套控制器相关代码。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/extend-kubernetes/operator/">https://kubernetes.io/zh-cn/docs/concepts/extend-kubernetes/operator/</a></li>
-<li><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/architecture/controller/">https://kubernetes.io/zh-cn/docs/concepts/architecture/controller/</a></li>
-<li><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/</a></li>
-<li><a target="_blank" rel="noopener" href="https://ot-redis-operator.netlify.app/docs/overview/">https://ot-redis-operator.netlify.app/docs/overview/</a></li>
+<p>控制平面组件如下:</p>
+<ul>
+<li>kube-api-server</li>
+<li>etcd</li>
+<li>scheduler</li>
+<li>Controller Manager</li>
+<li>cloud-controller-manager</li>
 </ul>
+<p>节点组件如下:</p>
+<ul>
+<li>kubelet</li>
+<li>kube-proxy</li>
+</ul>
+<h2 id="控制平面"><a href="#控制平面" class="headerlink" title="控制平面"></a>控制平面</h2><h3 id="kube-api-server"><a href="#kube-api-server" class="headerlink" title="kube-api-server"></a>kube-api-server</h3><p>api-server主要作用是负责处理客户端请求，包括但不限于kubectl,client-go等等。并且对外提供 RESTful 的接口，也是唯一一个可以和etcd集群通信的组件。</p>
+<p><img src="/..%5Cimages%5CK8S%5Cimage-20240112111009089.png" srcset="/img/loading.gif" lazyload alt="image-20240112111009089"></p>
+<p>客户端会使用Kubernetes  API来访问集群，API Server在接收请求之后会进行验证:</p>
+<ul>
+<li>身份认证(Authentication): 检查请求的身份信息（例如，证书、Token）。这确保只有经过身份验证的用户才能执行相应的操作。</li>
+<li>授权(Authorization): 确保用户有足够的权限执行请求的操作。</li>
+<li>准入控制(Admission Control): 该阶段可以进行自定义的验证和修改。例如，可以实现资源配额、标签自动填充等功能。</li>
+<li>调用适当的资源对象：API Server 根据请求的 API 路径和操作，调用相应的资源对象处理请求。这可能涉及到对 etcd 中的资源对象进行增、删、改、查等操作。</li>
+<li>存储层（etcd）交互：如果请求涉及对资源对象的增、删、改操作，API Server 会与 etcd 进行交互，将操作写入或读取自 etcd 存储。etcd 用于持久化存储整个集群的配置信息。</li>
+<li>返回结果给客户端: API Server 处理完请求后，将结果返回给客户端。结果中包含了请求的执行状态、资源对象的详细信息等。</li>
+</ul>
+<p>这里用创建pod做一个简单的例子，先暂时忽略其他组件，只关心api server和etcd交互:</p>
+<ol>
+<li>客户端使用 Kubernetes API（例如，通过 kubectl 或自定义的客户端）发送创建 Pod 的 API 请求到 API Server。</li>
+<li>API Server对请求进行校验，包括但不限于身份认证，授权等等。</li>
+<li>API Server根据请求中的路径和操作，调用对应资源处理请求。</li>
+<li>API Server和etcd进行交互，它会构建出创建 Pod 资源对象在 etcd 存储中的键，然后将创建 Pod 的请求写入 etcd 存储。</li>
+<li>etcd 接收到 API Server 的请求后，将创建 Pod 的相关信息持久化到其分布式一致性键值存储中</li>
+<li>最后，API Server 将创建 Pod 的操作结果返回给客户端。结果中可能包含创建成功的信息、Pod 的详细信息等。</li>
+</ol>
+<h3 id="etcd"><a href="#etcd" class="headerlink" title="etcd"></a>etcd</h3><p>etcd存储了整个集群的元数据，一般提到K8S高可用设计，也是指对etcd做高可用，所以可以看出来etcd的重要性。以下是etcd为K8S提供的作用:</p>
+<ol>
+<li>分布式一致性存储: 用来保存和管理 Kubernetes 集群的所有配置数据、状态信息以及元数据。这些数据包括了集群的整体配置、节点信息、服务发现、Pod 状态、网络配置等。etcd 提供了高度一致性和可靠性，确保数据的安全存储和可靠检索。</li>
+<li>集群状态维护: Kubernetes 中的各个组件需要协同工作以保持整个集群的健康状态。etcd 提供了一个共享的数据存储，使得各组件可以轻松地读取和更新集群的状态。这包括了节点的健康状态、服务的注册和发现、Pod 的分配等。</li>
+<li>Configuration Data: etcd 存储了 Kubernetes 集群的所有配置信息，包括 API Server 的配置、节点信息、网络配置、存储卷配置等。这些配置数据可以在运行时动态地更新，而不需要停止整个集群。</li>
+</ol>
+<h3 id="scheduler"><a href="#scheduler" class="headerlink" title="scheduler"></a>scheduler</h3><p>scheduler作用是根据request和limit为Pod调度一个合适的节点，每次只调度一个Pod资源对象，为每一个Pod资源对象寻找合适节点的过程就是一个调度周期，以下是scheduler主要作用:</p>
+<ol>
+<li>节点选择： Scheduler 根据用户定义的调度策略，选择合适的节点来运行新创建的 Pod。这些策略可以包括硬件约束、亲和性（Affinity）和反亲和性（Anti-Affinity）规则、资源需求等。</li>
+<li>负载均衡： Scheduler 努力确保各个节点的资源负载相对均衡，以充分利用整个集群的计算资源。通过智能地分配 Pod，Scheduler 可以避免资源过度集中在某些节点上，提高整个集群的利用率。</li>
+<li>调度决策： Scheduler 基于当前集群状态和用户定义的策略，做出调度决策。这可能涉及节点资源的可用性、Pod 的优先级、亲和性规则等多个因素的权衡。</li>
+<li>动态调度： Kubernetes 的 Scheduler 不仅在 Pod 创建时进行调度，还会监控集群状态的变化，动态地进行重新调度。例如，当节点故障或新节点加入集群时，Scheduler 可以重新调整现有 Pod 的分布，确保它们仍然满足调度策略。</li>
+<li>可插拔性： Kubernetes 的 Scheduler 是可插拔的，用户可以根据自己的需求实现自定义的调度器，并将其集成到 Kubernetes 中。这样可以根据特定的业务场景或策略来定制调度行为。</li>
+</ol>
+<h3 id="Controller-Manager"><a href="#Controller-Manager" class="headerlink" title="Controller Manager"></a>Controller Manager</h3><p>Controller Manager管理K8S集群中节点，Pod副本，服务，端点(Endpoint)，命名空间等等。举个稍微复杂的例子，假设K8S是一个房子，房子里面会有各种各样的设备，比如空调，热水器，温度调节器等等。为了让房间内更加舒服。你把温度调节器设置在30度，同时又想洗个热水澡，去把热水器调到50度。这些都是你的期望状态。之后这些设备开始工作，它会确保这些设备达到这些期望状态。这些设备就是控制器(Controller)，而Controller Manager就是统一管理这些控制器的。</p>
+<p><img src="D:\code\blog\source\images\K8S\image-20240112131548620.png" srcset="/img/loading.gif" lazyload alt="image-20240112131548620"></p>
+<h3 id="cloud-controller-manager"><a href="#cloud-controller-manager" class="headerlink" title="cloud-controller-manager"></a>cloud-controller-manager</h3><p>这一块和Controller Manager差不多，主要是云厂商关心的比较多，这里就不过多介绍了。</p>
+<h2 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h2><h3 id="kubelet"><a href="#kubelet" class="headerlink" title="kubelet"></a>kubelet</h3><p>kubelet运行在K8S每个节点上，用来接收，处理，上报kube-apiserver组件下发的任务，kubelet进程启动的时候会向kube-apiserver注册节点自身信息。</p>
+<p>主要负责所在节点上的Pod资源对象管理，比如说Pod资源对象的创建、修改、监控、删除、驱逐及Pod生命周期管理等。并且周期性的上报节点信息给kube-apiserver组件。kubelet也会对所在节点的镜像和容器做清理工作，保证节点上的镜像不会占满磁盘空间、删除的容器释放相关资源。</p>
+<p>除了上报信息之外，它还提供了三种接口:</p>
+<ol>
+<li>Container Runtime Interface：简称CRI（容器运行时接口）：提供容器运行时通用插件接口服务。</li>
+<li>Container Network Interface: 简称CNI(容器网络接口): 提供网络通用插件接口服务。</li>
+<li>Container Storage Interface: 简称CSI(容器存储接口): 提供存储通用插件接口服务。</li>
+</ol>
+<p>通过以上信息可以大概知道，kubelet主要作用是收集上报信息和通过三种接口去创建对应资源。</p>
+<h3 id="kube-proxy"><a href="#kube-proxy" class="headerlink" title="kube-proxy"></a>kube-proxy</h3><p>kube-proxy作为节点上的网络代理，和kubelet一样，运行在每个节点上。它监控kube-apiserver的服务和端点资源变化，并通过iptables&#x2F;ipvs等配置负载均衡器，为一组Pod提供统一的TCP&#x2F;UDP流量转发和负载均衡功能。</p>
+<p>kube-proxy是参与管理Pod-to-Service和External-to-Service网络的最重要的节点组件之一，以下是它的主要功能和作用:</p>
+<ol>
+<li><strong>服务代理：</strong> <code>kube-proxy</code> 负责监听 Kubernetes 集群中的服务创建和删除事件。当有新的服务创建时，<code>kube-proxy</code> 会为该服务创建对应的代理规则。这些代理规则可以将服务的访问请求转发到正确的 Pod 上。</li>
+<li><strong>负载均衡：</strong> 对于 Service 类型为 <code>LoadBalancer</code> 或 <code>NodePort</code> 的服务，<code>kube-proxy</code> 在每个节点上配置相应的规则，以实现负载均衡。这样，外部流量可以通过任何节点访问到服务，并且请求会被均匀分布到后端的 Pod 上。</li>
+<li><strong>服务发现：</strong> <code>kube-proxy</code> 通过与 Kubernetes API 交互，获取服务的信息，包括服务的 IP 地址和端口号，以及后端 Pod 的 IP 地址和端口号。这样，它能够动态地更新代理规则，确保服务发现的准确性。</li>
+<li><strong>网络代理：</strong> 对于 Service 类型为 <code>ClusterIP</code> 的服务，<code>kube-proxy</code> 通过 iptables 或 IPVS 等技术，创建一组虚拟 IP 和端口规则，将流量代理到后端的 Pod。这样，即使 Pod 的 IP 地址发生变化，服务的虚拟 IP 不会改变，保证了服务的稳定性</li>
+</ol>
+<p>总的来说，K8S Service是通过kube-proxy来实现的，它又是使用了iptables ,IPVS等等技术来实现Service。</p>
+<h2 id="Pod创建-查看组件之间调用"><a href="#Pod创建-查看组件之间调用" class="headerlink" title="Pod创建-查看组件之间调用"></a>Pod创建-查看组件之间调用</h2><p>这里使用Pod创建来查看组件之间是如何配合的，以及它的一个调用链路。</p>
 
                 
               </div>
@@ -357,8 +378,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>从零实现一个operator(0)-前期准备</div>
-      <div>http://example.com/2024/01/11/从零实现一个operator-0-前期准备/</div>
+      <div>kubernetes架构设计解析</div>
+      <div>http://example.com/2024/01/12/kubernetes架构设计解析/</div>
     </div>
     <div class="license-meta">
       
@@ -370,7 +391,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>January 11, 2024</div>
+          <div>January 12, 2024</div>
         </div>
       
       
@@ -402,9 +423,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" title="从零实现一个operator(1)-kubebuilder实现redis operator">
+                      <a href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" title="client-go组件使用与原理">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">从零实现一个operator(1)-kubebuilder实现redis operator</span>
+                        <span class="hidden-mobile">client-go组件使用与原理</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -412,8 +433,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/01/06/%E8%BF%9E%E6%8E%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84HomeLab/" title="连接同一个局域网下的HomeLab">
-                        <span class="hidden-mobile">连接同一个局域网下的HomeLab</span>
+                      <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" title="从零实现一个operator(1)-kubebuilder实现redis operator">
+                        <span class="hidden-mobile">从零实现一个operator(1)-kubebuilder实现redis operator</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
