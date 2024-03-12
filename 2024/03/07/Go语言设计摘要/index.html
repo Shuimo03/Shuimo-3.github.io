@@ -1,0 +1,710 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="背景写Go第三年了，但是Go相关的官方文档并没有看过，这篇文章主要是参考了Go FAQ，对其中有意思的部分进行记录。 设计运行时(Runtime)Runtime是Go的核心，主要实现了三个方面:  垃圾收集 并发 内存管理(堆栈管理)  Runtime有点类似于C中的libc。不过Runtime并没有像JVM的虚拟机，它是根据不同的体系结构和操作系统来编译可执行目标。 泛型(generic typ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go语言设计摘要">
+<meta property="og:url" content="http://example.com/2024/03/07/Go%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%91%98%E8%A6%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="背景写Go第三年了，但是Go相关的官方文档并没有看过，这篇文章主要是参考了Go FAQ，对其中有意思的部分进行记录。 设计运行时(Runtime)Runtime是Go的核心，主要实现了三个方面:  垃圾收集 并发 内存管理(堆栈管理)  Runtime有点类似于C中的libc。不过Runtime并没有像JVM的虚拟机，它是根据不同的体系结构和操作系统来编译可执行目标。 泛型(generic typ">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-03-07T05:24:38.000Z">
+<meta property="article:modified_time" content="2024-03-10T07:19:53.003Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Go语言设计摘要 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archives</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Categories</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Tags</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Go语言设计摘要"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-07 13:24" pubdate>
+          March 7, 2024 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          10k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          86 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Go语言设计摘要</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>写Go第三年了，但是Go相关的官方文档并没有看过，这篇文章主要是参考了Go FAQ，对其中有意思的部分进行记录。</p>
+<h2 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h2><h2 id="运行时-Runtime"><a href="#运行时-Runtime" class="headerlink" title="运行时(Runtime)"></a>运行时(Runtime)</h2><p>Runtime是Go的核心，主要实现了三个方面:</p>
+<ol>
+<li>垃圾收集</li>
+<li>并发</li>
+<li>内存管理(堆栈管理)</li>
+</ol>
+<p>Runtime有点类似于C中的libc。不过Runtime并没有像JVM的虚拟机，它是根据不同的体系结构和操作系统来编译可执行目标。</p>
+<h2 id="泛型-generic-types"><a href="#泛型-generic-types" class="headerlink" title="泛型(generic types)"></a>泛型(generic types)</h2><p>Go早期并没有泛型，想要实现泛型，一般是通过空接口(interface{})方式来实现:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">printValue</span><span class="hljs-params">(val <span class="hljs-keyword">interface</span>&#123;&#125;)</span></span> &#123;<br>	fmt.Println(val)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	printValue(<span class="hljs-number">42</span>)<br>	printValue(<span class="hljs-string">&quot;Hello, Go!&quot;</span>)<br>	printValue(<span class="hljs-number">3.14</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>但是使用空接口的方式，会在编译时无法进行类型检查，所以需要保证它是一个正确的类型，要不然会发生panic。比如给它一个nil参数，静态分析是检查不出来的。后来1.18中，Go提供了泛型实现。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">printTValue</span>[<span class="hljs-title">T</span> <span class="hljs-title">any</span>]<span class="hljs-params">(val T)</span></span> &#123;<br>	fmt.Println(val)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	printTValue(<span class="hljs-number">42</span>)<br>	printTValue(<span class="hljs-string">&quot;Hello, Go!&quot;</span>)<br>	printTValue(<span class="hljs-number">3.14</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>最开始不设计泛型的原因是因为会添加Runtime的复杂度，并且Go最初的目标是为了编写易于维护的服务器程序的语言。</p>
+<h2 id="异常捕获-exceptions"><a href="#异常捕获-exceptions" class="headerlink" title="异常捕获(exceptions)"></a>异常捕获(exceptions)</h2><p>Go在异常处理这一块并没有实现try-catch-finally这种异常捕获机制，因为认为这样会导致代码变得复杂。Go异常处理主要依赖两个核心概念：多值返回和错误值。</p>
+<p>多值返回这种方式可以在函数或者方法被调用的时候，根据error来判断是否发生错误，就可以省去捕获异常机制，来保证代码更加清晰、可读，并减少了过度使用异常的可能性。但是也会造成大量的 if err !&#x3D;nil这种情况。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">divide</span><span class="hljs-params">(a, b <span class="hljs-type">int</span>)</span></span> (<span class="hljs-type">int</span>, <span class="hljs-type">error</span>) &#123;<br>    <span class="hljs-keyword">if</span> b == <span class="hljs-number">0</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, errors.New(<span class="hljs-string">&quot;division by zero&quot;</span>)<br>    &#125;<br>    <span class="hljs-keyword">return</span> a / b, <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    result, err := divide(<span class="hljs-number">10</span>, <span class="hljs-number">2</span>)<br>    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>        fmt.Println(<span class="hljs-string">&quot;Error:&quot;</span>, err)<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        fmt.Println(<span class="hljs-string">&quot;Result:&quot;</span>, result)<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>下面是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Divider</span> &#123;<br><br>    <span class="hljs-comment">// Divide function with try-catch-finally</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">divide</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">if</span> (b == <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArithmeticException</span>(<span class="hljs-string">&quot;division by zero&quot;</span>);<br>            &#125;<br>            <span class="hljs-keyword">return</span> a / b;<br>        &#125; <span class="hljs-keyword">catch</span> (ArithmeticException e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;Error: &quot;</span> + e.getMessage());<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>; <span class="hljs-comment">// or handle the error in some way</span><br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            System.out.println(<span class="hljs-string">&quot;Division operation completed.&quot;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> divide(<span class="hljs-number">10</span>, <span class="hljs-number">2</span>);<br>        System.out.println(<span class="hljs-string">&quot;Result: &quot;</span> + result);<br><br>        <span class="hljs-type">int</span> <span class="hljs-variable">resultWithZeroDenominator</span> <span class="hljs-operator">=</span> divide(<span class="hljs-number">10</span>, <span class="hljs-number">0</span>);<br>        System.out.println(<span class="hljs-string">&quot;Result with zero denominator: &quot;</span> + resultWithZeroDenominator);<br>    &#125;<br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+
+<p>另外，Go鼓励使用显示错误值，而不是异常，这样做的原因是将错误视为正常流程的一部分。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;errors&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">exampleFunction</span><span class="hljs-params">()</span></span> <span class="hljs-type">error</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-keyword">if</span> someCondition &#123;<br>        <span class="hljs-keyword">return</span> errors.New(<span class="hljs-string">&quot;something went wrong&quot;</span>)<br>    &#125;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="基于CSP来构建并发-build-concurrency-on-the-ideas-of-CSP"><a href="#基于CSP来构建并发-build-concurrency-on-the-ideas-of-CSP" class="headerlink" title="基于CSP来构建并发( build concurrency on the ideas of  CSP)"></a>基于CSP来构建并发( build concurrency on the ideas of  CSP)</h2><p>使用CSP(Communicating Sequential Processes)模型来构建并发程序是因为之前的并发编程方式比较复杂，需要关注底层细节，比如线程之间的同步和互斥。</p>
+<h2 id="使用goroutine而不是用线程的原因"><a href="#使用goroutine而不是用线程的原因" class="headerlink" title="使用goroutine而不是用线程的原因"></a>使用goroutine而不是用线程的原因</h2><p>使用goroutine的原因是因为在编写并发程序的时候，它的上下文切换成本比线程要低，并且goroutine可以复用到另外一组线程上。当goroutine对应的线程阻塞的时候，会被runtime给转移到其他线程上。goroutine创建成本也很低，除了堆栈内存（只有几千字节）之外，它们几乎没有任何开销。并且runtime可以动态调整堆栈内存大小。</p>
+<h2 id="关于map的原子操作"><a href="#关于map的原子操作" class="headerlink" title="关于map的原子操作"></a>关于map的原子操作</h2><p>Go map并不是原子操作，map支持并发读，只要所有 goroutine 都只是读取(在映射中查找元素，包括使用 <code>for</code> <code>range</code> 循环对其进行迭代)都是并发安全的。但是不支持并发写，这里的写是指增加，删除，更新等操作。如果需要并发写，就要使用mutex来保证并发安全。但是mutex会减慢程序速度。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;sync&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-comment">// 创建一个map</span><br>	myMap := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]<span class="hljs-type">int</span>)<br><br>	<span class="hljs-comment">// 用于同步的互斥锁</span><br>	<span class="hljs-keyword">var</span> mutex sync.Mutex<br><br>	<span class="hljs-comment">// 启动多个goroutine并发地对map进行读写</span><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++ &#123;<br>		<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(id <span class="hljs-type">int</span>)</span></span> &#123;<br>			<span class="hljs-comment">// 写入map，需要加锁</span><br>			mutex.Lock()<br>			myMap[<span class="hljs-string">&quot;key&quot;</span>] = id<br>			mutex.Unlock()<br><br>			<span class="hljs-comment">// 读取map，不需要加锁</span><br>			value := myMap[<span class="hljs-string">&quot;key&quot;</span>]<br>			fmt.Printf(<span class="hljs-string">&quot;Goroutine %d: Map value: %d\n&quot;</span>, id, value)<br>		&#125;(i)<br>	&#125;<br><br>	<span class="hljs-comment">// 等待所有goroutine完成</span><br>	<span class="hljs-comment">// 这里使用Sleep只是为了演示目的，在实际应用中，你可能需要更复杂的同步机制</span><br>	<span class="hljs-comment">// 比如使用WaitGroup或者通道来等待goroutine完成</span><br>	fmt.Println(<span class="hljs-string">&quot;Waiting for goroutines to finish...&quot;</span>)<br>	fmt.Scanln()<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="关于面向对象"><a href="#关于面向对象" class="headerlink" title="关于面向对象"></a>关于面向对象</h2><h3 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h3><p>这里官方回答是Yes and no，Go强调组合方式, 它和传统的面向对象语言有一些不同:</p>
+<ol>
+<li>具有类型和方法: 允许使用面向对象编程，可以自定类型，并且在这些类型上定义方法。</li>
+<li>无类型层次结构: Go没有严格的类型层次结构，也就是说没有类似于类继承的概念，但是Go有接口，提供了一种不同的方式来实现多态性和抽象，相对于传统的继承体系更为灵活。</li>
+<li>接口为主: 接口定义了一组方法，类型只要实现了这些方法，就被视为实现了接口。</li>
+<li>嵌套类型: Go语言提供了嵌套类型的机制，可以在一个类型中嵌入另一个类型，类似于子类继承的概念。虽然这不是严格的子类继承，但提供了一种相似的机制。</li>
+<li>通用方法:Go语言中的方法更为通用，不仅仅局限于特定的结构体（类），甚至可以为内置类型（如整数）定义方法。这使得方法的使用更为灵活和广泛。</li>
+<li>轻量级对象: 由于缺乏严格的类型层次结构，Go中的“对象”感觉更加轻量。与C++或Java等语言相比，Go的面向对象实现更为简洁，没有繁重的层次结构。</li>
+</ol>
+<p>这里使用Java和Go来举例说明，首先是关于类型和方法定义:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">//方法在Go中可以与结构体（structs）或任何自定义类型关联。</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(receiver Type)</span></span> methodName(parameters) returnType &#123;<br>    <span class="hljs-comment">// 方法的实现</span><br>&#125;<br><span class="hljs-comment">/**</span><br><span class="hljs-comment">receiver：方法的接收者，表示方法关联的类型。可以是值接收者或指针接收者。</span><br><span class="hljs-comment">methodName：方法名。</span><br><span class="hljs-comment">parameters：方法的参数。</span><br><span class="hljs-comment">returnType：方法的返回类型。</span><br><span class="hljs-comment">**/</span><br><br><span class="hljs-comment">// 值接收者: 值接收者用于传递对象的副本。</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(v Vertex)</span></span> Method1() &#123;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br><br><span class="hljs-comment">// 指针接收者: 指针接收者用于传递对象的引用，允许在方法内修改对象的状态。</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(v *Vertex)</span></span> Method2() &#123;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br><br><br><br></code></pre></td></tr></table></figure>
+
+<p>具有类型和方法:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span><br><br><span class="hljs-comment">// 定义自定义类型</span><br><span class="hljs-keyword">type</span> MyType <span class="hljs-keyword">struct</span> &#123;<br>    Value <span class="hljs-type">int</span><br>&#125;<br><br><span class="hljs-comment">// 在类型上定义方法</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(mt MyType)</span></span> PrintValue() &#123;<br>    fmt.Println(mt.Value)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-comment">// 创建自定义类型的实例</span><br>    myInstance := MyType&#123;Value: <span class="hljs-number">42</span>&#125;<br><br>    <span class="hljs-comment">// 调用方法</span><br>    myInstance.PrintValue()<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>无类型层次结构:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span><br><br><span class="hljs-comment">// 定义接口</span><br><span class="hljs-keyword">type</span> MyInterface <span class="hljs-keyword">interface</span> &#123;<br>    MyMethod()<br>&#125;<br><br><span class="hljs-comment">// 实现接口的类型</span><br><span class="hljs-keyword">type</span> MyType <span class="hljs-keyword">struct</span> &#123;<br>    Value <span class="hljs-type">int</span><br>&#125;<br><br><span class="hljs-comment">// 在类型上实现接口方法</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(mt MyType)</span></span> MyMethod() &#123;<br>    fmt.Println(<span class="hljs-string">&quot;MyMethod called with value:&quot;</span>, mt.Value)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-comment">// 创建实现接口的类型实例</span><br>    myInstance := MyType&#123;Value: <span class="hljs-number">42</span>&#125;<br><br>    <span class="hljs-comment">// 调用接口方法</span><br>    myInstance.MyMethod()<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>嵌套方法:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span><br><br><span class="hljs-comment">// 定义嵌套类型</span><br><span class="hljs-keyword">type</span> OuterType <span class="hljs-keyword">struct</span> &#123;<br>    InnerType<br>    OuterValue <span class="hljs-type">int</span><br>&#125;<br><br><span class="hljs-comment">// 定义被嵌套的类型</span><br><span class="hljs-keyword">type</span> InnerType <span class="hljs-keyword">struct</span> &#123;<br>    InnerValue <span class="hljs-type">int</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-comment">// 创建嵌套类型的实例</span><br>    outerInstance := OuterType&#123;<br>        InnerType:  InnerType&#123;InnerValue: <span class="hljs-number">10</span>&#125;,<br>        OuterValue: <span class="hljs-number">20</span>,<br>    &#125;<br><br>    <span class="hljs-comment">// 访问嵌套类型的字段</span><br>    fmt.Println(<span class="hljs-string">&quot;InnerValue:&quot;</span>, outerInstance.InnerValue)<br>    fmt.Println(<span class="hljs-string">&quot;OuterValue:&quot;</span>, outerInstance.OuterValue)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>通用方法:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span><br><br><span class="hljs-comment">// 为内置类型定义方法</span><br><span class="hljs-keyword">type</span> MyInt <span class="hljs-type">int</span><br><br><span class="hljs-comment">// 在内置类型上定义方法</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(mi MyInt)</span></span> Double() MyInt &#123;<br>    <span class="hljs-keyword">return</span> mi * <span class="hljs-number">2</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-comment">// 使用内置类型</span><br>    myInt := MyInt(<span class="hljs-number">5</span>)<br><br>    <span class="hljs-comment">// 调用方法</span><br>    result := myInt.Double()<br><br>    <span class="hljs-comment">// 打印结果</span><br>    fmt.Println(<span class="hljs-string">&quot;Result:&quot;</span>, result)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="动态派发-dynamic-dispatch-of-methods"><a href="#动态派发-dynamic-dispatch-of-methods" class="headerlink" title="动态派发(dynamic dispatch of methods)"></a>动态派发(dynamic dispatch of methods)</h3><p>这里简单说下静态派发和动态派发，静态派发是指在编译时确定调用的方法，在静态派发中，编译器能够准确的知道要调用的方法，因为它可以在编译时确定对象的实际类型。在静态派发中，方法的调用目标是在编译阶段已经确定的，因此对于具体类型，编译器可以直接生成对应的方法调用指令。这样的优势在于性能更高，因为没有额外的运行时开销。</p>
+<p>在面向对象编程中，静态派发通常与类继承和虚函数表（vtable）关联。当你有一个基类和派生类时，编译器在编译时就能够确定要调用的方法。这种方式通常称为早期绑定（Early Binding）或静态绑定。</p>
+<p>而动态派发方法是在运行时根据实际类型来调用的方法，在面向对象编程中，动态派发通常与多态性（Polymorphism）和继承关联。当你有一个基类和派生类时，动态派发允许你通过基类引用调用派生类对象的方法，而不需要在编译时确定方法的具体实现。这种方式通常称为晚期绑定（Late Binding）或动态绑定。</p>
+<p>在Go语言中，如果希望实现动态派发方法，唯一的方式就是通过接口。接口定义了一组方法签名，而具体类型只要实现了这些方法，就被视为实现了接口。在运行时，可以通过接口类型来调用相应的方法，实现了动态派发。</p>
+<p>对于结构体或任何其他具体类型，其方法在编译时就被静态解析，即编译器能够准确地确定要调用的方法。这意味着在使用具体类型时，方法的调用是静态的，不会受到运行时对象实际类型的影响。</p>
+<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><h2 id="map不允许切片作为键"><a href="#map不允许切片作为键" class="headerlink" title="map不允许切片作为键"></a>map不允许切片作为键</h2><p>map是不能使用切片作为key的，但是数组可以:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> arr [<span class="hljs-number">10</span>]<span class="hljs-type">int</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	bmap := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[arr]<span class="hljs-type">int</span>)<br>	fmt.Println(bmap)<br>&#125;<br><br><span class="hljs-comment">//slice会报错: Invalid map key type: comparison operators == and != must be fully defined for the key type</span><br><br></code></pre></td></tr></table></figure>
+
+<p>slice不能作为map key的原因是因为Go没有实现相等性(equality)操作符，这是切片的相等性在定义上并不明确，存在多个考虑因素，比如浅层比较 vs. 深层比较、指针比较 vs. 值比较、如何处理递归类型等等。并且Slice还有一个动态伸缩的特性，它的映射也会丢失。因为键不会具有和之前相同的hashCode。</p>
+<p>而数组和结构体可以作为键，是因为他们实现了相等性。换句话来说，只需要实现相等性就能够对比。</p>
+<h2 id="map-slice-channel与数组"><a href="#map-slice-channel与数组" class="headerlink" title="map,slice,channel与数组"></a>map,slice,channel与数组</h2><h2 id="Pointers-and-Allocation-指针和分配"><a href="#Pointers-and-Allocation-指针和分配" class="headerlink" title="Pointers and Allocation 指针和分配"></a>Pointers and Allocation 指针和分配</h2><p>Go和C一样，所有内容都是值传递。这里说下值传递和引用传递，</p>
+<p>map和slice的值类似于指针，它们的实现都包含了一个指针，使用copy并不会复制</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">//slice底层结构</span><br><span class="hljs-keyword">type</span> slice <span class="hljs-keyword">struct</span> &#123;<br>	array unsafe.Pointer <span class="hljs-comment">// type Pointer *ArbitraryType</span><br>	<span class="hljs-built_in">len</span>   <span class="hljs-type">int</span><br>	<span class="hljs-built_in">cap</span>   <span class="hljs-type">int</span><br>&#125;<br><span class="hljs-comment">//map底层结构</span><br><span class="hljs-comment">// A header for a Go map.</span><br><span class="hljs-keyword">type</span> hmap <span class="hljs-keyword">struct</span> &#123;<br>	<span class="hljs-comment">// Note: the format of the hmap is also encoded in cmd/compile/internal/reflectdata/reflect.go.</span><br>	<span class="hljs-comment">// Make sure this stays in sync with the compiler&#x27;s definition.</span><br>	count     <span class="hljs-type">int</span> <span class="hljs-comment">// # live cells == size of map.  Must be first (used by len() builtin)</span><br>	flags     <span class="hljs-type">uint8</span><br>	B         <span class="hljs-type">uint8</span>  <span class="hljs-comment">// log_2 of # of buckets (can hold up to loadFactor * 2^B items)</span><br>	noverflow <span class="hljs-type">uint16</span> <span class="hljs-comment">// approximate number of overflow buckets; see incrnoverflow for details</span><br>	hash0     <span class="hljs-type">uint32</span> <span class="hljs-comment">// hash seed</span><br><br>	buckets    unsafe.Pointer <span class="hljs-comment">// array of 2^B Buckets. may be nil if count==0.</span><br>	oldbuckets unsafe.Pointer <span class="hljs-comment">// previous bucket array of half the size, non-nil only when growing</span><br>	nevacuate  <span class="hljs-type">uintptr</span>        <span class="hljs-comment">// progress counter for evacuation (buckets less than this have been evacuated)</span><br><br>	extra *mapextra <span class="hljs-comment">// optional fields</span><br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+
+<p>这里通过几个例子来看下:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">modifyInt</span><span class="hljs-params">(x <span class="hljs-type">int</span>)</span></span> &#123;<br>	x = <span class="hljs-number">42</span><br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+
+<p>之前定义方法的时候提到过使用值或者指针的方法来定义:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *MyStruct)</span></span> pointerMethod() &#123; &#125; <span class="hljs-comment">// method on pointer</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s MyStruct)</span></span>  valueMethod()   &#123; &#125; <span class="hljs-comment">// method on value</span><br></code></pre></td></tr></table></figure>
+
+<p>对于不经常使用指针的程序员来说不好理解，可以通过以下几点来决定使用那种方法，首先这个方法是否需要修改接收者？也就MyStruct这一块。如果需要修改，就必须设置成指针。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> MyStruct <span class="hljs-keyword">struct</span> &#123;<br>    Field1 <span class="hljs-type">int</span><br>    Field2 <span class="hljs-type">string</span><br>&#125;<br><br><span class="hljs-comment">// valueMethod 使用值接收器，不修改接收器的字段</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s MyStruct)</span></span> valueMethod() &#123;<br>    fmt.Println(<span class="hljs-string">&quot;Inside valueMethod:&quot;</span>, s.Field1, s.Field2)<br>&#125;<br><br><span class="hljs-comment">// pointerMethod 使用指针接收器，可以修改接收器的字段</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *MyStruct)</span></span> pointerMethod() &#123;<br>    s.Field1 = <span class="hljs-number">42</span><br>    s.Field2 = <span class="hljs-string">&quot;Modified&quot;</span><br>    fmt.Println(<span class="hljs-string">&quot;Inside pointerMethod:&quot;</span>, s.Field1, s.Field2)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-comment">// 创建 MyStruct 实例</span><br>    instance := MyStruct&#123;Field1: <span class="hljs-number">10</span>, Field2: <span class="hljs-string">&quot;Original&quot;</span>&#125;<br><br>    <span class="hljs-comment">// 使用值接收器的方法</span><br>    instance.valueMethod()<br>    <span class="hljs-comment">// 输出：After valueMethod: 10 Original</span><br>    fmt.Println(<span class="hljs-string">&quot;After valueMethod:&quot;</span>, instance.Field1, instance.Field2) <br><br>    <span class="hljs-comment">// 使用指针接收器的方法</span><br>    instance.pointerMethod()<br>    <span class="hljs-comment">// 输出：After pointerMethod: 42 Modified</span><br>    fmt.Println(<span class="hljs-string">&quot;After pointerMethod:&quot;</span>, instance.Field1, instance.Field2) <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>再一个是效率问题，如果接收器非常大，比如很大的struct，使用指针接收器会更好一点。最后是一致性问题，如果该类型方法必须具有指针接收器，那和接收器相关的方法都应该使用指针接收器。但是在基本类型，切片，以及小型struct等类型上，值接收器会更好一点。</p>
+<h2 id="new和make区别"><a href="#new和make区别" class="headerlink" title="new和make区别"></a>new和make区别</h2><p>简单来说，new是分配零值内存并返回指针，而make是初始化容器(chan,slice,map)类型的。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// The new built-in function allocates memory. The first argument is a type,</span><br><span class="hljs-comment">// not a value, and the value returned is a pointer to a newly</span><br><span class="hljs-comment">// allocated zero value of that type.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">new</span><span class="hljs-params">(Type)</span></span> *Type<br><br><span class="hljs-comment">// The make built-in function allocates and initializes an object of type</span><br><span class="hljs-comment">// slice, map, or chan (only). Like new, the first argument is a type, not a</span><br><span class="hljs-comment">// value. Unlike new, make&#x27;s return type is the same as the type of its</span><br><span class="hljs-comment">// argument, not a pointer to it. The specification of the result depends on</span><br><span class="hljs-comment">// the type:</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">//	Slice: The size specifies the length. The capacity of the slice is</span><br><span class="hljs-comment">//	equal to its length. A second integer argument may be provided to</span><br><span class="hljs-comment">//	specify a different capacity; it must be no smaller than the</span><br><span class="hljs-comment">//	length. For example, make([]int, 0, 10) allocates an underlying array</span><br><span class="hljs-comment">//	of size 10 and returns a slice of length 0 and capacity 10 that is</span><br><span class="hljs-comment">//	backed by this underlying array.</span><br><span class="hljs-comment">//	Map: An empty map is allocated with enough space to hold the</span><br><span class="hljs-comment">//	specified number of elements. The size may be omitted, in which case</span><br><span class="hljs-comment">//	a small starting size is allocated.</span><br><span class="hljs-comment">//	Channel: The channel&#x27;s buffer is initialized with the specified</span><br><span class="hljs-comment">//	buffer capacity. If zero, or the size is omitted, the channel is</span><br><span class="hljs-comment">//	unbuffered.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">make</span><span class="hljs-params">(t Type, size ...IntegerType)</span></span> Type<br></code></pre></td></tr></table></figure>
+
+<p>new不会初始化内存，而是将其清零( only <em>zeros</em>)，换句话来说就是new(T)为T类型分配归零内存并返回它的地址，即 <code>*T</code> 类型的值。</p>
+<p>make相对来说会比较好理解一点，初始化内存之后，它会返回对应的引用类型实例，并且它的返回值根据类型实例决定。</p>
+<h2 id="Concurrency-并发性"><a href="#Concurrency-并发性" class="headerlink" title="Concurrency 并发性"></a>Concurrency 并发性</h2><h3 id="原子操作与互斥锁-operations-are-atomic-mutexes"><a href="#原子操作与互斥锁-operations-are-atomic-mutexes" class="headerlink" title="原子操作与互斥锁(operations are atomic mutexes)"></a>原子操作与互斥锁(operations are atomic mutexes)</h3><ul>
+<li>sync</li>
+<li>sync&#x2F;atomic</li>
+<li>channel goroutine</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://dave.cheney.net/2014/08/17/go-has-both-make-and-new-functions-what-gives">https://dave.cheney.net/2014/08/17/go-has-both-make-and-new-functions-what-gives</a></p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/9320862/why-would-i-make-or-new/9325620#9325620">https://stackoverflow.com/questions/9320862/why-would-i-make-or-new/9325620#9325620</a></p>
+<p><a target="_blank" rel="noopener" href="https://go.dev/doc/faq">https://go.dev/doc/faq</a></p>
+<p><a target="_blank" rel="noopener" href="https://go.dev/doc/effective_go">https://go.dev/doc/effective_go</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Go/" class="print-no-link">#Go</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Go语言设计摘要</div>
+      <div>http://example.com/2024/03/07/Go语言设计摘要/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>March 7, 2024</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/05/Service%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E4%B8%80/" title="Service原理与实现(一)">
+                        <span class="hidden-mobile">Service原理与实现(一)</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

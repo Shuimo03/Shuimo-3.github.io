@@ -224,15 +224,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/14/K8S%E8%8A%82%E7%82%B9NotReady%E6%8E%92%E9%94%99%E6%80%9D%E8%B7%AF/" target="_self">
-          K8S节点NotReady排错思路
+        <a href="/2024/03/07/Go%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%91%98%E8%A6%81/" target="_self">
+          Go语言设计摘要
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/14/K8S%E8%8A%82%E7%82%B9NotReady%E6%8E%92%E9%94%99%E6%80%9D%E8%B7%AF/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/07/Go%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%91%98%E8%A6%81/" target="_self">
         <div>
-          背景在K8S中这种问题节点出现问题导致NotReady的情况并不少见，比如资源不足导致节点不可用，这里简单介绍下我遇到的情况以及我是如何解决的。 排查思路我使用的是VMware虚拟化出来的三个节点，一个master两个node，在kubectl get node的时候发现节点不可用:  以往一般会直接去重启对应节点机器，但是集群是重启过的，进一步查看原因，使用kubectl describe no
+          背景写Go第三年了，但是Go相关的官方文档并没有看过，这篇文章主要是参考了Go FAQ，对其中有意思的部分进行记录。 设计运行时(Runtime)Runtime是Go的核心，主要实现了三个方面:  垃圾收集 并发 内存管理(堆栈管理)  Runtime有点类似于C中的libc。不过Runtime并没有像JVM的虚拟机，它是根据不同的体系结构和操作系统来编译可执行目标。 泛型(generic typ
         </div>
       </a>
 
@@ -240,8 +240,48 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-14 18:17" pubdate>
-              2024-01-14
+            <time datetime="2024-03-07 13:24" pubdate>
+              2024-03-07
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Go/">#Go</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/03/05/Service%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E4%B8%80/" target="_self">
+          Service原理与实现(一)
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/05/Service%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E4%B8%80/" target="_self">
+        <div>
+          iptablesIPVS(IP Virtual Server)kube-Porxy发展史Service原理
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-03-05 14:32" pubdate>
+              2024-03-05
             </time>
           </div>
         
@@ -264,15 +304,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" target="_self">
-          client-go组件使用与原理
+        <a href="/2024/03/04/%E4%BD%BF%E7%94%A8ArgoCD%E6%90%AD%E5%BB%BACICD%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B3%E5%8F%B0/" target="_self">
+          使用GitHub Actions与ArgoCD搭建CICD流水线平台
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/04/%E4%BD%BF%E7%94%A8ArgoCD%E6%90%AD%E5%BB%BACICD%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B3%E5%8F%B0/" target="_self">
         <div>
-          背景之前大部分时间都在用client-go进行开发，也用过informer做一些有意思的事情，但是很多细节方面的东西没有注意，这次算是对client-go原理进行一个整理。 架构设计client-go类型client-go支持四种类型客户端对象来和api server进行交互:  RESTClient ClientSet DynamicClient DiscoveryClient  其他三种都是基
+          背景之前断断续续接触过CICD这些概念，但是使用的不多，并且相关概念比较模糊，这里通过GitHub Actions和Argo CD打造一个CICD平台，来熟悉相关概念和流程。 CI(Continuous Integration) 持续集成平时完成一个需求的时候，一般会做一些测试，比如单元测试,e2e测试等等，完成这些测试之后再去提交代码到不同的分支。之后等待其他人来review代码在合并。  从静
         </div>
       </a>
 
@@ -280,8 +320,81 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-12 11:43" pubdate>
-              2024-01-12
+            <time datetime="2024-03-04 14:40" pubdate>
+              2024-03-04
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/devops/">#devops</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/02/22/%E9%80%9A%E8%BF%87%E5%88%9B%E5%BB%BAPod%E4%B8%B2%E8%81%94K8S%E7%BB%84%E4%BB%B6/" target="_self">
+          通过创建Pod串联K8S组件
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E9%80%9A%E8%BF%87%E5%88%9B%E5%BB%BAPod%E4%B8%B2%E8%81%94K8S%E7%BB%84%E4%BB%B6/" target="_self">
+        <div>
+          
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-02-22 20:22" pubdate>
+              2024-02-22
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/02/22/kubernetes%E7%BC%96%E7%A8%8B%E7%AC%94%E8%AE%B0/" target="_self">
+          kubernetes编程笔记
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/kubernetes%E7%BC%96%E7%A8%8B%E7%AC%94%E8%AE%B0/" target="_self">
+        <div>
+          控制循环(Controller) 通常使用事件驱动模式(watch使用)，来读取资源状态。 改变集群状态或者集群外部系统状态。 通过API Server组件来更新第一部中修改的状态，资源状态存放在etcd中。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-02-22 19:55" pubdate>
+              2024-02-22
             </time>
           </div>
         
@@ -304,15 +417,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/12/kubernetes%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%A7%A3%E6%9E%90/" target="_self">
-          kubernetes架构设计解析
+        <a href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E4%BA%8C-%E5%8D%8F%E7%A8%8B/" target="_self">
+          协程实现原理(二)-协程
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/12/kubernetes%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%A7%A3%E6%9E%90/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E4%BA%8C-%E5%8D%8F%E7%A8%8B/" target="_self">
         <div>
-          背景之前对kubernetes有过一些简单的了解，但是并没有去深入的去理解每个组件之间是如何工作的，所以正好复习一下。 概要首先看下官方给出来的架构图:  可以看到架构组件分为两类:  控制平面(control plane) 节点(node)  控制平面组件如下:  kube-api-server etcd scheduler Controller Manager cloud-controller
+          完整的协程技术栈有栈协程无栈协程
         </div>
       </a>
 
@@ -320,8 +433,88 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-12 09:37" pubdate>
-              2024-01-12
+            <time datetime="2024-02-22 11:38" pubdate>
+              2024-02-22
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Go/">#Go</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
+          协程实现原理-前置知识
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
+        <div>
+          背景协程在1958年被Melvin Conway提出，想要为 COBOL 高级编程语言去实现一个 one-pass 的编译器。比当时进程， 线程的概念还要早一步诞生。不过当时并没有流行起来，因为不符合当时(一直持续到 1990 年代)以C语言为代表的命令式编程语言自顶向下设计思想。但是随着互联网发展，服务器对于高并发要求越来越高，出现C10K,C100K,C10M等问题。协程也就重新回归视野。 进
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-02-22 10:58" pubdate>
+              2024-02-22
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Go/">#Go</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/02/16/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator%E5%B7%A5%E5%85%B7%E7%AF%87-kubebuilder/" target="_self">
+          从零实现一个operator工具篇-kubebuilder
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/16/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator%E5%B7%A5%E5%85%B7%E7%AF%87-kubebuilder/" target="_self">
+        <div>
+          背景demo已经开发完成了，在这个过程中使用了kubebuilder作为开发工具，之前也提到了几种工具的对比，但是kubebuilder并没有详细的介绍，这篇文章来介绍一下kubebuilder的架构设计。 架构设计kubebuilder依赖于controller-tools和controller-runtime，所以在了解kubebuilder架构之前先简单了解下这两个工具。 controlle
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-02-16 14:13" pubdate>
+              2024-02-16
             </time>
           </div>
         
@@ -344,15 +537,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" target="_self">
-          从零实现一个operator(1)-kubebuilder实现redis operator
+        <a href="/2024/02/15/node-exporter%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_self">
+          node_exporter源码解析
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/15/node-exporter%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_self">
         <div>
-          operator实现步骤正式开始使用kubebuilder来实现operator，关于operator原理可以看之前文章介绍，根据官网教程中的步骤来初始化一个operator项目: 1kubebuilder init --domain my.domain --repo my.domain/guestbook #修改这里的my.domain和my.domain/guestbook  之后kubebu
+          背景最近想要实现一个关于OS exporter，发现和node exporter类似，所以打算学习一下node exporter源码。这里以centos8作为操作系统。所以相关代码都是Linux相关。 CPU指标获取在具体了解代码之前，在linux中如果想要查看CPU相关指标都有那些工具？耳熟能详的都有以下工具：  top 各种stat vmstat iostat pidstat mpstat
         </div>
       </a>
 
@@ -360,8 +553,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-11 14:33" pubdate>
-              2024-01-11
+            <time datetime="2024-02-15 17:10" pubdate>
+              2024-02-15
             </time>
           </div>
         
@@ -370,7 +563,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/kubernetes/">#kubernetes</a>
+              <a href="/tags/Observability/">#Observability</a>
             
           </div>
         
@@ -384,15 +577,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-0-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/" target="_self">
-          从零实现一个operator(0)-前期准备
+        <a href="/2024/02/15/Borg%E8%AE%BA%E6%96%87%E5%AF%BC%E8%AF%BB/" target="_self">
+          Borg论文导读
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-0-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/15/Borg%E8%AE%BA%E6%96%87%E5%AF%BC%E8%AF%BB/" target="_self">
         <div>
-          operator基本概念在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。 看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说o
+          背景 解决运维操作管理问题 提高服务可靠性 降低服务器成本  设计目标 运维操作自动化 监控系统-&gt;自动愈合系统  应用场景系统设计 broglet 评分计算  调度实现 异构架构 尽量让执行过相同任务的机器去执行一样的任务 软件包&#x2F;镜像拉取速度 任务混合部署  对比K8S思考 Borg如何保证业务能够自动恢复到预期状态？
         </div>
       </a>
 
@@ -400,208 +593,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-11 13:30" pubdate>
-              2024-01-11
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/kubernetes/">#kubernetes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/01/06/%E8%BF%9E%E6%8E%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84HomeLab/" target="_self">
-          连接同一个局域网下的HomeLab
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/06/%E8%BF%9E%E6%8E%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84HomeLab/" target="_self">
-        <div>
-          背景因为之前搬家，搭建好的HomeLab使用的是静态IP，所以当搬家完之后，就需要重新配置过。 局域网内ping测试之前远程连接用的是Windows自带的，相关配置不需要修改，只需要修改下IP即可。但是想要使用HomeLab里面的各种服务，比如说虚拟机搭建的K8S集群，或者说访问Web服务，这里还不够。  当我把HomeLab防火墙关闭掉的时候，就可以ping通:  很明显这样做风险太大，可以通过
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-06 09:43" pubdate>
-              2024-01-06
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/homeLab/">#homeLab</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E8%AE%BA%E6%96%87-FRAUDAR/" target="_self">
-          异常检测论文-FRAUDAR
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E8%AE%BA%E6%96%87-FRAUDAR/" target="_self">
-        <div>
-          背景解决的问题算法应用场景伪装 随机伪装 有偏伪装 劫持账户  抗伪装异常指标定义 点异常 边异常  公理算法流程思考 最开始的时候，如何定义或者判断是异常值？
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-03 10:01" pubdate>
-              2024-01-03
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/AIOPS/">#AIOPS</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B-%E4%B8%80-%E5%AF%BC%E8%AE%BA/" target="_self">
-          异常检测(一)-导论
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/03/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B-%E4%B8%80-%E5%AF%BC%E8%AE%BA/" target="_self">
-        <div>
-          异常检测异常异常分类 点异常 连续性异常 上下文异常(监控场景)  异常检测应用场景模型类型(Model Type) 有监督-DNN 半监督-oneClass-SVM 无监督-AutoEncoder Hybrid
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-03 09:50" pubdate>
-              2024-01-03
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/AIOPS/">#AIOPS</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/28/springboot%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%E5%8C%96%E6%B5%81%E7%A8%8B/" target="_self">
-          springboot微服务容器化流程
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/28/springboot%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%E5%8C%96%E6%B5%81%E7%A8%8B/" target="_self">
-        <div>
-          spring cloudkubernetes
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-28 13:51" pubdate>
-              2023-12-28
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Microservice/">#Microservice</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/18/Machines%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" target="_self">
-          Machines论文笔记
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/18/Machines%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" target="_self">
-        <div>
-          The Design of a Practical System for Fault-Tolerant Virtual MachinesFAQ
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-18 13:08" pubdate>
-              2023-12-18
+            <time datetime="2024-02-15 10:32" pubdate>
+              2024-02-15
             </time>
           </div>
         
@@ -622,7 +615,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

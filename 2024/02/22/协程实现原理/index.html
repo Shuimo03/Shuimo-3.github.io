@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="背景协程在1958年被Melvin Conway提出，想要为 COBOL 高级编程语言去实现一个 one-pass 的编译器。比当时进程， 线程的概念还要早一步诞生。不过当时并没有流行起来，因为不符合当时(一直持续到 1990 年代)以C语言为代表的命令式编程语言自顶向下设计思想。但是随着互联网发展，服务器对于高并发要求越来越高，出现C10K,C100K,C10M等问题。协程也就重新回归视野。 进">
+<meta property="og:type" content="article">
+<meta property="og:title" content="协程实现原理-前置知识">
+<meta property="og:url" content="http://example.com/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="背景协程在1958年被Melvin Conway提出，想要为 COBOL 高级编程语言去实现一个 one-pass 的编译器。比当时进程， 线程的概念还要早一步诞生。不过当时并没有流行起来，因为不符合当时(一直持续到 1990 年代)以C语言为代表的命令式编程语言自顶向下设计思想。但是随着互联网发展，服务器对于高并发要求越来越高，出现C10K,C100K,C10M等问题。协程也就重新回归视野。 进">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://4011417824-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-MB7Io-ER4uA8ffGsDSz%2F-MEcdes9BFi7TFQWEUwY%2F-MEh2S_JHPEly4tLx0CJ%2Fimage.png?alt=media&token=a6accde8-b81f-4c6a-9112-ea4acfb82441">
+<meta property="article:published_time" content="2024-02-22T02:58:59.000Z">
+<meta property="article:modified_time" content="2024-02-22T07:48:44.969Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://4011417824-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-MB7Io-ER4uA8ffGsDSz%2F-MEcdes9BFi7TFQWEUwY%2F-MEh2S_JHPEly4tLx0CJ%2Fimage.png?alt=media&token=a6accde8-b81f-4c6a-9112-ea4acfb82441">
+  
+  
+  
+  <title>协程实现原理-前置知识 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archives</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Categories</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Tags</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="协程实现原理-前置知识"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-02-22 10:58" pubdate>
+          February 22, 2024 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.6k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          55 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">协程实现原理-前置知识</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>协程在1958年被Melvin Conway提出，想要为 COBOL 高级编程语言去实现一个 one-pass 的编译器。比当时进程， 线程的概念还要早一步诞生。不过当时并没有流行起来，因为不符合当时(一直持续到 1990 年代)以C语言为代表的命令式编程语言自顶向下设计思想。但是随着互联网发展，服务器对于高并发要求越来越高，出现C10K,C100K,C10M等问题。协程也就重新回归视野。</p>
+<h2 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h2><ul>
+<li>基本结构</li>
+<li>上下文切换</li>
+</ul>
+<h3 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h3><p>再了解协程的实现之前，先简单回顾下进程和线程，进程在操作系统中是作为资源分配的基本单位，而线程则是执行单位。不过在Linux中不管是线程还是进程都被称为任务(Task)，task可以简单分为以下几个部分:</p>
+<ol>
+<li>thread_info</li>
+<li>mm_struct</li>
+<li>tty_struct</li>
+<li>fs_struct</li>
+<li>files_struct</li>
+<li>signal_struct</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">task_struct</span> &#123;</span><br>	<span class="hljs-keyword">volatile</span> <span class="hljs-type">long</span> state;	<span class="hljs-comment">/* -1 unrunnable, 0 runnable, &gt;0 stopped */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread_info</span> *<span class="hljs-title">thread_info</span>;</span><br>	<span class="hljs-type">atomic_t</span> usage;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> flags;	<span class="hljs-comment">/* per process flags, defined below */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> ptrace;<br><br>	<span class="hljs-type">int</span> lock_depth;		<span class="hljs-comment">/* Lock depth */</span><br><br>	<span class="hljs-type">int</span> prio, static_prio;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">run_list</span>;</span><br>	<span class="hljs-type">prio_array_t</span> *<span class="hljs-built_in">array</span>;<br><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> sleep_avg;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> last_run;<br><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> policy;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> cpus_allowed;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> time_slice, first_time_slice;<br><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">tasks</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">ptrace_children</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">ptrace_list</span>;</span><br><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">mm_struct</span> *<span class="hljs-title">mm</span>, *<span class="hljs-title">active_mm</span>;</span><br><br><span class="hljs-comment">/* task state */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">linux_binfmt</span> *<span class="hljs-title">binfmt</span>;</span><br>	<span class="hljs-type">int</span> exit_code, exit_signal;<br>	<span class="hljs-type">int</span> pdeath_signal;  <span class="hljs-comment">/*  The signal sent when the parent dies  */</span><br>	<span class="hljs-comment">/* ??? */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> personality;<br>	<span class="hljs-type">int</span> did_exec:<span class="hljs-number">1</span>;<br>	<span class="hljs-type">pid_t</span> pid;<br>	<span class="hljs-type">pid_t</span> pgrp;<br>	<span class="hljs-type">pid_t</span> tty_old_pgrp;<br>	<span class="hljs-type">pid_t</span> session;<br>	<span class="hljs-type">pid_t</span> tgid;<br>	<span class="hljs-comment">/* boolean value for session group leader */</span><br>	<span class="hljs-type">int</span> leader;<br>	<span class="hljs-comment">/* </span><br><span class="hljs-comment">	 * pointers to (original) parent process, youngest child, younger sibling,</span><br><span class="hljs-comment">	 * older sibling, respectively.  (p-&gt;father can be replaced with </span><br><span class="hljs-comment">	 * p-&gt;parent-&gt;pid)</span><br><span class="hljs-comment">	 */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">task_struct</span> *<span class="hljs-title">real_parent</span>;</span> <span class="hljs-comment">/* real parent process (when being debugged) */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">task_struct</span> *<span class="hljs-title">parent</span>;</span>	<span class="hljs-comment">/* parent process */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">children</span>;</span>	<span class="hljs-comment">/* list of my children */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">sibling</span>;</span>	<span class="hljs-comment">/* linkage in my parent&#x27;s children list */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">task_struct</span> *<span class="hljs-title">group_leader</span>;</span><br><br>	<span class="hljs-comment">/* PID/PID hash table linkage. */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid_link</span> <span class="hljs-title">pids</span>[<span class="hljs-title">PIDTYPE_MAX</span>];</span><br><br>	<span class="hljs-type">wait_queue_head_t</span> wait_chldexit;	<span class="hljs-comment">/* for wait4() */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">completion</span> *<span class="hljs-title">vfork_done</span>;</span>		<span class="hljs-comment">/* for vfork() */</span><br>	<span class="hljs-type">int</span> __user *set_child_tid;		<span class="hljs-comment">/* CLONE_CHILD_SETTID */</span><br>	<span class="hljs-type">int</span> __user *clear_child_tid;		<span class="hljs-comment">/* CLONE_CHILD_CLEARTID */</span><br><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> rt_priority;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> it_real_value, it_prof_value, it_virt_value;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> it_real_incr, it_prof_incr, it_virt_incr;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">timer_list</span> <span class="hljs-title">real_timer</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">posix_timers</span>;</span> <span class="hljs-comment">/* POSIX.1b Interval Timers */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> utime, stime, cutime, cstime;<br>	u64 start_time;<br><span class="hljs-comment">/* mm fault and swap info: this can arguably be seen as either mm-specific or thread-specific */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> min_flt, maj_flt, nswap, cmin_flt, cmaj_flt, cnswap;<br><span class="hljs-comment">/* process credentials */</span><br>	<span class="hljs-type">uid_t</span> uid,euid,suid,fsuid;<br>	<span class="hljs-type">gid_t</span> gid,egid,sgid,fsgid;<br>	<span class="hljs-type">int</span> ngroups;<br>	<span class="hljs-type">gid_t</span>	groups[NGROUPS];<br>	<span class="hljs-type">kernel_cap_t</span>   cap_effective, cap_inheritable, cap_permitted;<br>	<span class="hljs-type">int</span> keep_capabilities:<span class="hljs-number">1</span>;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">user_struct</span> *<span class="hljs-title">user</span>;</span><br><span class="hljs-comment">/* limits */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">rlimit</span> <span class="hljs-title">rlim</span>[<span class="hljs-title">RLIM_NLIMITS</span>];</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> used_math;<br>	<span class="hljs-type">char</span> comm[<span class="hljs-number">16</span>];<br><span class="hljs-comment">/* file system info */</span><br>	<span class="hljs-type">int</span> link_count, total_link_count;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">tty_struct</span> *<span class="hljs-title">tty</span>;</span> <span class="hljs-comment">/* NULL if no tty */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> locks; <span class="hljs-comment">/* How many file locks are being held */</span><br><span class="hljs-comment">/* ipc stuff */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysv_sem</span> <span class="hljs-title">sysvsem</span>;</span><br><span class="hljs-comment">/* CPU-specific state of this task */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread_struct</span> <span class="hljs-title">thread</span>;</span><br><span class="hljs-comment">/* filesystem information */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_struct</span> *<span class="hljs-title">fs</span>;</span><br><span class="hljs-comment">/* open file information */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">files_struct</span> *<span class="hljs-title">files</span>;</span><br><span class="hljs-comment">/* namespace */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">namespace</span> *<span class="hljs-title">namespace</span>;</span><br><span class="hljs-comment">/* signal handlers */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">signal_struct</span> *<span class="hljs-title">signal</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sighand_struct</span> *<span class="hljs-title">sighand</span>;</span><br><br>	<span class="hljs-type">sigset_t</span> blocked, real_blocked;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sigpending</span> <span class="hljs-title">pending</span>;</span><br><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> sas_ss_sp;<br>	<span class="hljs-type">size_t</span> sas_ss_size;<br>	<span class="hljs-type">int</span> (*notifier)(<span class="hljs-type">void</span> *priv);<br>	<span class="hljs-type">void</span> *notifier_data;<br>	<span class="hljs-type">sigset_t</span> *notifier_mask;<br>	<br>	<span class="hljs-type">void</span> *security;<br><br><span class="hljs-comment">/* Thread group tracking */</span><br>   	u32 parent_exec_id;<br>   	u32 self_exec_id;<br><span class="hljs-comment">/* Protection of (de-)allocation: mm, files, fs, tty */</span><br>	<span class="hljs-type">spinlock_t</span> alloc_lock;<br><span class="hljs-comment">/* Protection of proc_dentry: nesting proc_lock, dcache_lock, write_lock_irq(&amp;tasklist_lock); */</span><br>	<span class="hljs-type">spinlock_t</span> proc_lock;<br><span class="hljs-comment">/* context-switch lock */</span><br>	<span class="hljs-type">spinlock_t</span> switch_lock;<br><br><span class="hljs-comment">/* journalling filesystem info */</span><br>	<span class="hljs-type">void</span> *journal_info;<br><br><span class="hljs-comment">/* VM state */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">reclaim_state</span> *<span class="hljs-title">reclaim_state</span>;</span><br><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dentry</span> *<span class="hljs-title">proc_dentry</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">backing_dev_info</span> *<span class="hljs-title">backing_dev_info</span>;</span><br><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> ptrace_message;<br>	<span class="hljs-type">siginfo_t</span> *last_siginfo; <span class="hljs-comment">/* For ptrace use.  */</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>为了直观了解进程和线程，这里分别实现两个demo:</p>
+<ul>
+<li>多进程</li>
+<li>多线程</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">print_numbers</span><span class="hljs-params">(<span class="hljs-type">char</span> *prefix, <span class="hljs-type">int</span> count)</span> &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; count; ++i) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s: %d\n&quot;</span>, prefix, i);<br>        sleep(<span class="hljs-number">100000</span>);  <span class="hljs-comment">// 等待 100 毫秒</span><br>    &#125;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> <span class="hljs-type">const</span> *argv[])</span><br>&#123;<br>    <span class="hljs-type">pid_t</span> child_pid;<br>    <span class="hljs-keyword">if</span>((child_pid == fork()) == <span class="hljs-number">0</span>)&#123;<br>         print_numbers(<span class="hljs-string">&quot;Process 1&quot;</span>, <span class="hljs-number">5</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-keyword">if</span> ((child_pid = fork()) == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 子进程执行 print_numbers</span><br>        print_numbers(<span class="hljs-string">&quot;Process 2&quot;</span>, <span class="hljs-number">5</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125;<br>    wait(<span class="hljs-literal">NULL</span>);<br>    wait(<span class="hljs-literal">NULL</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">./multiprocessing<br>Process 1: 0<br>Process 2: 0<br><br><br>➜  ~ ps -ef |grep multiprocessing<br>root        2214     652  0 11:47 pts/0    00:00:00 ./multiprocessing<br>root        2215    2214  0 11:47 pts/0    00:00:00 ./multiprocessing<br>root        2216    2215  0 11:47 pts/0    00:00:00 ./multiprocessing<br>root        2228    1876  0 11:47 pts/7    00:00:00 grep --color=auto --exclude-dir=.bzr --exclude-dir=CVS --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn --exclude-dir=.idea --exclude-dir=.tox multiprocessing<br>➜  ~ pstree -p 2214<br>multiprocessing(2214)───multiprocessing(2215)───multiprocessing(2216)<br></code></pre></td></tr></table></figure>
+
+<p>创建了多个进程，通过ps aux可以看到它一个进程就是2120内存</p>
+<p>创建多线程:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;pthread.h&gt;</span></span><br><br><span class="hljs-type">void</span> *<span class="hljs-title function_">print_numbers</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    <span class="hljs-type">char</span> *prefix = (<span class="hljs-type">char</span> *)arg;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; ++i) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s: %d\n&quot;</span>, prefix, i);<br>        sleep(<span class="hljs-number">1000000</span>);  <span class="hljs-comment">// 等待 100 毫秒</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">pthread_t</span> thread1, thread2;<br><br>    <span class="hljs-comment">// 创建第一个线程</span><br>    pthread_create(&amp;thread1, <span class="hljs-literal">NULL</span>, print_numbers, <span class="hljs-string">&quot;Thread 1&quot;</span>);<br><br>    <span class="hljs-comment">// 创建第二个线程</span><br>    pthread_create(&amp;thread2, <span class="hljs-literal">NULL</span>, print_numbers, <span class="hljs-string">&quot;Thread 2&quot;</span>);<br><br>    <span class="hljs-comment">// 等待两个线程执行完毕</span><br>    pthread_join(thread1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(thread2, <span class="hljs-literal">NULL</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"> ./multi_thread_demo<br>Thread 1: 0<br>Thread 2: 0<br><br><br>ps aux |grep multi_thread_demo<br>root        3193  0.0  0.0  84704   944 pts/0    Sl+  11:55   0:00 ./multi_thread_demo<br>root        3216  0.0  0.0   4032  2184 pts/7    S+   11:55   0:00 grep --color=auto --exclude-dir=.bzr --exclude-dir=CVS --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn --exclude-dir=.idea --exclude-dir=.tox multi_thread_demo<br>➜  ~ pstree -p 3193<br>multi_thread_de(3193)─┬─&#123;multi_thread_de&#125;(3194)<br>                      └─&#123;multi_thread_de&#125;(3195)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="上下文切换-context-switch"><a href="#上下文切换-context-switch" class="headerlink" title="上下文切换(context switch)"></a>上下文切换(context switch)</h3><p>上下文切换概念很简单，就是保存Running状态进程的寄存器，并且为可运行状态的进程恢复一些寄存器的值，这一块操作系统会执行一些底层汇编代码来保存通用寄存器、程序计数器，以及当前正在运行的进程的内核栈指针。然后恢复寄存器，程序计数器在切换到内核栈。</p>
+<p>可以来看下进程上下文切换都有那些成本:</p>
+<ol>
+<li>保存和恢复寄存器状态</li>
+<li>保存和恢复内存页表</li>
+<li>切换堆栈</li>
+<li>清理和设置硬件上下文</li>
+<li>切换任务状态</li>
+<li>TLB(Translation Lookaside Buffer)刷新</li>
+</ol>
+<p>再来看下协程上下文切换成本:</p>
+<ol>
+<li>保存和恢复寄存器状态</li>
+<li>保护和切换堆栈</li>
+<li>切换任务状态</li>
+<li>TLB刷新</li>
+<li>清理和设置硬件上下文</li>
+</ol>
+<p>可以看到相比较于进程省去了一个切换内存页表的成本，因为线程是共享进程中的资源，在之前基本结构中也提到过。所以使用多线程成本和性能方面会比多进程表现好。</p>
+<h2 id="进程内存段布局"><a href="#进程内存段布局" class="headerlink" title="进程内存段布局"></a>进程内存段布局</h2><p>这是一个关于32位X86架构上运行的Linux进程的内存段布局(从高地址向低地址):</p>
+<p><img src="https://4011417824-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-MB7Io-ER4uA8ffGsDSz%2F-MEcdes9BFi7TFQWEUwY%2F-MEh2S_JHPEly4tLx0CJ%2Fimage.png?alt=media&token=a6accde8-b81f-4c6a-9112-ea4acfb82441" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h2 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/IO4ynnKEfy2Rt-Me7EIeqg?poc_token=HJtz0WWjWG56HYq7_9Cre6SctSS-m3gHBYfRQyso">https://mp.weixin.qq.com/s/IO4ynnKEfy2Rt-Me7EIeqg?poc_token=HJtz0WWjWG56HYq7_9Cre6SctSS-m3gHBYfRQyso</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.kerneltravel.net/blog/2020/task_struct_zjqing/">https://www.kerneltravel.net/blog/2020/task_struct_zjqing/</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Go/" class="print-no-link">#Go</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>协程实现原理-前置知识</div>
+      <div>http://example.com/2024/02/22/协程实现原理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>February 22, 2024</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E4%BA%8C-%E5%8D%8F%E7%A8%8B/" title="协程实现原理(二)-协程">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">协程实现原理(二)-协程</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/02/16/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator%E5%B7%A5%E5%85%B7%E7%AF%87-kubebuilder/" title="从零实现一个operator工具篇-kubebuilder">
+                        <span class="hidden-mobile">从零实现一个operator工具篇-kubebuilder</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
