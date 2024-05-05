@@ -16,24 +16,22 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Service Mesh诞生背景 微服务通信基础设施 微服务治理   Service Mesh架构 边车模式(Sidecar Proxy-Based) 网络中心模式(Network-Centric-Based) 主机代理模式(Host Proxy-Based) 联邦集群模式(Multimesh-Based)  边车模式(Sidecar Proxy-Based) 网络中心模式(Network-Cen">
+    <meta name="description" content="背景接触K8S这么久以来，对K8S内部原理还不是理解的很深，加上对K8S源码分析的书不多，所以打算从各个组件源码入手。关于kubelet，主要关心它是如何通过CRI,CSI,CNI来为Pod创建相关资源的，以及它对容器的监控。版本使用1.25。 组件编译在深入kubelet源码之前，先对kubelet组件进行编译，这样做可以快速对kubelet源码有一个认识。 入口函数Pod创建-CRI流程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="服务网格的诞生">
-<meta property="og:url" content="http://example.com/2024/02/13/%E6%9C%8D%E5%8A%A1%E7%BD%91%E6%A0%BC%E7%9A%84%E8%AF%9E%E7%94%9F/index.html">
+<meta property="og:title" content="kubelet(一)源码分析">
+<meta property="og:url" content="http://example.com/2024/04/02/kubelet-%E4%B8%80-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Service Mesh诞生背景 微服务通信基础设施 微服务治理   Service Mesh架构 边车模式(Sidecar Proxy-Based) 网络中心模式(Network-Centric-Based) 主机代理模式(Host Proxy-Based) 联邦集群模式(Multimesh-Based)  边车模式(Sidecar Proxy-Based) 网络中心模式(Network-Cen">
+<meta property="og:description" content="背景接触K8S这么久以来，对K8S内部原理还不是理解的很深，加上对K8S源码分析的书不多，所以打算从各个组件源码入手。关于kubelet，主要关心它是如何通过CRI,CSI,CNI来为Pod创建相关资源的，以及它对容器的监控。版本使用1.25。 组件编译在深入kubelet源码之前，先对kubelet组件进行编译，这样做可以快速对kubelet源码有一个认识。 入口函数Pod创建-CRI流程">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://puming.zone/img/ServiceMesh%e6%9c%aa%e6%9d%a5%e5%8f%91%e5%b1%95%e8%b6%8b%e5%8a%bf%e6%b5%85%e6%9e%90/%e5%9b%be2.png">
-<meta property="article:published_time" content="2024-02-13T08:32:05.000Z">
-<meta property="article:modified_time" content="2024-02-13T08:41:44.706Z">
+<meta property="article:published_time" content="2024-04-02T05:44:56.000Z">
+<meta property="article:modified_time" content="2024-04-02T05:54:26.321Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="serviceMesh">
+<meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://puming.zone/img/ServiceMesh%e6%9c%aa%e6%9d%a5%e5%8f%91%e5%b1%95%e8%b6%8b%e5%8a%bf%e6%b5%85%e6%9e%90/%e5%9b%be2.png">
   
   
   
-  <title>服务网格的诞生 - Hexo</title>
+  <title>kubelet(一)源码分析 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +197,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="服务网格的诞生"></span>
+            <span id="subtitle" data-typed-text="kubelet(一)源码分析"></span>
           
         </div>
 
@@ -210,8 +208,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-02-13 16:32" pubdate>
-          February 13, 2024 pm
+        <time datetime="2024-04-02 13:44" pubdate>
+          April 2, 2024 pm
         </time>
       </span>
     
@@ -222,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          638 words
+          195 words
         
       </span>
     
@@ -233,7 +231,7 @@
         
         
         
-          6 mins
+          2 mins
         
       </span>
     
@@ -270,46 +268,14 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">服务网格的诞生</h1>
+            <h1 id="seo-header">kubelet(一)源码分析</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="Service-Mesh诞生背景"><a href="#Service-Mesh诞生背景" class="headerlink" title="Service Mesh诞生背景"></a>Service Mesh诞生背景</h2><ul>
-<li>微服务通信基础设施</li>
-<li>微服务治理</li>
-<li></li>
-</ul>
-<h2 id="Service-Mesh架构"><a href="#Service-Mesh架构" class="headerlink" title="Service Mesh架构"></a>Service Mesh架构</h2><ul>
-<li>边车模式(Sidecar Proxy-Based)</li>
-<li>网络中心模式(Network-Centric-Based)</li>
-<li>主机代理模式(Host Proxy-Based)</li>
-<li>联邦集群模式(Multimesh-Based)</li>
-</ul>
-<h3 id="边车模式-Sidecar-Proxy-Based"><a href="#边车模式-Sidecar-Proxy-Based" class="headerlink" title="边车模式(Sidecar Proxy-Based)"></a>边车模式(Sidecar Proxy-Based)</h3><p><img src="https://puming.zone/img/ServiceMesh%e6%9c%aa%e6%9d%a5%e5%8f%91%e5%b1%95%e8%b6%8b%e5%8a%bf%e6%b5%85%e6%9e%90/%e5%9b%be2.png" srcset="/img/loading.gif" lazyload alt="image"></p>
-<h3 id="网络中心模式-Network-Centric-Based"><a href="#网络中心模式-Network-Centric-Based" class="headerlink" title="网络中心模式(Network-Centric-Based)"></a>网络中心模式(Network-Centric-Based)</h3><p>网络中心模式的Service Mesh聚焦于网络层(L3&#x2F;L4)，这种模式常通过底层基础设施提供的内核级功能实现，从而可以消除对Sidecar模式的依赖。</p>
-<h3 id="主机代理模式-Host-Proxy-Based"><a href="#主机代理模式-Host-Proxy-Based" class="headerlink" title="主机代理模式(Host Proxy-Based)"></a>主机代理模式(Host Proxy-Based)</h3><p>主机代理模式通常指在节点级别共享代理，而非Sidecar在Pod级别共享代理。</p>
-<h3 id="联邦集群模式-Multimesh-Based"><a href="#联邦集群模式-Multimesh-Based" class="headerlink" title="联邦集群模式(Multimesh-Based)"></a>联邦集群模式(Multimesh-Based)</h3><p>联邦集群模式是具有多个Service Mesh管理的解决方案</p>
-<h3 id="控制平面"><a href="#控制平面" class="headerlink" title="控制平面"></a>控制平面</h3><h3 id="数据平面"><a href="#数据平面" class="headerlink" title="数据平面"></a>数据平面</h3><ul>
-<li>流量控制(L3&#x2F;L4&#x2F;L7层)<ul>
-<li>服务发现</li>
-<li>负载均衡</li>
-<li>智能路由</li>
-<li>故障注入</li>
-<li>熔断器</li>
-<li>TLS终止</li>
-</ul>
-</li>
-</ul>
-<h2 id="Ambient-mesh"><a href="#Ambient-mesh" class="headerlink" title="Ambient mesh"></a>Ambient mesh</h2><h2 id="Service-Mesh产品"><a href="#Service-Mesh产品" class="headerlink" title="Service Mesh产品"></a>Service Mesh产品</h2><ul>
-<li>Istio</li>
-</ul>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Lfy2AoTmiyNIWA-6rZnuOg">https://mp.weixin.qq.com/s/Lfy2AoTmiyNIWA-6rZnuOg</a></li>
-<li><a target="_blank" rel="noopener" href="https://konghq.com/learning-center/service-mesh/what-is-a-service-mesh">https://konghq.com/learning-center/service-mesh/what-is-a-service-mesh</a></li>
-<li><a target="_blank" rel="noopener" href="https://linkerd.io/what-is-a-service-mesh/">https://linkerd.io/what-is-a-service-mesh/</a></li>
-</ul>
-
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>接触K8S这么久以来，对K8S内部原理还不是理解的很深，加上对K8S源码分析的书不多，所以打算从各个组件源码入手。关于kubelet，主要关心它是如何通过CRI,CSI,CNI来为Pod创建相关资源的，以及它对容器的监控。版本使用1.25。</p>
+<h2 id="组件编译"><a href="#组件编译" class="headerlink" title="组件编译"></a>组件编译</h2><p>在深入kubelet源码之前，先对kubelet组件进行编译，这样做可以快速对kubelet源码有一个认识。</p>
+<h2 id="入口函数"><a href="#入口函数" class="headerlink" title="入口函数"></a>入口函数</h2><h2 id="Pod创建-CRI流程"><a href="#Pod创建-CRI流程" class="headerlink" title="Pod创建-CRI流程"></a>Pod创建-CRI流程</h2>
                 
               </div>
             
@@ -321,7 +287,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/serviceMesh/" class="print-no-link">#serviceMesh</a>
+        <a href="/tags/kubernetes/" class="print-no-link">#kubernetes</a>
       
     </div>
   
@@ -333,8 +299,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>服务网格的诞生</div>
-      <div>http://example.com/2024/02/13/服务网格的诞生/</div>
+      <div>kubelet(一)源码分析</div>
+      <div>http://example.com/2024/04/02/kubelet-一-源码分析/</div>
     </div>
     <div class="license-meta">
       
@@ -346,7 +312,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>February 13, 2024</div>
+          <div>April 2, 2024</div>
         </div>
       
       
@@ -378,9 +344,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/02/15/Borg%E8%AE%BA%E6%96%87%E5%AF%BC%E8%AF%BB/" title="Borg论文导读">
+                      <a href="/2024/05/04/iam-%E6%8E%88%E6%9D%83%E5%AE%9E%E7%8E%B0/" title="iam-授权实现">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Borg论文导读</span>
+                        <span class="hidden-mobile">iam-授权实现</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -388,8 +354,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/02/11/%E5%86%8D%E8%B0%88%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" title="再谈源码学习">
-                        <span class="hidden-mobile">再谈源码学习</span>
+                      <a href="/2024/04/01/Kafka%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" title="Kafka系统架构设计">
+                        <span class="hidden-mobile">Kafka系统架构设计</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -400,6 +366,41 @@
             </div>
 
             
+  
+  
+    <article id="comments" lazyload>
+      
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'Shuimo03/shuimo03.github.io');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
           </article>
         </div>
       </div>

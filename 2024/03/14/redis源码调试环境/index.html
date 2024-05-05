@@ -16,22 +16,24 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="背景很久之前我写过类似的文章，关于如何去学习源码，但是那边文章已经没了，这里重新总结一些关于如何学习源码的一些方法。 具有相关知识阅读源码之前，需要对这个软件有一定的背景知识，比如说你是一个redis小白，或者没有用过redis，但是有数据结构，操作系统，计算机网络等背景知识，你想要了解Reactor模型，想要了解数据结构实现，想要了解持久化存储，就需要这些背景知识。同时对软件的系统架构，实现原理">
+    <meta name="description" content="背景深入学习redis绕不过去的肯定是源码，源码学习的最好方式就是带着问题去debug，所以这里使用vscode进行调试。 编译我比较顺利，一遍跑通了，如果缺少什么可以根据错误去自行解决。 1make CFLAGS&#x3D;&quot;-g -O0&quot;  #-O0不进行优化处理  如果编译成功，在src目录下可以看到redis二进制文件: 1234567-rwxr-xr-x 1 root root">
 <meta property="og:type" content="article">
-<meta property="og:title" content="再谈源码学习">
-<meta property="og:url" content="http://example.com/2024/02/11/%E5%86%8D%E8%B0%88%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:title" content="Redis源码调试环境">
+<meta property="og:url" content="http://example.com/2024/03/14/redis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="背景很久之前我写过类似的文章，关于如何去学习源码，但是那边文章已经没了，这里重新总结一些关于如何学习源码的一些方法。 具有相关知识阅读源码之前，需要对这个软件有一定的背景知识，比如说你是一个redis小白，或者没有用过redis，但是有数据结构，操作系统，计算机网络等背景知识，你想要了解Reactor模型，想要了解数据结构实现，想要了解持久化存储，就需要这些背景知识。同时对软件的系统架构，实现原理">
+<meta property="og:description" content="背景深入学习redis绕不过去的肯定是源码，源码学习的最好方式就是带着问题去debug，所以这里使用vscode进行调试。 编译我比较顺利，一遍跑通了，如果缺少什么可以根据错误去自行解决。 1make CFLAGS&#x3D;&quot;-g -O0&quot;  #-O0不进行优化处理  如果编译成功，在src目录下可以看到redis二进制文件: 1234567-rwxr-xr-x 1 root root">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-02-11T12:02:46.000Z">
-<meta property="article:modified_time" content="2024-02-11T13:03:15.241Z">
+<meta property="og:image" content="http://example.com/images/redis/image-20240314142031853.png">
+<meta property="article:published_time" content="2024-03-14T02:37:52.000Z">
+<meta property="article:modified_time" content="2024-03-14T06:29:09.426Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="learn">
+<meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/redis/image-20240314142031853.png">
   
   
   
-  <title>再谈源码学习 - Hexo</title>
+  <title>Redis源码调试环境 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="再谈源码学习"></span>
+            <span id="subtitle" data-typed-text="Redis源码调试环境"></span>
           
         </div>
 
@@ -208,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-02-11 20:02" pubdate>
-          February 11, 2024 pm
+        <time datetime="2024-03-14 10:37" pubdate>
+          March 14, 2024 am
         </time>
       </span>
     
@@ -220,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          619 words
+          2.1k words
         
       </span>
     
@@ -231,7 +233,7 @@
         
         
         
-          6 mins
+          18 mins
         
       </span>
     
@@ -268,16 +270,28 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">再谈源码学习</h1>
+            <h1 id="seo-header">Redis源码调试环境</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>很久之前我写过类似的文章，关于如何去学习源码，但是那边文章已经没了，这里重新总结一些关于如何学习源码的一些方法。</p>
-<h2 id="具有相关知识"><a href="#具有相关知识" class="headerlink" title="具有相关知识"></a>具有相关知识</h2><p>阅读源码之前，需要对这个软件有一定的背景知识，比如说你是一个redis小白，或者没有用过redis，但是有数据结构，操作系统，计算机网络等背景知识，你想要了解Reactor模型，想要了解数据结构实现，想要了解持久化存储，就需要这些背景知识。同时对软件的系统架构，实现原理，关键设计也需要先去了解，最后再去看具体实现，也就是源码部分。</p>
-<h2 id="方法论"><a href="#方法论" class="headerlink" title="方法论"></a>方法论</h2><h3 id="为什么看源码"><a href="#为什么看源码" class="headerlink" title="为什么看源码"></a>为什么看源码</h3><p>在阅读源码之前，首先需要确认下目标，为什么要学习源码？是出于那种目的？功利一点来说，在面对各种八股文的时候，比如说go slice扩容，map冲突解决，redis数据结构等等；也就是说带着问题去看源码。因为这些软件代码非常多，不带着问题去看，就很容易陷入进去。同时需要了解到源码对应的项目结构，这样可以更好的定位到想要查看的源码。</p>
-<h3 id="源码编译"><a href="#源码编译" class="headerlink" title="源码编译"></a>源码编译</h3><p>通过源码编译，可以知道更多细节问题，比如说Nginx，源码安装所依赖的库有pcre、pcre-devel、openssl、openssl-devel、zlib。通过这些知道nginx一些功能上的实现是依赖于那些第三方工具。</p>
-<h3 id="参数配置"><a href="#参数配置" class="headerlink" title="参数配置"></a>参数配置</h3><p>像Kafka会有一些配置文件来进行日志保留期限等等，通过配置文件可以清楚知道软件提供那些能力。如果能够掌握配置文件和命令行等参数，可以说对这个软件非常熟悉了，并且可以顺着这些参数查看到对应源码。</p>
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>深入学习redis绕不过去的肯定是源码，源码学习的最好方式就是带着问题去debug，所以这里使用vscode进行调试。</p>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>我比较顺利，一遍跑通了，如果缺少什么可以根据错误去自行解决。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">make CFLAGS=<span class="hljs-string">&quot;-g -O0&quot;</span>  <span class="hljs-comment">#-O0不进行优化处理</span><br></code></pre></td></tr></table></figure>
+
+<p>如果编译成功，在src目录下可以看到redis二进制文件:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">-rwxr-xr-x 1 root root  8990408 Mar 14 11:19 redis-benchmark<br>-rwxr-xr-x 1 root root 11723016 Mar 14 11:19 redis-check-aof<br>-rwxr-xr-x 1 root root 11723016 Mar 14 11:19 redis-check-rdb<br>-rwxr-xr-x 1 root root  8694912 Mar 14 11:19 redis-cli<br>-rwxr-xr-x 1 root root 11723016 Mar 14 11:19 redis-sentinel<br>-rwxr-xr-x 1 root root 11723016 Mar 14 11:19 redis-server<br>-rwxr-xr-x 1 root root     3729 Mar 12 14:50 redis-trib.rb<br></code></pre></td></tr></table></figure>
+
+<p>我在编译之前修改了server.c中一些提示，这样方便做对比:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c">serverLog(LL_WARNING, <span class="hljs-string">&quot;oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo&quot;</span>);<br>serverLog(LL_WARNING,<br>    <span class="hljs-string">&quot;Redis version=%s, bits=%d, commit=%s, modified=%d, pid=%d, just started Test Done&quot;</span>,<br>        REDIS_VERSION,<br>        (<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">long</span>) == <span class="hljs-number">8</span>) ? <span class="hljs-number">64</span> : <span class="hljs-number">32</span>,<br>        redisGitSHA1(),<br>        strtol(redisGitDirty(),<span class="hljs-literal">NULL</span>,<span class="hljs-number">10</span>) &gt; <span class="hljs-number">0</span>,<br>        (<span class="hljs-type">int</span>)getpid());<br><br><span class="hljs-keyword">if</span> (argc == <span class="hljs-number">1</span>) &#123;<br>    serverLog(LL_WARNING, <span class="hljs-string">&quot;Warning: no config file specified, using the default config. In order to specify a config file use %s /path/to/%s.conf&quot;</span>, argv[<span class="hljs-number">0</span>], server.sentinel_mode ? <span class="hljs-string">&quot;sentinel&quot;</span> : <span class="hljs-string">&quot;redis&quot;</span>);<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    serverLog(LL_WARNING, <span class="hljs-string">&quot;Configuration loaded&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接着配置vscode中launch.json，方便进行调试:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-comment">// Use IntelliSense to learn about possible attributes.</span><br>    <span class="hljs-comment">// Hover to view descriptions of existing attributes.</span><br>    <span class="hljs-comment">// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span><br>    <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0.2.0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;configurations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;redis-server&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cppdbg&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;request&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;launch&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;program&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$&#123;workspaceFolder&#125;/bin/redis-server&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;args&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                <span class="hljs-string">&quot;./redis.conf&quot;</span><br>            <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;stopAtEntry&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;cwd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$&#123;workspaceFolder&#125;&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;environment&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;externalConsole&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;MIMode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;gdb&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;miDebuggerPath&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/usr/bin/gdb&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>这里需要注意MIMode，根据具体编译器来选择，我是gdb，所以填的是gdb，有一些是lldb。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>最近在学习持久化和数据结构这些，这里就用RDB做一个测试，RDB有save和bgsave两种方法将redis数据持久化到磁盘上，所以在server.c中打上断点:</p>
+<p><img src="/../images/redis/image-20240314142031853.png" srcset="/img/loading.gif" lazyload alt="image-20240314142031853"></p>
+<p>之后在redis-cli中执行save就会触发断点，也就以上展示的内容。</p>
 
                 
               </div>
@@ -290,7 +304,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/learn/" class="print-no-link">#learn</a>
+        <a href="/tags/redis/" class="print-no-link">#redis</a>
       
     </div>
   
@@ -302,8 +316,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>再谈源码学习</div>
-      <div>http://example.com/2024/02/11/再谈源码学习/</div>
+      <div>Redis源码调试环境</div>
+      <div>http://example.com/2024/03/14/redis源码调试环境/</div>
     </div>
     <div class="license-meta">
       
@@ -315,7 +329,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>February 11, 2024</div>
+          <div>March 14, 2024</div>
         </div>
       
       
@@ -347,9 +361,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/02/13/%E6%9C%8D%E5%8A%A1%E7%BD%91%E6%A0%BC%E7%9A%84%E8%AF%9E%E7%94%9F/" title="服务网格的诞生">
+                      <a href="/2024/03/14/redis%E6%8C%81%E4%B9%85%E5%8C%96%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" title="redis持久化实现原理">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">服务网格的诞生</span>
+                        <span class="hidden-mobile">redis持久化实现原理</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -357,8 +371,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/02/05/%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%B9%B6%E8%A1%8C%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E5%AE%9E%E7%8E%B0/" title="并发与并行的区别以及实现">
-                        <span class="hidden-mobile">并发与并行的区别以及实现</span>
+                      <a href="/2024/03/13/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%9C%BA%E6%99%AF/" title="redis持久化使用与场景">
+                        <span class="hidden-mobile">redis持久化使用与场景</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -369,6 +383,41 @@
             </div>
 
             
+  
+  
+    <article id="comments" lazyload>
+      
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'Shuimo03/shuimo03.github.io');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
           </article>
         </div>
       </div>
