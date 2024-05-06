@@ -16,19 +16,25 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
-<meta property="og:title" content="iam-授权实现">
-<meta property="og:url" content="http://example.com/2024/05/04/iam-%E6%8E%88%E6%9D%83%E5%AE%9E%E7%8E%B0/index.html">
+    <meta name="description" content="IAM(Identity and Access Management)IAM是用来管理用户和系统对资源的访问权限，覆盖了对用户，组织，角色和策略的身份验证，授权和管理。 IAM功能IAM核心功能如下:  身份验证: 常见身份认证方式有用户名密码认证、多因素认证（MFA）、单点登录（SSO）、生物识别认证。 授权: 确保对应用户有相关权限，比如用户A对资源ABC具有读写权限，但是在D资源上只有读权限">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iam场景与授权方案">
+<meta property="og:url" content="http://example.com/2024/05/04/iam%E5%9C%BA%E6%99%AF%E4%B8%8E%E6%8E%88%E6%9D%83%E6%96%B9%E6%A1%88/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="IAM(Identity and Access Management)IAM是用来管理用户和系统对资源的访问权限，覆盖了对用户，组织，角色和策略的身份验证，授权和管理。 IAM功能IAM核心功能如下:  身份验证: 常见身份认证方式有用户名密码认证、多因素认证（MFA）、单点登录（SSO）、生物识别认证。 授权: 确保对应用户有相关权限，比如用户A对资源ABC具有读写权限，但是在D资源上只有读权限">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="d:\code\blog\source\images\iam\image-20240505215852124.png">
+<meta property="og:image" content="d:\code\blog\source\images\iam\image-20240506095800205.png">
 <meta property="article:published_time" content="2024-05-04T12:31:44.000Z">
-<meta property="article:modified_time" content="2024-05-04T12:31:44.231Z">
+<meta property="article:modified_time" content="2024-05-06T02:29:08.661Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="iam">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="d:\code\blog\source\images\iam\image-20240505215852124.png">
   
   
   
-  <title>iam-授权实现 - Hexo</title>
+  <title>iam场景与授权方案 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -194,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iam-授权实现"></span>
+            <span id="subtitle" data-typed-text="iam场景与授权方案"></span>
           
         </div>
 
@@ -217,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 words
+          3.1k words
         
       </span>
     
@@ -228,7 +234,7 @@
         
         
         
-          1 mins
+          26 mins
         
       </span>
     
@@ -265,12 +271,101 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">iam-授权实现</h1>
+            <h1 id="seo-header">iam场景与授权方案</h1>
             
             
               <div class="markdown-body">
                 
-                
+                <h2 id="IAM-Identity-and-Access-Management"><a href="#IAM-Identity-and-Access-Management" class="headerlink" title="IAM(Identity and Access Management)"></a>IAM(Identity and Access Management)</h2><p>IAM是用来管理用户和系统对资源的访问权限，覆盖了对用户，组织，角色和策略的身份验证，授权和管理。</p>
+<h3 id="IAM功能"><a href="#IAM功能" class="headerlink" title="IAM功能"></a>IAM功能</h3><p>IAM核心功能如下:</p>
+<ol>
+<li>身份验证: 常见身份认证方式有用户名密码认证、多因素认证（MFA）、单点登录（SSO）、生物识别认证。</li>
+<li>授权: 确保对应用户有相关权限，比如用户A对资源ABC具有读写权限，但是在D资源上只有读权限。</li>
+<li>用户管理: 管理用户的身份和属性信息，包括创建、删除、禁用和启用用户，以及管理用户的组织结构、角色和权限。</li>
+<li>角色管理:  定义和管理角色，角色是一组权限的集合，通常根据用户的职责或工作功能来定义。</li>
+<li>策略管理: 定义和管理访问策略，策略规定了用户或系统可以对哪些资源执行哪些操作。</li>
+<li>审计与监控: 记录和跟踪用户对资源的操作，以及检查和分析安全事件。</li>
+</ol>
+<h3 id="IAM应用场景"><a href="#IAM应用场景" class="headerlink" title="IAM应用场景"></a>IAM应用场景</h3><p>假设系统是一套微服务系统架构，用户在访问service1的时候需要使用账户1，类似于admin&#x2F;admin123；接着访问service2又需要使用admin&#x2F;admin124以此类推。或者需要反复的注册登录，管理员就需要反复审批。</p>
+<p>而开发人员需要开发针对服务重复造轮子，这些行为都是非常低效的。</p>
+<p><img src="D:\code\blog\source\images\iam\image-20240505215852124.png" srcset="/img/loading.gif" lazyload alt="image-20240505215852124"></p>
+<p>通过IAM中认证服务，只需要一套账号，再根据用户权限就可以访问对应服务，从而提高效率。</p>
+<h2 id="身份验证方案"><a href="#身份验证方案" class="headerlink" title="身份验证方案"></a>身份验证方案</h2><p>IAM有多种身份认证方案:</p>
+<ol>
+<li>用户名密码认证</li>
+<li>多因素认证(MFA)</li>
+<li>单点登录(SSO)</li>
+<li>生物识别认证</li>
+</ol>
+<p>在之前提到过用户访问多个服务中使用一套账号密码的方案就是SSO，所以这里主要是介绍SSO相关方案实现。</p>
+<h2 id="SSO-Single-sign-on"><a href="#SSO-Single-sign-on" class="headerlink" title="SSO(Single sign-on)"></a>SSO(Single sign-on)</h2><h3 id="JWT-JSON-Web-Token"><a href="#JWT-JSON-Web-Token" class="headerlink" title="JWT(JSON Web Token)"></a>JWT(JSON Web Token)</h3><p>JWT是一种开放标准(RFC 7519)，它由三部分组成:</p>
+<ul>
+<li><p>Header</p>
+<ul>
+<li>alg: 加密算法</li>
+<li>typ: token类型</li>
+</ul>
+</li>
+<li><p>Payload: 通常包含用户相关信息，比如用户ID,姓名,角色这种；以及其他自定义数据。</p>
+</li>
+<li><p>Signature: 使用指定算法对header和payload进行签名，以确保token的完整性和安全性。签名的生成算法通常会使用header中指定的算法和一个秘钥。</p>
+</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;header&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;alg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;HS256&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;typ&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;JWT&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;payload&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;sub&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1234567890&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;admin&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;iat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1516239022</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;signature&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;HMACSHA256(</span><br><span class="hljs-string">    base64UrlEncode(header) + &#x27;.&#x27; +</span><br><span class="hljs-string">    base64UrlEncode(payload),</span><br><span class="hljs-string">    secret)&quot;</span><br><span class="hljs-punctuation">&#125;</span><br><br></code></pre></td></tr></table></figure>
+
+<p><img src="D:\code\blog\source\images\iam\image-20240506095800205.png" srcset="/img/loading.gif" lazyload alt="image-20240506095920502"></p>
+<p>jwt认证流程如下:</p>
+<ol>
+<li>用户发送用户名和密码</li>
+<li>iam服务器进行验证,验证通过后返回token</li>
+<li>用户接收保存token,后续访问服务带上token</li>
+<li>服务器验证token，查看那些服务可以访问。</li>
+</ol>
+<p>流程上比较简单，也比较好实现。但是在保存token这里会有一些麻烦，是保存在cookie还是localstorage? 这里分别讨论下。首先是关于cookie，如果使用cookie来保存，在安全性方便会比较高: Cookie可以设置HttpOnly和Secure属性，使得Token不容易受到XSS和CSRF等攻击。实现也简单。但是它的大小有限制，假设token大于4kb，cookie就保存不了。</p>
+<p>使用LocalStorage的好处在于不会有大小限制，并且可以在跨域请求中使用，不受同源策略的限制。但是安全性不高，因为LocalStorage中数据可以通过JS访问，存在被XSS攻击窃取Token的风险。</p>
+<p>所以一般情况下都会使用cookie来保存token，不过cookie有一些局限性，就是当服务端注销用户的时候，token如果还在，那客户端只需要发送token就可以接着使用，并且因为是无状态的，服务端并没有办法阻止。</p>
+<h3 id="session"><a href="#session" class="headerlink" title="session"></a>session</h3><p>token生成方式和之前一样，再保存上不同，会存在服务端session中。然后，服务器将这个 token 发送给客户端，并要求客户端在后续的请求中使用这个 token 来验证身份。</p>
+<p>具体流程如下：</p>
+<ol>
+<li>用户发送用户名和密码给服务器进行登录验证。</li>
+<li>服务器验证用户身份成功后，生成一个唯一的 token，并将其存储在服务器端的会话中。</li>
+<li>服务器将生成的 token 发送给客户端作为登录成功的响应。</li>
+<li>客户端在后续的请求中将 token 放置在请求的头部（通常是 Authorization 头）或者请求体中。</li>
+<li>服务器收到请求后，从请求中获取 token，然后验证 token 的有效性。</li>
+<li>如果 token 有效，则允许用户访问相应的资源，否则拒绝访问。</li>
+</ol>
+<p>使用session好处在于可以更加灵活地管理用户会话，例如可以在服务器端主动注销用户会话。相比较于 Cookie 的会话管理方式，使用 token 可以更好地支持跨域访问和无状态服务。</p>
+<p>但是带来的坏处是需要额外空间来保存token，每次请求中都需要将 token 发送给服务器，增加了网络传输的开销。</p>
+<h3 id="redis-token"><a href="#redis-token" class="headerlink" title="redis token"></a>redis token</h3><p>在这种方式下，服务器将生成的 token 存储在 Redis 数据库中，并在需要验证用户身份时，从 Redis 中获取并验证 token 的有效性。</p>
+<p>具体流程如下：</p>
+<ol>
+<li>用户发送用户名和密码给服务器进行登录验证。</li>
+<li>服务器验证用户身份成功后，生成一个唯一的 token，并将其存储在 Redis 数据库中，通常以用户 ID 或其他唯一标识作为 key。</li>
+<li>服务器将生成的 token 发送给客户端作为登录成功的响应。</li>
+<li>客户端在后续的请求中将 token 放置在请求的头部（通常是 Authorization 头）或者请求体中。</li>
+<li>服务器收到请求后，从请求中获取 token，并使用 token 在 Redis 数据库中进行验证。</li>
+<li>如果 token 有效，则允许用户访问相应的资源，否则拒绝访问。</li>
+</ol>
+<p>优点：</p>
+<ul>
+<li>使用 Redis 存储 token 可以提供快速、高效的 token 验证，因为 Redis 具有高性能的内存数据库。</li>
+<li>Redis 具有持久化特性，可以确保 token 在服务器重启或者故障恢复后不会丢失。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要额外的 Redis 服务器来存储 token，增加了系统的复杂性和成本。</li>
+<li>如果 Redis 服务器发生故障或者网络问题，可能会影响到 token 的验证和用户访问。</li>
+</ul>
+<p>总的来说，Redis Token 方式是一种高效、可靠的用户身份验证方式，特别适用于需要快速、高性能的场景，但需要考虑 Redis 服务器的可用性和可靠性。</p>
+<p>本质上来说，redis token也是一种session，使用redis token在灵活性和扩展性等方面会比session更好。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li>GPT</li>
+<li><a target="_blank" rel="noopener" href="https://www.woshipm.com/it/4681031.html">https://www.woshipm.com/it/4681031.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/entra/fundamentals/introduction-identity-access-management">https://learn.microsoft.com/zh-cn/entra/fundamentals/introduction-identity-access-management</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/when-to-use-iam.html">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/when-to-use-iam.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000012617431">https://segmentfault.com/q/1010000012617431</a></li>
+</ul>
+
                 
               </div>
             
@@ -278,6 +373,13 @@
             <div>
               <div class="post-metas my-3">
   
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/iam/" class="print-no-link">#iam</a>
+      
+    </div>
   
 </div>
 
@@ -287,8 +389,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iam-授权实现</div>
-      <div>http://example.com/2024/05/04/iam-授权实现/</div>
+      <div>iam场景与授权方案</div>
+      <div>http://example.com/2024/05/04/iam场景与授权方案/</div>
     </div>
     <div class="license-meta">
       
