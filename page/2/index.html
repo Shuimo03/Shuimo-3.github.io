@@ -224,173 +224,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/03/12/etcd%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E4%B8%8E%E8%B0%83%E8%AF%95/" target="_self">
-          etcd源码编译与调试
+        <a href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E5%AD%90%E6%9F%A5%E8%AF%A2/" target="_self">
+          SQL基础-子查询
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/12/etcd%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E4%B8%8E%E8%B0%83%E8%AF%95/" target="_self">
-        <div>
-          背景K8S元数据存储在etcd中，所以etcd是非常重要的一环，之前有过几次etcd出现故障导致集群不可用，所以打算重头学下etcd。 编译我的环境是WSL2上的Ubuntu，整体编译过程和Linux上大差不差，要注意的是文件格式问题: 123$ git clone -b v3.5.11 https://github.com/etcd-io/etcd.git #选择etcd版本源码$ cd etc
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-12 11:07" pubdate>
-              2024-03-12
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/etcd/">#etcd</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/07/Go%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%91%98%E8%A6%81/" target="_self">
-          Go语言设计摘要
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/07/Go%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%91%98%E8%A6%81/" target="_self">
-        <div>
-          背景写Go第三年了，但是Go相关的官方文档并没有看过，这篇文章主要是参考了Go FAQ，对其中有意思的部分进行记录。 设计运行时(Runtime)Runtime是Go的核心，主要实现了三个方面:  垃圾收集 并发 内存管理(堆栈管理)  Runtime有点类似于C中的libc。不过Runtime并没有像JVM的虚拟机，它是根据不同的体系结构和操作系统来编译可执行目标。 泛型(generic typ
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-07 13:24" pubdate>
-              2024-03-07
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Go/">#Go</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/05/Service%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E4%B8%80/" target="_self">
-          Service原理与实现(一)
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/05/Service%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E4%B8%80/" target="_self">
-        <div>
-          iptablesIPVS(IP Virtual Server)kube-Porxy发展史Service原理
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-05 14:32" pubdate>
-              2024-03-05
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/kubernetes/">#kubernetes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/04/%E4%BD%BF%E7%94%A8ArgoCD%E6%90%AD%E5%BB%BACICD%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B3%E5%8F%B0/" target="_self">
-          使用GitHub Actions与ArgoCD搭建CICD流水线平台
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/04/%E4%BD%BF%E7%94%A8ArgoCD%E6%90%AD%E5%BB%BACICD%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B3%E5%8F%B0/" target="_self">
-        <div>
-          背景之前断断续续接触过CICD这些概念，但是使用的不多，并且相关概念比较模糊，这里通过GitHub Actions和Argo CD打造一个CICD平台，来熟悉相关概念和流程。 CI(Continuous Integration) 持续集成平时完成一个需求的时候，一般会做一些测试，比如单元测试,e2e测试等等，完成这些测试之后再去提交代码到不同的分支。之后等待其他人来review代码在合并。  从静
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-04 14:40" pubdate>
-              2024-03-04
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/devops/">#devops</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/02/22/%E9%80%9A%E8%BF%87%E5%88%9B%E5%BB%BAPod%E4%B8%B2%E8%81%94K8S%E7%BB%84%E4%BB%B6/" target="_self">
-          通过创建Pod串联K8S组件
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E9%80%9A%E8%BF%87%E5%88%9B%E5%BB%BAPod%E4%B8%B2%E8%81%94K8S%E7%BB%84%E4%BB%B6/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E5%AD%90%E6%9F%A5%E8%AF%A2/" target="_self">
         <div>
           
         </div>
@@ -400,8 +240,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-22 20:22" pubdate>
-              2024-02-22
+            <time datetime="2024-05-20 21:13" pubdate>
+              2024-05-20
             </time>
           </div>
         
@@ -417,15 +257,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/02/22/kubernetes%E7%BC%96%E7%A8%8B%E7%AC%94%E8%AE%B0/" target="_self">
-          kubernetes编程笔记
+        <a href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E8%BF%9E%E6%8E%A5/" target="_self">
+          SQL基础-连接
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/kubernetes%E7%BC%96%E7%A8%8B%E7%AC%94%E8%AE%B0/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E8%BF%9E%E6%8E%A5/" target="_self">
         <div>
-          控制循环(Controller) 通常使用事件驱动模式(watch使用)，来读取资源状态。 改变集群状态或者集群外部系统状态。 通过API Server组件来更新第一部中修改的状态，资源状态存放在etcd中。
+          
         </div>
       </a>
 
@@ -433,8 +273,88 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-22 19:55" pubdate>
-              2024-02-22
+            <time datetime="2024-05-20 19:59" pubdate>
+              2024-05-20
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/05/04/iam%E5%9C%BA%E6%99%AF%E4%B8%8E%E6%8E%88%E6%9D%83%E6%96%B9%E6%A1%88/" target="_self">
+          iam场景与授权方案
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/04/iam%E5%9C%BA%E6%99%AF%E4%B8%8E%E6%8E%88%E6%9D%83%E6%96%B9%E6%A1%88/" target="_self">
+        <div>
+          IAM(Identity and Access Management)IAM是用来管理用户和系统对资源的访问权限，覆盖了对用户，组织，角色和策略的身份验证，授权和管理。 IAM功能IAM核心功能如下:  身份验证: 常见身份认证方式有用户名密码认证、多因素认证（MFA）、单点登录（SSO）、生物识别认证。 授权: 确保对应用户有相关权限，比如用户A对资源ABC具有读写权限，但是在D资源上只有读权限
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-05-04 20:31" pubdate>
+              2024-05-04
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/iam/">#iam</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/02/kubelet-%E4%B8%80-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
+          kubelet(一)源码分析
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/02/kubelet-%E4%B8%80-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
+        <div>
+          背景接触K8S这么久以来，对K8S内部原理还不是理解的很深，加上对K8S源码分析的书不多，所以打算从各个组件源码入手。关于kubelet，主要关心它是如何通过CRI,CSI,CNI来为Pod创建相关资源的，以及它对容器的监控。版本使用1.25。 组件编译在深入kubelet源码之前，先对kubelet组件进行编译，这样做可以快速对kubelet源码有一个认识。 入口函数Pod创建-CRI流程
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-02 13:44" pubdate>
+              2024-04-02
             </time>
           </div>
         
@@ -457,15 +377,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E4%BA%8C-%E5%8D%8F%E7%A8%8B/" target="_self">
-          协程实现原理(二)-协程
+        <a href="/2024/04/01/Kafka%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" target="_self">
+          Kafka系统架构设计
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E4%BA%8C-%E5%8D%8F%E7%A8%8B/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/01/Kafka%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" target="_self">
         <div>
-          完整的协程技术栈有栈协程无栈协程
+          
         </div>
       </a>
 
@@ -473,8 +393,201 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-22 11:38" pubdate>
-              2024-02-22
+            <time datetime="2024-04-01 17:12" pubdate>
+              2024-04-01
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/kafka/">#kafka</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/01/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" target="_self">
+          设计模式-单例模式
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/01/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" target="_self">
+        <div>
+          
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-01 14:50" pubdate>
+              2024-04-01
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/03/14/redis%E6%8C%81%E4%B9%85%E5%8C%96%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
+          redis持久化实现原理
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/14/redis%E6%8C%81%E4%B9%85%E5%8C%96%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
+        <div>
+          
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-03-14 14:44" pubdate>
+              2024-03-14
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/redis/">#redis</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/03/14/redis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/" target="_self">
+          Redis源码调试环境
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/14/redis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/" target="_self">
+        <div>
+          背景深入学习redis绕不过去的肯定是源码，源码学习的最好方式就是带着问题去debug，所以这里使用vscode进行调试。 编译我比较顺利，一遍跑通了，如果缺少什么可以根据错误去自行解决。 1make CFLAGS=&quot;-g -O0&quot;  #-O0不进行优化处理  如果编译成功，在src目录下可以看到redis二进制文件: 1234567-rwxr-xr-x 1 root root
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-03-14 10:37" pubdate>
+              2024-03-14
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/redis/">#redis</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/03/13/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%9C%BA%E6%99%AF/" target="_self">
+          redis持久化使用与场景
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/13/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%9C%BA%E6%99%AF/" target="_self">
+        <div>
+          Redis持久化方案持久化是指将数据写入到磁盘上，Redis提供了以下几种方案:  RDB: AOF RDB+AOF  除了上面三种持久化方案，还有不开启持久化，这种场景一般是将redis当作缓存使用，不过不推荐使用，因为 RDB(Redis Database)RDB优点 RDB非常适合容灾场景，因为它可以设置定期时间来生成快照备份，比如每小时备份最近24小时数据。 在键值对较多的情况下，换句话来
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-03-13 21:43" pubdate>
+              2024-03-13
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/redis/">#redis</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/03/13/WaitGroup%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
+          WaitGroup使用与实现
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/13/WaitGroup%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
+        <div>
+          背景WaitGroup主要应用场景是等待一组goroutine完成，主goroutine使用Add来设置等待goroutine的数量，之后每个goroutine使用Done来表示它们已经运行完成，同时Wait可以用于阻塞，直到所有goroutine都已经使用了Done。简单来说WaitGroup就是用来解决并发-等待问题。 WaitGroup在被创建之后，不能被复制，这里有点绕，用代码来说明: 1
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-03-13 20:07" pubdate>
+              2024-03-13
             </time>
           </div>
         
@@ -484,126 +597,6 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/Go/">#Go</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
-          协程实现原理-前置知识
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
-        <div>
-          背景协程在1958年被Melvin Conway提出，想要为 COBOL 高级编程语言去实现一个 one-pass 的编译器。比当时进程， 线程的概念还要早一步诞生。不过当时并没有流行起来，因为不符合当时(一直持续到 1990 年代)以C语言为代表的命令式编程语言自顶向下设计思想。但是随着互联网发展，服务器对于高并发要求越来越高，出现C10K,C100K,C10M等问题。协程也就重新回归视野。 进
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-22 10:58" pubdate>
-              2024-02-22
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Go/">#Go</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/02/16/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator%E5%B7%A5%E5%85%B7%E7%AF%87-kubebuilder/" target="_self">
-          从零实现一个operator工具篇-kubebuilder
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/16/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator%E5%B7%A5%E5%85%B7%E7%AF%87-kubebuilder/" target="_self">
-        <div>
-          背景demo已经开发完成了，在这个过程中使用了kubebuilder作为开发工具，之前也提到了几种工具的对比，但是kubebuilder并没有详细的介绍，这篇文章来介绍一下kubebuilder的架构设计。 架构设计kubebuilder依赖于controller-tools和controller-runtime，所以在了解kubebuilder架构之前先简单了解下这两个工具。 controlle
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-16 14:13" pubdate>
-              2024-02-16
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/kubernetes/">#kubernetes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/02/15/node-exporter%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_self">
-          node_exporter源码解析
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/15/node-exporter%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_self">
-        <div>
-          背景最近想要实现一个关于OS exporter，发现和node exporter类似，所以打算学习一下node exporter源码。这里以centos8作为操作系统。所以相关代码都是Linux相关。 CPU指标获取在具体了解代码之前，在linux中如果想要查看CPU相关指标都有那些工具？耳熟能详的都有以下工具：  top 各种stat vmstat iostat pidstat mpstat
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-15 17:10" pubdate>
-              2024-02-15
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Observability/">#Observability</a>
             
           </div>
         
@@ -615,7 +608,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/#board">6</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

@@ -224,15 +224,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/02/15/Borg%E8%AE%BA%E6%96%87%E5%AF%BC%E8%AF%BB/" target="_self">
-          Borg论文导读
+        <a href="/2024/03/13/Channel%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
+          Channel使用与实现
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/15/Borg%E8%AE%BA%E6%96%87%E5%AF%BC%E8%AF%BB/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/13/Channel%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
         <div>
-          背景 解决运维操作管理问题 提高服务可靠性 降低服务器成本  设计目标 运维操作自动化 监控系统-&gt;自动愈合系统  应用场景系统设计 broglet 评分计算  调度实现 异构架构 尽量让执行过相同任务的机器去执行一样的任务 软件包&#x2F;镜像拉取速度 任务混合部署  对比K8S思考 Borg如何保证业务能够自动恢复到预期状态？
+          背景channel之前使用的不多，虽然也看过源码和一些使用案例，但是在使用中还是会犯错。这里简单记录下channel使用和一些源码实现。 使用Go中经常提到的一句话就是不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。也就是使用CSP并发模型。Goroutine之间使用channel传递。 例子1  通过channel传递信息先来理解一下CSP模型，这里设置两个Goroutine，分
         </div>
       </a>
 
@@ -240,8 +240,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-15 10:32" pubdate>
-              2024-02-15
+            <time datetime="2024-03-13 15:41" pubdate>
+              2024-03-13
             </time>
           </div>
         
@@ -250,7 +250,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/distributed-system/">#distributed system</a>
+              <a href="/tags/Go/">#Go</a>
             
           </div>
         
@@ -264,15 +264,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/02/05/%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%B9%B6%E8%A1%8C%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E5%AE%9E%E7%8E%B0/" target="_self">
-          并发与并行的区别以及实现
+        <a href="/2024/03/12/redis%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F/" target="_self">
+          redis主从模式
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/05/%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%B9%B6%E8%A1%8C%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E5%AE%9E%E7%8E%B0/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/12/redis%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F/" target="_self">
         <div>
-          背景不管是在面试的时候，还是在写代码的时候，都会提起什么是并行什么是并发，经常出现搞混的情况。甚至出现并发&#x3D;&#x3D;并行这种尴尬的场景。为了解决这个问题，尝试从不同角度以及代码上来识别什么是并行，什么是并发。 并发并行
+          背景redis Replication 在redis作为缓存的时候，用户访问应用，应用会先从redis中读取信息，如果没有再从mysql中读取。但是当redis失效的时候，应用流量会直接打到mysql，对mysql造成压力。为了保证redis的可靠性，就需要添加redis实例。也就是主从模式。 redis在4.0版本提供了主从模式，在主从模式中master和slave采取读写分离的模式，为了保证一
         </div>
       </a>
 
@@ -280,41 +280,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-05 14:53" pubdate>
-              2024-02-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/02/05/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5%E5%B7%A5%E5%85%B7-memleak/" target="_self">
-          内存泄漏排查工具-memleak
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/05/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5%E5%B7%A5%E5%85%B7-memleak/" target="_self">
-        <div>
-          memleakmemleak是BCC工具中的内存分析工具，它用来跟踪(trace)内存和释放请求，并且收集进程的调用堆栈，并展示进程中每个函数的调用情况。 实践这里使用《Linux 性能优化实战》中倪朋飞老师的例子来对memleak进行一个简单上手展示: 1$ docker run --name=app -itd feisky/app:mem-leak  这是一个计算斐波那契数列的进程。之后运行起
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-05 11:44" pubdate>
-              2024-02-05
+            <time datetime="2024-03-12 15:23" pubdate>
+              2024-03-12
             </time>
           </div>
         
@@ -323,7 +290,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/eBPF/">#eBPF</a>
+              <a href="/tags/redis/">#redis</a>
             
           </div>
         
@@ -337,15 +304,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/30/SLA%E4%B8%8ESLO%E4%BB%A5%E5%8F%8ASLI%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB/" target="_self">
-          SLA与SLO以及SLI之间的关系
+        <a href="/2024/03/12/etcd%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E4%B8%8E%E8%B0%83%E8%AF%95/" target="_self">
+          etcd源码编译与调试
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/30/SLA%E4%B8%8ESLO%E4%BB%A5%E5%8F%8ASLI%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/12/etcd%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E4%B8%8E%E8%B0%83%E8%AF%95/" target="_self">
         <div>
-          背景做了一年的SRE，虽然大部分时间都在做开发，但是其中一些概念还是需要去了解的，这篇文章主要梳理下关于什么是SLA,SLO,SLI概念以及它们之间的关系。 SLA(Service-Level Agreement) 服务等级协议SLA简单来说就是一种保证下限的协议，没有任何一个服务可以保证自己不会出现问题，停机出现故障时必然的，但是在多长时间之内恢复以及相应的赔偿就是SLA需要做的事情了。SLA
+          背景K8S元数据存储在etcd中，所以etcd是非常重要的一环，之前有过几次etcd出现故障导致集群不可用，所以打算重头学下etcd。 编译我的环境是WSL2上的Ubuntu，整体编译过程和Linux上大差不差，要注意的是文件格式问题: 123$ git clone -b v3.5.11 https://github.com/etcd-io/etcd.git #选择etcd版本源码$ cd etc
         </div>
       </a>
 
@@ -353,8 +320,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-30 12:54" pubdate>
-              2024-01-30
+            <time datetime="2024-03-12 11:07" pubdate>
+              2024-03-12
             </time>
           </div>
         
@@ -363,7 +330,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/Observability/">#Observability</a>
+              <a href="/tags/etcd/">#etcd</a>
             
           </div>
         
@@ -377,15 +344,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/19/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-2-%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/" target="_self">
-          从零开始实现一个operator(2)-控制器实现
+        <a href="/2024/03/07/Go%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%91%98%E8%A6%81/" target="_self">
+          Go语言设计摘要
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/19/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-2-%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/07/Go%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%91%98%E8%A6%81/" target="_self">
         <div>
-          控制器-Controller在上一篇中，已经介绍如何去实现一个CR，并且也在集群中创建了，但是并没有相关Pod以及资源被创建，是因为Controller没有被实现。这里来讲下如何实现一个Controller。 控制器实现reconciliation loopreconciliation loop也就是概念篇中提到的控制回路，它用来保证期望状态和当前状态一致性的关键机制。以下是它的工作状态:  监视
+          背景写Go第三年了，但是Go相关的官方文档并没有看过，这篇文章主要是参考了Go FAQ，对其中有意思的部分进行记录。 设计运行时(Runtime)Runtime是Go的核心，主要实现了三个方面:  垃圾收集 并发 内存管理(堆栈管理)  Runtime有点类似于C中的libc。不过Runtime并没有像JVM的虚拟机，它是根据不同的体系结构和操作系统来编译可执行目标。 泛型(generic typ
         </div>
       </a>
 
@@ -393,8 +360,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-19 07:25" pubdate>
-              2024-01-19
+            <time datetime="2024-03-07 13:24" pubdate>
+              2024-03-07
             </time>
           </div>
         
@@ -403,7 +370,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/kubernetes/">#kubernetes</a>
+              <a href="/tags/Go/">#Go</a>
             
           </div>
         
@@ -417,15 +384,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/14/K8S%E8%8A%82%E7%82%B9NotReady%E6%8E%92%E9%94%99%E6%80%9D%E8%B7%AF/" target="_self">
-          K8S节点NotReady排错思路
+        <a href="/2024/03/05/Service%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E4%B8%80/" target="_self">
+          Service原理与实现(一)
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/14/K8S%E8%8A%82%E7%82%B9NotReady%E6%8E%92%E9%94%99%E6%80%9D%E8%B7%AF/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/05/Service%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E4%B8%80/" target="_self">
         <div>
-          背景在K8S中这种问题节点出现问题导致NotReady的情况并不少见，比如资源不足导致节点不可用，这里简单介绍下我遇到的情况以及我是如何解决的。 排查思路我使用的是VMware虚拟化出来的三个节点，一个master两个node，在kubectl get node的时候发现节点不可用:  以往一般会直接去重启对应节点机器，但是集群是重启过的，进一步查看原因，使用kubectl describe no
+          iptablesIPVS(IP Virtual Server)kube-Porxy发展史Service原理
         </div>
       </a>
 
@@ -433,8 +400,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-14 18:17" pubdate>
-              2024-01-14
+            <time datetime="2024-03-05 14:32" pubdate>
+              2024-03-05
             </time>
           </div>
         
@@ -457,15 +424,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" target="_self">
-          client-go组件使用与原理
+        <a href="/2024/03/04/%E4%BD%BF%E7%94%A8ArgoCD%E6%90%AD%E5%BB%BACICD%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B3%E5%8F%B0/" target="_self">
+          使用GitHub Actions与ArgoCD搭建CICD流水线平台
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/12/client-go%E7%BB%84%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/04/%E4%BD%BF%E7%94%A8ArgoCD%E6%90%AD%E5%BB%BACICD%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B3%E5%8F%B0/" target="_self">
         <div>
-          背景之前大部分时间都在用client-go进行开发，也用过informer做一些有意思的事情，但是很多细节方面的东西没有注意，这次算是对client-go原理进行一个整理。 架构设计client-go类型client-go支持四种类型客户端对象来和api server进行交互:  RESTClient ClientSet DynamicClient DiscoveryClient  其他三种都是基
+          背景之前断断续续接触过CICD这些概念，但是使用的不多，并且相关概念比较模糊，这里通过GitHub Actions和Argo CD打造一个CICD平台，来熟悉相关概念和流程。 CI(Continuous Integration) 持续集成平时完成一个需求的时候，一般会做一些测试，比如单元测试,e2e测试等等，完成这些测试之后再去提交代码到不同的分支。之后等待其他人来review代码在合并。  从静
         </div>
       </a>
 
@@ -473,8 +440,81 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-12 11:43" pubdate>
-              2024-01-12
+            <time datetime="2024-03-04 14:40" pubdate>
+              2024-03-04
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/devops/">#devops</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/02/22/%E9%80%9A%E8%BF%87%E5%88%9B%E5%BB%BAPod%E4%B8%B2%E8%81%94K8S%E7%BB%84%E4%BB%B6/" target="_self">
+          通过创建Pod串联K8S组件
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E9%80%9A%E8%BF%87%E5%88%9B%E5%BB%BAPod%E4%B8%B2%E8%81%94K8S%E7%BB%84%E4%BB%B6/" target="_self">
+        <div>
+          
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-02-22 20:22" pubdate>
+              2024-02-22
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/02/22/kubernetes%E7%BC%96%E7%A8%8B%E7%AC%94%E8%AE%B0/" target="_self">
+          kubernetes编程笔记
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/kubernetes%E7%BC%96%E7%A8%8B%E7%AC%94%E8%AE%B0/" target="_self">
+        <div>
+          控制循环(Controller) 通常使用事件驱动模式(watch使用)，来读取资源状态。 改变集群状态或者集群外部系统状态。 通过API Server组件来更新第一部中修改的状态，资源状态存放在etcd中。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-02-22 19:55" pubdate>
+              2024-02-22
             </time>
           </div>
         
@@ -497,15 +537,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/12/kubernetes%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%A7%A3%E6%9E%90/" target="_self">
-          kubernetes架构设计解析
+        <a href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E4%BA%8C-%E5%8D%8F%E7%A8%8B/" target="_self">
+          协程实现原理(二)-协程
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/12/kubernetes%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%A7%A3%E6%9E%90/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E4%BA%8C-%E5%8D%8F%E7%A8%8B/" target="_self">
         <div>
-          背景之前对kubernetes有过一些简单的了解，但是并没有去深入的去理解每个组件之间是如何工作的，所以正好复习一下。 概要首先看下官方给出来的架构图:  可以看到架构组件分为两类:  控制平面(control plane) 节点(node)  控制平面组件如下:  kube-api-server etcd scheduler Controller Manager cloud-controller
+          完整的协程技术栈有栈协程无栈协程
         </div>
       </a>
 
@@ -513,8 +553,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-12 09:37" pubdate>
-              2024-01-12
+            <time datetime="2024-02-22 11:38" pubdate>
+              2024-02-22
             </time>
           </div>
         
@@ -523,7 +563,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/kubernetes/">#kubernetes</a>
+              <a href="/tags/Go/">#Go</a>
             
           </div>
         
@@ -537,15 +577,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" target="_self">
-          从零实现一个operator(1)-kubebuilder实现redis operator
+        <a href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
+          协程实现原理-前置知识
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-1-kubebuilder%E5%AE%9E%E7%8E%B0redis-operator/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/22/%E5%8D%8F%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
         <div>
-          operator实现步骤正式开始使用kubebuilder来实现operator，关于operator原理可以看之前文章介绍，根据官网教程中的步骤来初始化一个operator项目: 1kubebuilder init --domain my.domain --repo my.domain/guestbook #修改这里的my.domain和my.domain/guestbook  之后kubebu
+          背景协程在1958年被Melvin Conway提出，想要为 COBOL 高级编程语言去实现一个 one-pass 的编译器。比当时进程， 线程的概念还要早一步诞生。不过当时并没有流行起来，因为不符合当时(一直持续到 1990 年代)以C语言为代表的命令式编程语言自顶向下设计思想。但是随着互联网发展，服务器对于高并发要求越来越高，出现C10K,C100K,C10M等问题。协程也就重新回归视野。 进
         </div>
       </a>
 
@@ -553,8 +593,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-11 14:33" pubdate>
-              2024-01-11
+            <time datetime="2024-02-22 10:58" pubdate>
+              2024-02-22
             </time>
           </div>
         
@@ -563,47 +603,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/kubernetes/">#kubernetes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-0-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/" target="_self">
-          从零实现一个operator(0)-前期准备
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/11/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAoperator-0-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/" target="_self">
-        <div>
-          operator基本概念在官方给出的解释中，operator是K8S用来对定制资源进行管理的组件，它遵守控制器理念。控制器理念是指个非终止回路，用于调节系统状态。 看到以上解释，肯定还是不明白什么是operator，operator这个词是从机器人技术和自动化领域借用过来的，举个例子来说下，假设你有一个非常高级的空调，可以调节室内温度，你希望室内温度在26度左右，这是你的期望值。而控制器换句话说o
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-11 13:30" pubdate>
-              2024-01-11
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/kubernetes/">#kubernetes</a>
+              <a href="/tags/Go/">#Go</a>
             
           </div>
         
@@ -615,7 +615,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/2/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/4/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/page/2/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><a class="page-number" href="/page/6/#board">6</a><a class="extend next" rel="next" href="/page/4/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

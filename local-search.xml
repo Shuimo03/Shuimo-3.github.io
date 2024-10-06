@@ -4,6 +4,210 @@
   
   
   <entry>
+    <title>centos虚拟机故障:Entering emergency mode. Exit the shell to continue.</title>
+    <link href="/2024/10/06/centos%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%95%85%E9%9A%9C-Entering-emergency-mode-Exit-the-shell-to-continue/"/>
+    <url>/2024/10/06/centos%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%95%85%E9%9A%9C-Entering-emergency-mode-Exit-the-shell-to-continue/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>上次是家里电源出现问题，主机出现断电，导致VMware虚拟机出现问题。</p><h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>根据信息查看错误:</p><p><img src="/../images/Linux/image-20241006135339675.png" alt="image-20241006135442619"></p><p>使用journalctl查看最后一页:</p><p><img src="/../images/Linuximage-20241006142322793.png" alt="image-20241006142322793"></p><p><img src="/../images/Linux/image-20241006135224025.png" alt="image-20241006135224025"></p><p>这个错误提示“please unmount the filesystem and rectify the problems”通常是由于XFS文件系统挂载出现问题。可能的原因包括：</p><ol><li><strong>未同步的数据</strong>：意外关机时，未写入磁盘的数据可能丢失，导致文件系统结构不一致。</li><li><strong>文件系统元数据损坏</strong>：关机过程中，XFS的元数据未能正确更新，从而在引导时无法读取。</li><li><strong>硬件问题</strong>：磁盘故障、连接不良或电源问题也可能引发文件系统损坏。</li></ol><p>因此，意外断电可能导致上述问题的发生。</p><p>为了修复这个问题，我们通过以下命令解决:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#因为我的是NVMe设备,所以是看不到/dev/mapper和/dev/dm-0相关文件夹，但是思路都是一样的</span><br>xfs_repair /dev/nvme0n1p2 -L<br></code></pre></td></tr></table></figure><p>为了保险起见，可以先备份虚拟机，输入命令之后等待一下就可以重启服务器了。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>探索gPRC与对比REST API</title>
+    <link href="/2024/10/05/%E6%8E%A2%E7%B4%A2gPRC/"/>
+    <url>/2024/10/05/%E6%8E%A2%E7%B4%A2gPRC/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前学习ArgoCD有了解到gRPC，并且之前项目和当前公司项目大部分都是gRPC为主。所以编写一篇关于gRPC的文章，简单说明一下。</p><h2 id="诞生背景"><a href="#诞生背景" class="headerlink" title="诞生背景"></a>诞生背景</h2><h2 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h2><h2 id="HTTP-2-0"><a href="#HTTP-2-0" class="headerlink" title="HTTP 2.0"></a>HTTP 2.0</h2><h3 id="对比HTTP1-1"><a href="#对比HTTP1-1" class="headerlink" title="对比HTTP1.1"></a>对比HTTP1.1</h3><h2 id="gRPC特点"><a href="#gRPC特点" class="headerlink" title="gRPC特点"></a>gRPC特点</h2><ul><li>convenience</li><li>scalability</li><li>performance</li></ul><h3 id="convenience"><a href="#convenience" class="headerlink" title="convenience"></a>convenience</h3><ul><li>对比RESTful</li><li></li></ul><p>假设不同的服务使用不同编程语言实现，比如A服务使用Go，B服务使用Python，C服务使用Rust。这些服务之间想要通信</p><p><img src="F:\code\blog\source\images\gPRC\image-20241006132754551.png" alt="image-20241006132754551"></p><h2 id="服务通信"><a href="#服务通信" class="headerlink" title="服务通信"></a>服务通信</h2><h2 id="代码生成"><a href="#代码生成" class="headerlink" title="代码生成"></a>代码生成</h2><h2 id="协议缓冲区-Protocol-buffer"><a href="#协议缓冲区-Protocol-buffer" class="headerlink" title="协议缓冲区(Protocol buffer)"></a>协议缓冲区(Protocol buffer)</h2><ul><li>Fast</li><li>Type-safe</li><li>A signle source of truth</li><li>Generators for differe languages</li><li>Steaming</li></ul><h2 id="Message"><a href="#Message" class="headerlink" title="Message"></a>Message</h2><h2 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h2><h2 id="不同语言之间的HTTP库版本"><a href="#不同语言之间的HTTP库版本" class="headerlink" title="不同语言之间的HTTP库版本"></a>不同语言之间的HTTP库版本</h2><ul><li>python</li><li>Rust</li><li>Go</li></ul><h2 id="第三方客户端-third-library"><a href="#第三方客户端-third-library" class="headerlink" title="第三方客户端(third library)"></a>第三方客户端(third library)</h2><h2 id="REST-API处理方式"><a href="#REST-API处理方式" class="headerlink" title="REST-API处理方式"></a>REST-API处理方式</h2><h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul><li>压缩JSON消息体后，传输速度会怎么样？</li><li>开发和维护成本</li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>gPRC</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>RDB文件分析</title>
+    <link href="/2024/09/28/RDB%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/"/>
+    <url>/2024/09/28/RDB%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h2 id="RDB文件实现"><a href="#RDB文件实现" class="headerlink" title="RDB文件实现"></a>RDB文件实现</h2><h3 id="键值对分析"><a href="#键值对分析" class="headerlink" title="键值对分析"></a>键值对分析</h3><p>在解析过FE(数据库选择器)之后，就会解析具体键值。键值对分为四个部分:</p><ol><li>key存活时间(Expiry)，具体看是碰到FC还是FD，不过这是可选值。</li><li>value类型，这里会使用一个字节来表示，具体value类型，比如0就是String类型。</li><li>key编码</li><li>value编码</li></ol><p>这里举一个例子:</p><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs tap">FC<span class="hljs-number"> 48 </span>66<span class="hljs-number"> 85 </span>ED<span class="hljs-number"> 70 </span>02<span class="hljs-number"> 01 </span>40 <span class="hljs-comment">#这里从28-00表示Expiry时间，以毫秒为单位。</span><br>00<span class="hljs-number"> 11 </span>70<span class="hljs-number"> 64 </span>3A<span class="hljs-number"> 31 </span>30 2E<span class="hljs-number"> 31 </span>39<span class="hljs-number"> 31 </span>2E<span class="hljs-number"> 32 </span>35<span class="hljs-number"> 34 </span>2E<span class="hljs-number"> 32 </span>32<span class="hljs-number"> 30 </span>0E <span class="hljs-comment">#0表示value类型，接着是key编码，key编码使用的是redis字符串相关编码</span><br>.................. <span class="hljs-comment">#最后是value</span><br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>redis</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>kubernetes网关对比与选型</title>
+    <link href="/2024/09/20/kubernetes%E7%BD%91%E5%85%B3%E5%AF%B9%E6%AF%94%E4%B8%8E%E9%80%89%E5%9E%8B/"/>
+    <url>/2024/09/20/kubernetes%E7%BD%91%E5%85%B3%E5%AF%B9%E6%AF%94%E4%B8%8E%E9%80%89%E5%9E%8B/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前经常听到各种类型的网关，比如nginx，envoy等等，但是对这些网关概念理解并不多，所以打算把主流网关做一个对比与选型。</p><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="网关-Gateway"><a href="#网关-Gateway" class="headerlink" title="网关(Gateway)"></a>网关(Gateway)</h3><p>网关主要是将不同网络之间的流量进行转发的节点，用来处理不同协议或者网络拓扑流量，同时还会处理网络层协议转换，负载均衡、流量控制和安全策略等。</p><p>总的来说，网关具有以下基本功能:</p><ul><li>流量转发</li><li>协议转换</li><li>负载均衡</li><li>流量控制</li><li>安全策略</li></ul><h3 id="Ingress-Controller"><a href="#Ingress-Controller" class="headerlink" title="Ingress Controller"></a>Ingress Controller</h3><p><img src="F:\code\blog\source\images\gateway\image-20240920072544589.png" alt="image-20240920072544589"></p><p>如图所示，ingress是对外提供服务的入口，主要负责L7流量处理。接收外部流量根据不同规则转发到service，service再转发到对应的服务上。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>kubernetes</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>有状态应用在K8S上的挑战</title>
+    <link href="/2024/09/18/%E6%9C%89%E7%8A%B6%E6%80%81%E5%BA%94%E7%94%A8%E5%9C%A8K8S%E4%B8%8A%E7%9A%84%E6%8C%91%E6%88%98/"/>
+    <url>/2024/09/18/%E6%9C%89%E7%8A%B6%E6%80%81%E5%BA%94%E7%94%A8%E5%9C%A8K8S%E4%B8%8A%E7%9A%84%E6%8C%91%E6%88%98/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>redis集群创建</title>
+    <link href="/2024/09/18/redis%E9%9B%86%E7%BE%A4%E5%88%9B%E5%BB%BA/"/>
+    <url>/2024/09/18/redis%E9%9B%86%E7%BE%A4%E5%88%9B%E5%BB%BA/</url>
+    
+    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前工作中接触到redis OPS居高不下，所以需要将其扩展为redis-cluster。</p><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>首先了解一个概念，并不是OPS越高越好，OPS虽然可以反映redis处理能力，但是因为redis是单线程使用，只会使用到一个核。所以需要使用到集群。redis版本是6.2.6；所以集群也使用该版本。</p><h3 id="机器规划"><a href="#机器规划" class="headerlink" title="机器规划"></a>机器规划</h3><p>在资源受限的情况下，我们可以考虑使用三台服务器搭建一套三主三从服务器:</p><table><thead><tr><th>IP</th><th>内存</th><th>CPU</th></tr></thead><tbody><tr><td>192.168.0.100</td><td>4G</td><td>2C</td></tr><tr><td>192.168.0.101</td><td>4G</td><td>2C</td></tr><tr><td>192.168.0.102</td><td>4G</td><td>2C</td></tr></tbody></table><p>这里是一个通用模板，具体配置需要根据场景来设定，以下是一些例子，仅作参考：</p><h3 id="场景一-小型业务系统"><a href="#场景一-小型业务系统" class="headerlink" title="场景一: 小型业务系统"></a>场景一: 小型业务系统</h3><ul><li>数据量：50GB</li><li>业务请求量：中等，QPS在1万左右</li><li>高可用性：需要基本的高可用，主从架构（3主3从）</li></ul><p>根据这些信息，我们大概可以推测每个节点负责1&#x2F;3的数据量，因为redis大部分操作都是单线程，再根据主从架构，也就是说最少需要6个核心。</p><p>内存需求:</p><ul><li>每个主节点的内存需求 &#x3D; 50GB &#x2F; 3 ≈ <strong>16.67GB</strong>。</li><li>预留20%用于缓存和其他操作，所以每个主节点需要大约 <strong>20GB</strong> 内存。</li><li>每个从节点需要和主节点相同的内存，因此从节点每个也需要<strong>20GB</strong>。</li><li>整个集群的内存需求 &#x3D; 3（主）× 20GB + 3（从）× 20GB &#x3D; <strong>120GB</strong>。</li></ul><p>最后推断出:</p><p><strong>CPU需求</strong>：至少6个核心（3主3从，每个实例1核心）。</p><p><strong>内存需求</strong>：总计<strong>120GB</strong>（每个节点20GB，3主3从）</p><h3 id="ansible"><a href="#ansible" class="headerlink" title="ansible"></a>ansible</h3><p>redis6版本开始部署集群变得简单起来，不像之前需要使用Ruby来创建。</p><h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="redis进程保活"><a href="#redis进程保活" class="headerlink" title="redis进程保活"></a>redis进程保活</h3><h3 id="redis进程绑核"><a href="#redis进程绑核" class="headerlink" title="redis进程绑核"></a>redis进程绑核</h3><h2 id="进一步提升"><a href="#进一步提升" class="headerlink" title="进一步提升"></a>进一步提升</h2><ul><li>如何有效扩容节点？</li><li>怎么</li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>redis</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>redis-cluster集群迁移与细节</title>
+    <link href="/2024/07/27/redis-cluster%E9%9B%86%E7%BE%A4%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/"/>
+    <url>/2024/07/27/redis-cluster%E9%9B%86%E7%BE%A4%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>redis</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>zookeeper迁移与细节</title>
+    <link href="/2024/07/27/zookeeper%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/"/>
+    <url>/2024/07/27/zookeeper%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SREworkBook-Note1-devops与sre关系</title>
+    <link href="/2024/06/07/SREworkBook-Note1-devops%E4%B8%8Esre%E5%85%B3%E7%B3%BB/"/>
+    <url>/2024/06/07/SREworkBook-Note1-devops%E4%B8%8Esre%E5%85%B3%E7%B3%BB/</url>
+    
+    <content type="html"><![CDATA[<h2 id="CALMS"><a href="#CALMS" class="headerlink" title="CALMS"></a>CALMS</h2><h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="devops背景"><a href="#devops背景" class="headerlink" title="devops背景"></a>devops背景</h2><h2 id="SRE背景"><a href="#SRE背景" class="headerlink" title="SRE背景"></a>SRE背景</h2><ul><li>SRE需要按照软件工程的方法去解决问题。</li><li>为合适的群体选择SLO</li><li>自动化，减少重复性任务<ul><li>自动化场景</li><li>确定自动化内容</li><li>在上面条件下完成自动化</li></ul></li><li>最佳目标: 50%开发 50%运维</li><li>SRE目标<ul><li>提高稳定性</li><li>提高产品开发产出</li><li>减少MTTR(平均修复时间)</li><li>降本增效</li></ul></li><li>SRE关注重点<ul><li>生产问题</li><li>实践软件工程，保证业务服务的可用性、延迟、性能、效率、变更管理、监控、应急响应和容量规划。</li><li>SRE应该熟悉对应服务的技术栈，比如前端技术和后端技术等等。</li></ul></li></ul><h2 id="SRE与DevOps之间的关系"><a href="#SRE与DevOps之间的关系" class="headerlink" title="SRE与DevOps之间的关系"></a>SRE与DevOps之间的关系</h2><ul><li>差异</li><li>共同点</li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>SRE</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SQL基础-窗口函数</title>
+    <link href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0/"/>
+    <url>/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SQL基础-子查询</title>
+    <link href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E5%AD%90%E6%9F%A5%E8%AF%A2/"/>
+    <url>/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E5%AD%90%E6%9F%A5%E8%AF%A2/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SQL基础-连接</title>
+    <link href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E8%BF%9E%E6%8E%A5/"/>
+    <url>/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E8%BF%9E%E6%8E%A5/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>PostgreSQL</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>iam场景与授权方案</title>
     <link href="/2024/05/04/iam%E5%9C%BA%E6%99%AF%E4%B8%8E%E6%8E%88%E6%9D%83%E6%96%B9%E6%A1%88/"/>
     <url>/2024/05/04/iam%E5%9C%BA%E6%99%AF%E4%B8%8E%E6%8E%88%E6%9D%83%E6%96%B9%E6%A1%88/</url>
@@ -81,6 +285,12 @@
     <content type="html"><![CDATA[]]></content>
     
     
+    
+    <tags>
+      
+      <tag>redis</tag>
+      
+    </tags>
     
   </entry>
   
@@ -821,25 +1031,6 @@
     <url>/2023/10/07/redis-proxy%E5%88%9D%E6%8E%A2/</url>
     
     <content type="html"><![CDATA[]]></content>
-    
-    
-    
-    <tags>
-      
-      <tag>redis</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>redis集群模式</title>
-    <link href="/2023/10/07/redis%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/"/>
-    <url>/2023/10/07/redis%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/</url>
-    
-    <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前大部分场景都使用redis，而不是redis cluster，所以对redis cluster感到陌生。</p><h2 id="redis集群"><a href="#redis集群" class="headerlink" title="redis集群"></a>redis集群</h2><p>在考虑redis集群之前，可以想想看为什么需要redis集群，集群一般是解决单机内存、并发、流量等瓶颈问题。但是也可以对redis实例进行垂直扩展，假设redis单机实例是2C2G，在下面场景中对比redis集群。</p><h3 id="单机内存瓶颈"><a href="#单机内存瓶颈" class="headerlink" title="单机内存瓶颈"></a>单机内存瓶颈</h3><p>redis内存瓶颈主要出现在数据量过大，或者使用不妥当，比如开发没有设置TTL，又或者是内存碎片太多等场景。假设当前redis已经用掉了1G内存，这个时候有多个big key出现，就会造成redis实例不可用，为了避免这种情况，一般会考虑添加内存容量。</p><h3 id="并发瓶颈"><a href="#并发瓶颈" class="headerlink" title="并发瓶颈"></a>并发瓶颈</h3><h3 id="流量瓶颈"><a href="#流量瓶颈" class="headerlink" title="流量瓶颈"></a>流量瓶颈</h3><h2 id="可扩展性"><a href="#可扩展性" class="headerlink" title="可扩展性"></a>可扩展性</h2><ul><li>垂直</li><li>水平</li></ul><h2 id="分片"><a href="#分片" class="headerlink" title="分片"></a>分片</h2><h2 id="分片算法"><a href="#分片算法" class="headerlink" title="分片算法"></a>分片算法</h2><h2 id="集群模式"><a href="#集群模式" class="headerlink" title="集群模式"></a>集群模式</h2><h2 id="哈希槽"><a href="#哈希槽" class="headerlink" title="哈希槽"></a>哈希槽</h2><h2 id="可用性"><a href="#可用性" class="headerlink" title="可用性"></a>可用性</h2><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul><li><a href="https://redis.io/docs/reference/cluster-spec/">https://redis.io/docs/reference/cluster-spec/</a></li></ul>]]></content>
     
     
     

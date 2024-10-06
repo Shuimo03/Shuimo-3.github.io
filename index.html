@@ -224,15 +224,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/05/04/iam%E5%9C%BA%E6%99%AF%E4%B8%8E%E6%8E%88%E6%9D%83%E6%96%B9%E6%A1%88/" target="_self">
-          iam场景与授权方案
+        <a href="/2024/10/06/centos%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%95%85%E9%9A%9C-Entering-emergency-mode-Exit-the-shell-to-continue/" target="_self">
+          centos虚拟机故障:Entering emergency mode. Exit the shell to continue.
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/04/iam%E5%9C%BA%E6%99%AF%E4%B8%8E%E6%8E%88%E6%9D%83%E6%96%B9%E6%A1%88/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/06/centos%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%95%85%E9%9A%9C-Entering-emergency-mode-Exit-the-shell-to-continue/" target="_self">
         <div>
-          IAM(Identity and Access Management)IAM是用来管理用户和系统对资源的访问权限，覆盖了对用户，组织，角色和策略的身份验证，授权和管理。 IAM功能IAM核心功能如下:  身份验证: 常见身份认证方式有用户名密码认证、多因素认证（MFA）、单点登录（SSO）、生物识别认证。 授权: 确保对应用户有相关权限，比如用户A对资源ABC具有读写权限，但是在D资源上只有读权限
+          背景上次是家里电源出现问题，主机出现断电，导致VMware虚拟机出现问题。 解决根据信息查看错误:  使用journalctl查看最后一页:   这个错误提示“please unmount the filesystem and rectify the problems”通常是由于XFS文件系统挂载出现问题。可能的原因包括：  未同步的数据：意外关机时，未写入磁盘的数据可能丢失，导致文件系统结构不一
         </div>
       </a>
 
@@ -240,8 +240,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-05-04 20:31" pubdate>
-              2024-05-04
+            <time datetime="2024-10-06 13:50" pubdate>
+              2024-10-06
             </time>
           </div>
         
@@ -250,7 +250,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/iam/">#iam</a>
+              <a href="/tags/Linux/">#Linux</a>
             
           </div>
         
@@ -264,15 +264,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/04/02/kubelet-%E4%B8%80-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
-          kubelet(一)源码分析
+        <a href="/2024/10/05/%E6%8E%A2%E7%B4%A2gPRC/" target="_self">
+          探索gPRC与对比REST API
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/02/kubelet-%E4%B8%80-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/%E6%8E%A2%E7%B4%A2gPRC/" target="_self">
         <div>
-          背景接触K8S这么久以来，对K8S内部原理还不是理解的很深，加上对K8S源码分析的书不多，所以打算从各个组件源码入手。关于kubelet，主要关心它是如何通过CRI,CSI,CNI来为Pod创建相关资源的，以及它对容器的监控。版本使用1.25。 组件编译在深入kubelet源码之前，先对kubelet组件进行编译，这样做可以快速对kubelet源码有一个认识。 入口函数Pod创建-CRI流程
+          背景之前学习ArgoCD有了解到gRPC，并且之前项目和当前公司项目大部分都是gRPC为主。所以编写一篇关于gRPC的文章，简单说明一下。 诞生背景RPCHTTP 2.0对比HTTP1.1gRPC特点 convenience scalability performance  convenience 对比RESTful   假设不同的服务使用不同编程语言实现，比如A服务使用Go，B服务使用Pytho
         </div>
       </a>
 
@@ -280,8 +280,88 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-04-02 13:44" pubdate>
-              2024-04-02
+            <time datetime="2024-10-05 15:24" pubdate>
+              2024-10-05
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/gPRC/">#gPRC</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/28/RDB%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/" target="_self">
+          RDB文件分析
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/28/RDB%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/" target="_self">
+        <div>
+          背景RDB文件实现键值对分析在解析过FE(数据库选择器)之后，就会解析具体键值。键值对分为四个部分:  key存活时间(Expiry)，具体看是碰到FC还是FD，不过这是可选值。 value类型，这里会使用一个字节来表示，具体value类型，比如0就是String类型。 key编码 value编码  这里举一个例子: 123FC 48 66 85 ED 70 02 01 40 #这里从28-00表
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-28 21:16" pubdate>
+              2024-09-28
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/redis/">#redis</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/20/kubernetes%E7%BD%91%E5%85%B3%E5%AF%B9%E6%AF%94%E4%B8%8E%E9%80%89%E5%9E%8B/" target="_self">
+          kubernetes网关对比与选型
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/20/kubernetes%E7%BD%91%E5%85%B3%E5%AF%B9%E6%AF%94%E4%B8%8E%E9%80%89%E5%9E%8B/" target="_self">
+        <div>
+          背景之前经常听到各种类型的网关，比如nginx，envoy等等，但是对这些网关概念理解并不多，所以打算把主流网关做一个对比与选型。 基本概念网关(Gateway)网关主要是将不同网络之间的流量进行转发的节点，用来处理不同协议或者网络拓扑流量，同时还会处理网络层协议转换，负载均衡、流量控制和安全策略等。 总的来说，网关具有以下基本功能:  流量转发 协议转换 负载均衡 流量控制 安全策略  Ingr
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-20 07:14" pubdate>
+              2024-09-20
             </time>
           </div>
         
@@ -304,13 +384,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/04/01/Kafka%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" target="_self">
-          Kafka系统架构设计
+        <a href="/2024/09/18/%E6%9C%89%E7%8A%B6%E6%80%81%E5%BA%94%E7%94%A8%E5%9C%A8K8S%E4%B8%8A%E7%9A%84%E6%8C%91%E6%88%98/" target="_self">
+          有状态应用在K8S上的挑战
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/01/Kafka%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/18/%E6%9C%89%E7%8A%B6%E6%80%81%E5%BA%94%E7%94%A8%E5%9C%A8K8S%E4%B8%8A%E7%9A%84%E6%8C%91%E6%88%98/" target="_self">
         <div>
           
         </div>
@@ -320,48 +400,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-04-01 17:12" pubdate>
-              2024-04-01
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/kafka/">#kafka</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/04/01/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" target="_self">
-          设计模式-单例模式
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/01/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" target="_self">
-        <div>
-          
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-04-01 14:50" pubdate>
-              2024-04-01
+            <time datetime="2024-09-18 09:10" pubdate>
+              2024-09-18
             </time>
           </div>
         
@@ -377,15 +417,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/03/14/redis%E6%8C%81%E4%B9%85%E5%8C%96%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
-          redis持久化实现原理
+        <a href="/2024/09/18/redis%E9%9B%86%E7%BE%A4%E5%88%9B%E5%BB%BA/" target="_self">
+          redis集群创建
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/14/redis%E6%8C%81%E4%B9%85%E5%8C%96%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/18/redis%E9%9B%86%E7%BE%A4%E5%88%9B%E5%BB%BA/" target="_self">
         <div>
-          
+          背景之前工作中接触到redis OPS居高不下，所以需要将其扩展为redis-cluster。 实现首先了解一个概念，并不是OPS越高越好，OPS虽然可以反映redis处理能力，但是因为redis是单线程使用，只会使用到一个核。所以需要使用到集群。redis版本是6.2.6；所以集群也使用该版本。 机器规划在资源受限的情况下，我们可以考虑使用三台服务器搭建一套三主三从服务器:    IP 内存 C
         </div>
       </a>
 
@@ -393,41 +433,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-14 14:44" pubdate>
-              2024-03-14
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/14/redis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/" target="_self">
-          Redis源码调试环境
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/14/redis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/" target="_self">
-        <div>
-          背景深入学习redis绕不过去的肯定是源码，源码学习的最好方式就是带着问题去debug，所以这里使用vscode进行调试。 编译我比较顺利，一遍跑通了，如果缺少什么可以根据错误去自行解决。 1make CFLAGS=&quot;-g -O0&quot;  #-O0不进行优化处理  如果编译成功，在src目录下可以看到redis二进制文件: 1234567-rwxr-xr-x 1 root root
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-14 10:37" pubdate>
-              2024-03-14
+            <time datetime="2024-09-18 09:02" pubdate>
+              2024-09-18
             </time>
           </div>
         
@@ -450,15 +457,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/03/13/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%9C%BA%E6%99%AF/" target="_self">
-          redis持久化使用与场景
+        <a href="/2024/07/27/redis-cluster%E9%9B%86%E7%BE%A4%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/" target="_self">
+          redis-cluster集群迁移与细节
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/13/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%9C%BA%E6%99%AF/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/07/27/redis-cluster%E9%9B%86%E7%BE%A4%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/" target="_self">
         <div>
-          Redis持久化方案持久化是指将数据写入到磁盘上，Redis提供了以下几种方案:  RDB: AOF RDB+AOF  除了上面三种持久化方案，还有不开启持久化，这种场景一般是将redis当作缓存使用，不过不推荐使用，因为 RDB(Redis Database)RDB优点 RDB非常适合容灾场景，因为它可以设置定期时间来生成快照备份，比如每小时备份最近24小时数据。 在键值对较多的情况下，换句话来
+          
         </div>
       </a>
 
@@ -466,8 +473,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-13 21:43" pubdate>
-              2024-03-13
+            <time datetime="2024-07-27 16:05" pubdate>
+              2024-07-27
             </time>
           </div>
         
@@ -490,15 +497,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/03/13/WaitGroup%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
-          WaitGroup使用与实现
+        <a href="/2024/07/27/zookeeper%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/" target="_self">
+          zookeeper迁移与细节
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/13/WaitGroup%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/07/27/zookeeper%E8%BF%81%E7%A7%BB%E4%B8%8E%E7%BB%86%E8%8A%82/" target="_self">
         <div>
-          背景WaitGroup主要应用场景是等待一组goroutine完成，主goroutine使用Add来设置等待goroutine的数量，之后每个goroutine使用Done来表示它们已经运行完成，同时Wait可以用于阻塞，直到所有goroutine都已经使用了Done。简单来说WaitGroup就是用来解决并发-等待问题。 WaitGroup在被创建之后，不能被复制，这里有点绕，用代码来说明: 1
+          
         </div>
       </a>
 
@@ -506,8 +513,41 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-13 20:07" pubdate>
-              2024-03-13
+            <time datetime="2024-07-27 16:05" pubdate>
+              2024-07-27
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/06/07/SREworkBook-Note1-devops%E4%B8%8Esre%E5%85%B3%E7%B3%BB/" target="_self">
+          SREworkBook-Note1-devops与sre关系
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/06/07/SREworkBook-Note1-devops%E4%B8%8Esre%E5%85%B3%E7%B3%BB/" target="_self">
+        <div>
+          CALMSdevops背景SRE背景 SRE需要按照软件工程的方法去解决问题。 为合适的群体选择SLO 自动化，减少重复性任务 自动化场景 确定自动化内容 在上面条件下完成自动化   最佳目标: 50%开发 50%运维 SRE目标 提高稳定性 提高产品开发产出 减少MTTR(平均修复时间) 降本增效   SRE关注重点 生产问题 实践软件工程，保证业务服务的可用性、延迟、性能、效率、变更管理、监控
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-06-07 07:10" pubdate>
+              2024-06-07
             </time>
           </div>
         
@@ -516,7 +556,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/Go/">#Go</a>
+              <a href="/tags/SRE/">#SRE</a>
             
           </div>
         
@@ -530,15 +570,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/03/13/Channel%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
-          Channel使用与实现
+        <a href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0/" target="_self">
+          SQL基础-窗口函数
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/13/Channel%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/20/SQL%E5%9F%BA%E7%A1%80-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0/" target="_self">
         <div>
-          背景channel之前使用的不多，虽然也看过源码和一些使用案例，但是在使用中还是会犯错。这里简单记录下channel使用和一些源码实现。 使用Go中经常提到的一句话就是不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。也就是使用CSP并发模型。Goroutine之间使用channel传递。 例子1  通过channel传递信息先来理解一下CSP模型，这里设置两个Goroutine，分
+          
         </div>
       </a>
 
@@ -546,59 +586,12 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-13 15:41" pubdate>
-              2024-03-13
+            <time datetime="2024-05-20 21:14" pubdate>
+              2024-05-20
             </time>
           </div>
         
         
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Go/">#Go</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/12/redis%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F/" target="_self">
-          redis主从模式
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/12/redis%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F/" target="_self">
-        <div>
-          背景redis Replication 在redis作为缓存的时候，用户访问应用，应用会先从redis中读取信息，如果没有再从mysql中读取。但是当redis失效的时候，应用流量会直接打到mysql，对mysql造成压力。为了保证redis的可靠性，就需要添加redis实例。也就是主从模式。 redis在4.0版本提供了主从模式，在主从模式中master和slave采取读写分离的模式，为了保证一
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-12 15:23" pubdate>
-              2024-03-12
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/redis/">#redis</a>
-            
-          </div>
         
       </div>
     </article>
@@ -608,7 +601,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/#board">6</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 
